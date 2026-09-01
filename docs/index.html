@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roo4u Architecture Constellation | Repository Network Graph</title>
+  <meta name="description" content="Interactive constellation-style force-directed network graph visualization of Roo4u repository architecture across Python (main) and Pure OCaml (v2) branches.">
+  
+  <!-- Google Fonts: Inter, JetBrains Mono, Orbitron -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  
+  <!-- D3.js v7 CDN with fallback -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-space">
+  <!-- Top Cosmic Navigation Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand">
+        <div class="brand-orbit">
+          <div class="brand-core"></div>
+          <div class="brand-ring"></div>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">ROO4U <span class="brand-subtitle">CONSTELLATION</span></h1>
+          <p class="brand-tagline">Repository Architecture &amp; Force-Directed Network Map</p>
+        </div>
+      </div>
+
+      <!-- Branch Selection Tabs -->
+      <nav class="branch-tabs" role="tablist" aria-label="Branch Switcher">
+        <button class="branch-tab active" id="tab-main" data-branch="main" role="tab" aria-selected="true">
+          <span class="tab-dot dot-main"></span>
+          <span class="tab-name">main</span>
+          <span class="tab-badge">Python Core</span>
+        </button>
+        <button class="branch-tab" id="tab-v2" data-branch="v2" role="tab" aria-selected="false">
+          <span class="tab-dot dot-v2"></span>
+          <span class="tab-name">v2</span>
+          <span class="tab-badge">Pure OCaml</span>
+        </button>
+        <button class="branch-tab tab-compare" id="tab-compare" data-mode="compare" role="tab" aria-selected="false">
+          <span class="tab-icon">⇄</span>
+          <span class="tab-name">Architecture Shift</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Header Actions / Search & Quick Filters -->
+    <div class="header-right">
+      <!-- Search Input with Autocomplete -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="node-search" placeholder="Search files, symbols, modules..." autocomplete="off" spellcheck="false">
+          <button id="search-clear" class="search-clear hidden" title="Clear search">✕</button>
+        </div>
+        <div id="search-results" class="search-dropdown hidden"></div>
+      </div>
+
+      <!-- Layout Selector Dropdown -->
+      <div class="layout-selector">
+        <label for="layout-mode" class="layout-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Layout
+        </label>
+        <select id="layout-mode">
+          <option value="cosmic">Cosmic Orbit (Force)</option>
+          <option value="concentric">Concentric Rings</option>
+          <option value="layered">Layered Hierarchy</option>
+          <option value="clusters">Galactic Sectors</option>
+        </select>
+      </div>
+
+      <!-- Controls Toggle Button -->
+      <button id="toggle-controls-btn" class="icon-btn" title="Toggle Simulation &amp; Physics Controls">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="4" y1="21" x2="4" y2="14"></line>
+          <line x1="4" y1="10" x2="4" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12" y2="3"></line>
+          <line x1="20" y1="21" x2="20" y2="16"></line>
+          <line x1="20" y1="12" x2="20" y2="3"></line>
+          <line x1="1" y1="14" x2="7" y2="14"></line>
+          <line x1="9" y1="8" x2="15" y2="8"></line>
+          <line x1="17" y1="16" x2="23" y2="16"></line>
+        </svg>
+      </button>
+
+      <!-- Reset Camera Button -->
+      <button id="reset-cam-btn" class="icon-btn" title="Fit to Constellation">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace Area -->
+  <main class="workspace">
+    <!-- Starfield & Network Graph Canvas Layer -->
+    <div id="graph-container" class="graph-container">
+      <canvas id="starfield-canvas"></canvas>
+      <canvas id="graph-canvas"></canvas>
+      
+      <!-- Interactive Tooltip Overlay -->
+      <div id="graph-tooltip" class="graph-tooltip hidden">
+        <div class="tooltip-header">
+          <span class="tooltip-category-badge" id="tt-category">Core</span>
+          <span class="tooltip-lang" id="tt-lang">Python</span>
+        </div>
+        <div class="tooltip-title" id="tt-title">base_agent.py</div>
+        <div class="tooltip-path" id="tt-path">agents/base_agent.py</div>
+        <div class="tooltip-summary" id="tt-summary">Abstract base class with local LLM integration and resilience.</div>
+        <div class="tooltip-stats">
+          <span class="tt-stat"><strong id="tt-loc">0</strong> LOC</span>
+          <span class="tt-stat"><strong id="tt-degree">0</strong> Links</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats & Certification Status HUD Overlay (Top-Left) -->
+    <div class="hud-panel hud-stats">
+      <div class="hud-header">
+        <span class="hud-tag" id="hud-branch-tag">MAIN BRANCH</span>
+        <span class="hud-status-indicator pulse-green"></span>
+      </div>
+      <div class="hud-grid">
+        <div class="hud-stat-item">
+          <div class="hud-stat-val" id="stat-nodes">0</div>
+          <div class="hud-stat-label">Files / Stars</div>
+        </div>
+        <div class="hud-stat-item">
+          <div class="hud-stat-val" id="stat-links">0</div>
+          <div class="hud-stat-label">Filaments</div>
+        </div>
+        <div class="hud-stat-item">
+          <div class="hud-stat-val" id="stat-loc">0</div>
+          <div class="hud-stat-label">Total LOC</div>
+        </div>
+        <div class="hud-stat-item">
+          <div class="hud-stat-val" id="stat-clusters">0</div>
+          <div class="hud-stat-label">Constellations</div>
+        </div>
+      </div>
+      <div class="hud-cert" id="hud-cert-box">
+        <svg class="cert-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="m9 12 2 2 4-4"></path>
+        </svg>
+        <span id="hud-cert-text">AST Certified Pass (SHA-256)</span>
+      </div>
+    </div>
+
+    <!-- Cluster / Category Filter Bar (Bottom-Left) -->
+    <div class="hud-panel hud-filters">
+      <div class="filter-header">
+        <span class="filter-title">CONSTELLATION SECTORS</span>
+        <div class="swarm-toggle-wrapper">
+          <label class="toggle-label" for="toggle-swarm">
+            <input type="checkbox" id="toggle-swarm" checked>
+            <span class="toggle-custom"></span>
+            <span class="toggle-text">Include Swarm Logs</span>
+          </label>
+        </div>
+      </div>
+      <div id="category-chips" class="category-chips-grid"></div>
+    </div>
+
+    <!-- Radar Minimap (Bottom-Right) -->
+    <div class="hud-panel hud-minimap">
+      <div class="minimap-header">
+        <span>GALACTIC RADAR</span>
+        <span id="zoom-indicator">100%</span>
+      </div>
+      <div class="minimap-canvas-wrapper">
+        <canvas id="minimap-canvas" width="180" height="120"></canvas>
+      </div>
+    </div>
+
+    <!-- Physics & Simulation Control Drawer (Collapsible) -->
+    <aside id="physics-panel" class="physics-drawer hidden">
+      <div class="drawer-header">
+        <h3>Cosmic Simulation Physics</h3>
+        <button id="close-physics-btn" class="drawer-close" title="Close Physics Drawer">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="control-group">
+          <label for="slider-charge">Node Repulsion / Charge: <span id="val-charge">-350</span></label>
+          <input type="range" id="slider-charge" min="-1200" max="-50" step="25" value="-350">
+        </div>
+        <div class="control-group">
+          <label for="slider-link-dist">Filament Distance: <span id="val-link-dist">90</span></label>
+          <input type="range" id="slider-link-dist" min="30" max="250" step="5" value="90">
+        </div>
+        <div class="control-group">
+          <label for="slider-collision">Stellar Collision Radius: <span id="val-collision">18</span></label>
+          <input type="range" id="slider-collision" min="5" max="50" step="1" value="18">
+        </div>
+        <div class="control-group">
+          <label for="slider-gravity">Galactic Gravity: <span id="val-gravity">0.08</span></label>
+          <input type="range" id="slider-gravity" min="0.01" max="0.3" step="0.01" value="0.08">
+        </div>
+        <div class="control-group">
+          <label for="slider-photon-speed">Photon Pulse Speed: <span id="val-photon-speed">1.0x</span></label>
+          <input type="range" id="slider-photon-speed" min="0" max="3" step="0.2" value="1">
+        </div>
+        <div class="control-group toggles-row">
+          <label class="toggle-label" for="toggle-photons">
+            <input type="checkbox" id="toggle-photons" checked>
+            <span class="toggle-custom"></span>
+            <span class="toggle-text">Flowing Photons</span>
+          </label>
+          <label class="toggle-label" for="toggle-nebulas">
+            <input type="checkbox" id="toggle-nebulas" checked>
+            <span class="toggle-custom"></span>
+            <span class="toggle-text">Nebula Glows</span>
+          </label>
+        </div>
+        <div class="drawer-actions">
+          <button id="reset-physics-btn" class="btn btn-secondary">Reset Physics</button>
+          <button id="reheat-sim-btn" class="btn btn-primary">Reheat Simulation</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Node Inspector Drawer (Sliding from Right) -->
+    <aside id="inspector-drawer" class="inspector-drawer hidden">
+      <div class="inspector-header">
+        <div class="inspector-title-row">
+          <span class="inspector-category-badge" id="insp-category">Agents</span>
+          <button id="close-inspector-btn" class="drawer-close" title="Close Inspector">✕</button>
+        </div>
+        <h2 class="inspector-filename" id="insp-name">county_agent.py</h2>
+        <p class="inspector-filepath" id="insp-path">agents/county_agent.py</p>
+      </div>
+
+      <!-- Inspector Tab Controls -->
+      <div class="inspector-tabs">
+        <button class="insp-tab-btn active" data-tab="insp-overview">Overview</button>
+        <button class="insp-tab-btn" data-tab="insp-deps">Filaments (<span id="insp-deps-count">0</span>)</button>
+        <button class="insp-tab-btn" data-tab="insp-symbols">Symbols (<span id="insp-syms-count">0</span>)</button>
+        <button class="insp-tab-btn" data-tab="insp-code">Preview</button>
+      </div>
+
+      <div class="inspector-body">
+        <!-- Overview Tab -->
+        <div id="insp-overview" class="insp-tab-content active">
+          <div class="insp-section">
+            <h4 class="section-title">Architectural Role</h4>
+            <p class="insp-desc" id="insp-summary">Municipal and tax assessor data collector for San Francisco DBI &amp; PIM records.</p>
+          </div>
+
+          <div class="insp-section">
+            <h4 class="section-title">Stellar Metadata</h4>
+            <dl class="meta-grid">
+              <dt>Language</dt>
+              <dd id="insp-meta-lang">Python</dd>
+              <dt>Lines of Code</dt>
+              <dd id="insp-meta-loc">342 LOC</dd>
+              <dt>File Size</dt>
+              <dd id="insp-meta-size">14.2 KB</dd>
+              <dt>Constellation Layer</dt>
+              <dd id="insp-meta-layer">Layer 2 (Autonomous Agents)</dd>
+              <dt>SHA-256 Digest</dt>
+              <dd class="sha-box" id="insp-meta-sha">d9f482a... <button class="copy-sha-btn" id="copy-sha-btn" title="Copy SHA256">⧉</button></dd>
+            </dl>
+          </div>
+
+          <div class="insp-actions">
+            <button id="focus-constellation-btn" class="btn btn-primary btn-block">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              Isolate Connected Constellation
+            </button>
+            <button id="clear-focus-btn" class="btn btn-secondary btn-block hidden">Reset Isolation</button>
+          </div>
+        </div>
+
+        <!-- Dependencies Tab -->
+        <div id="insp-deps" class="insp-tab-content">
+          <div class="insp-section">
+            <h4 class="section-title">Inbound Filaments (Imported By)</h4>
+            <ul id="insp-inbound-list" class="dep-list"></ul>
+          </div>
+          <div class="insp-section">
+            <h4 class="section-title">Outbound Filaments (Imports / Depends On)</h4>
+            <ul id="insp-outbound-list" class="dep-list"></ul>
+          </div>
+        </div>
+
+        <!-- Symbols Tab -->
+        <div id="insp-symbols" class="insp-tab-content">
+          <div class="insp-section">
+            <h4 class="section-title">Exported Types, Classes &amp; Callables</h4>
+            <ul id="insp-symbols-list" class="symbols-list"></ul>
+          </div>
+        </div>
+
+        <!-- Code Preview Tab -->
+        <div id="insp-code" class="insp-tab-content">
+          <div class="insp-section">
+            <div class="code-preview-header">
+              <span id="code-preview-filename">county_agent.py</span>
+              <span class="badge-code">First 18 Lines</span>
+            </div>
+            <pre class="code-preview-block"><code id="insp-code-content"></code></pre>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Architecture Shift Comparison Modal (Overlaid on Tab Selection) -->
+    <div id="compare-modal" class="compare-modal hidden">
+      <div class="compare-modal-content">
+        <div class="compare-header">
+          <div>
+            <h2 class="compare-title">Python (main) ➔ Pure OCaml (v2) Architectural Shift</h2>
+            <p class="compare-subtitle">Comprehensive evolution from Python offline multi-agent architecture with dynamic AST validation to a type-safe, invariant-enforcing pure OCaml functional engine.</p>
+          </div>
+          <button id="close-compare-btn" class="drawer-close" title="Close Comparison">✕</button>
+        </div>
+
+        <div class="compare-body">
+          <!-- Key Metrics Comparison Table -->
+          <div class="compare-section">
+            <h3 class="compare-section-title">Architectural Paradigm Shift</h3>
+            <div class="compare-table-wrapper">
+              <table class="compare-table">
+                <thead>
+                  <tr>
+                    <th>Dimension</th>
+                    <th>main (Python Architecture)</th>
+                    <th>v2 (Pure OCaml Rewrite)</th>
+                    <th>Verification Advantage</th>
+                  </tr>
+                </thead>
+                <tbody id="compare-metrics-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Module Direct Mappings -->
+          <div class="compare-section">
+            <h3 class="compare-section-title">Direct Component Transformations</h3>
+            <div class="mappings-grid" id="compare-mappings-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Load Embedded Graph Dataset -->
+  <script src="data.js"></script>
+  <!-- Load Application Engine -->
+  <script src="app.js"></script>
+</body>
+</html>
