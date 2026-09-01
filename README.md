@@ -5,12 +5,12 @@ Roo4u is an automated, agentic lead generation pipeline specifically designed fo
 ## Architecture: The "Local Swarm" (Zero-Cost Cloud Alternative)
 Until we scale to paid cloud infrastructure with API keys, Roo4u leverages a brilliant "Local Compute Arbitrage" architecture. Instead of deploying to AWS or GCP, this system runs entirely within the **Antigravity Desktop Agent Environment** using **Global Scheduled Tasks**.
 
-Every time the scheduled cron job triggers, it spawns a fresh **sidecar agent** that executes our pipeline in the following priority order:
+We operate on an **Hourly Micro-Batch Schedule**. Every hour, a cron job triggers and spawns a master "Orchestrator" sidecar agent that delegates work to a swarm of subagents:
 
-1. **GitHub Issue Polling:** The agent acts as an autonomous worker, checking this GitHub repository's issues for new commands (e.g., a new zip code to target or a bug to fix) before beginning its run.
-2. **Database Maintenance:** It connects to the local SQLite database (`leads.db`) to clean up old data, enforce uniqueness, and prep the environment.
-3. **Agentic Web Browsing:** It invokes a browser subagent (via `/browser` concepts) to scrape Zillow, County GIS, Permit Tracking, and PeopleSearch platforms autonomously to validate leads without paying for commercial API data.
-4. **Execution & Export:** It records its findings back into the database and spits out a `validated_leads.csv` for human review.
+1. **GitHub Issue Polling:** The master invokes a `github_db_manager` subagent equipped with the native `github-mcp-server`. It reads this repository's issues to grab your latest commands (e.g., changing the target zip code).
+2. **Database Maintenance:** The same subagent connects to the local SQLite database (`leads.db`) and queues up exactly 3-5 leads to process. Keeping the batch size micro allows us to fly completely under the radar of anti-bot systems.
+3. **Pure AI Browsing:** The master then invokes a specialized `pure_ai_browser` subagent. Rather than relying on static, breakable Python scripts, this subagent acts exactly like the `/browser` command—using its own AI logic to search the web, read HTML, and navigate county sites dynamically from scratch to validate the leads.
+4. **Execution & Export:** The master records the findings back into the database and spits out a `validated_leads.csv` for human review.
 
 ## Tech Stack
 - **Environment:** Antigravity Global Scheduled Tasks (Cron)
