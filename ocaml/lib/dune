@@ -1,5 +1,5 @@
 (library
- (name roof_verif)
- (public_name roof_verif)
- (libraries str)
- (modules types invariants parser))
+ (name roof_engine)
+ (public_name roof_engine)
+ (libraries unix str threads)
+ (modules types crypto json invariants scorer embeddings lesson_store vector_store db http_client datasf municipal llm_client telemetry csv_exporter pipeline))

@@ -1,20 +1,32 @@
 """
-scripts/acquire_live_data.py
-
-Live Data Acquisition & OCaml Mathematical Verification Pipeline for Roo4u v2.
-Acquires real, live municipal property records, assessor data, and building permits
-from San Francisco open municipal datasets and portal records, runs formal invariant
-checks via the OCaml verification binary, and exports qualified actionable leads.
+===============================================================================
+DEPRECATION NOTICE:
+scripts/acquire_live_data.py is DEPRECATED as part of Milestone 4.
+Data acquisition, invariant checking, and CSV export are now natively executed
+in pure OCaml via:
+  - ocaml/lib/pipeline.mli / ocaml/lib/pipeline.ml
+  - ocaml/lib/datasf.ml
+  - ocaml/lib/csv_exporter.ml
+  - CLI binary: ./ocaml/_build/default/bin/main.exe --run
+===============================================================================
 """
 
 import argparse
 import json
 import os
+import subprocess
 import sys
 import urllib.request
 import urllib.parse
+import warnings
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+
+warnings.warn(
+    "scripts/acquire_live_data.py is deprecated. Use pure OCaml binary roof_pipeline --run instead.",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 # Ensure project root is in sys.path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -325,12 +337,26 @@ def run_live_acquisition_pipeline(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Roo4u v2 Live Data Acquisition")
+    parser = argparse.ArgumentParser(description="Roo4u v2 Live Data Acquisition (DEPRECATED -> Pure OCaml)")
     parser.add_argument("--zips", type=str, default="94115,94123,94118,94109", help="Target zip codes comma-separated")
     parser.add_argument("--limit", type=int, default=15, help="Limit per zip code")
     parser.add_argument("--db", type=str, default="sqlite:///leads.db", help="Database path")
     parser.add_argument("--csv", type=str, default="validated_leads.csv", help="CSV export path")
+    parser.add_argument("--ocaml", action="store_true", help="Execute native pure OCaml binary instead")
     args = parser.parse_args()
+
+    print("=" * 70)
+    print(" [DEPRECATION NOTICE] scripts/acquire_live_data.py is DEPRECATED.")
+    print(" Please use pure OCaml engine: ./ocaml/_build/default/bin/main.exe --run")
+    print("=" * 70)
+
+    if args.ocaml:
+        base_dir = PROJECT_ROOT
+        ocaml_bin = os.path.join(base_dir, "ocaml", "_build", "default", "bin", "main.exe")
+        db_clean = args.db.replace("sqlite:///", "")
+        cmd = [ocaml_bin, "--run", "--zips", args.zips, "--limit", str(args.limit), "--db", db_clean, "--csv", args.csv]
+        res = subprocess.run(cmd)
+        sys.exit(res.returncode)
 
     zip_list = [z.strip() for z in args.zips.split(",") if z.strip()]
     run_live_acquisition_pipeline(

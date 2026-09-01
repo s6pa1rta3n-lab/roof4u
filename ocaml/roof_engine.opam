@@ -1,6 +1,6 @@
 opam-version: "2.0"
-synopsis: "Roo4u Mathematical Verification Engine"
-description: "Formal verification of real estate leads and roof qualification invariants"
+synopsis: "Roo4u Pure OCaml Engine"
+description: "Formal verification of real estate leads, cryptographic proofs, and municipal qualification invariants"
 maintainer: ["Roo4u Lab"]
 authors: ["Roo4u Lab"]
 license: "MIT"

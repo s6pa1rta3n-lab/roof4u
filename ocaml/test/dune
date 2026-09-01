@@ -1,4 +1,65 @@
 (test
  (name test_verif)
- (libraries roof_verif str)
+ (libraries roof_engine unix)
  (modules test_verif))
+
+(test
+ (name test_crypto)
+ (libraries roof_engine unix)
+ (modules test_crypto))
+
+(test
+ (name test_json)
+ (libraries roof_engine unix)
+ (modules test_json))
+
+(test
+ (name test_invariants)
+ (libraries roof_engine unix)
+ (modules test_invariants))
+
+(test
+ (name test_memory)
+ (libraries roof_engine unix)
+ (modules test_memory))
+
+(test
+ (name test_connectors)
+ (libraries roof_engine unix)
+ (modules test_connectors))
+
+(test
+ (name test_security)
+ (libraries roof_engine unix)
+ (modules test_security))
+
+(test
+ (name test_e2e_pipeline)
+ (libraries roof_engine unix)
+ (modules test_e2e_pipeline))
+
+(test
+ (name test_adversarial_m1)
+ (libraries roof_engine unix)
+ (modules test_adversarial_m1))
+
+(test
+ (name test_m1_challenger)
+ (libraries roof_engine unix)
+ (modules test_m1_challenger))
+
+(test
+ (name test_tier5_adversarial)
+ (libraries roof_engine unix)
+ (modules test_tier5_adversarial))
+
+(executable
+ (name diff_sha256_gen)
+ (libraries roof_engine unix)
+ (modules diff_sha256_gen))
+
+(executable
+ (name diff_json_fuzz)
+ (libraries roof_engine unix)
+ (modules diff_json_fuzz))
+

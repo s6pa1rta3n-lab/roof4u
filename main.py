@@ -1,14 +1,30 @@
 """
-main.py
-
-Roo4u Autonomous Lead Generation & Self-Healing Observation Pipeline.
-Coordinates Browsing Agents (ZillowAgent, CountyAgent) with Local LLM Extraction
-and the closed-loop Learning Agent (dual-memory persistence and GitHub telemetry logging).
+===============================================================================
+DEPRECATION NOTICE:
+main.py is DEPRECATED as part of the pure OCaml rewrite (Milestone 4).
+The entire autonomous pipeline orchestration, invariant verification,
+and lead acquisition engine is now natively implemented in pure OCaml:
+  - ocaml/lib/pipeline.mli / ocaml/lib/pipeline.ml
+  - ocaml/lib/datasf.ml
+  - ocaml/lib/invariants.ml
+  - ocaml/lib/scorer.ml
+  - ocaml/lib/csv_exporter.ml
+  - CLI binary: ./ocaml/_build/default/bin/main.exe --run
+===============================================================================
 """
 
 import argparse
 import os
+import subprocess
+import sys
+import warnings
 from typing import Optional
+
+warnings.warn(
+    "main.py is deprecated in favor of pure OCaml binary (roof_pipeline --run).",
+    DeprecationWarning,
+    stacklevel=2
+)
 
 from db.database import init_db, get_session, Lead
 from agents.zillow_agent import ZillowAgent
@@ -184,14 +200,28 @@ def run_pipeline(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Roo4u Lead Generation Pipeline")
+    parser = argparse.ArgumentParser(description="Roo4u Lead Generation Pipeline (DEPRECATED -> Pure OCaml)")
     parser.add_argument("--zip", type=str, default="94115", help="Target zip code (default: 94115)")
     parser.add_argument("--address", type=str, default=None, help="Target specific property address")
     parser.add_argument("--headless", action="store_true", default=True, help="Run browser in headless mode")
     parser.add_argument("--db", type=str, default="sqlite:///leads.db", help="SQLite database path")
     parser.add_argument("--disable-learning", action="store_true", help="Disable learning agent")
     parser.add_argument("--disable-github", action="store_true", help="Disable github issue logging")
+    parser.add_argument("--ocaml", action="store_true", help="Execute native pure OCaml binary instead")
     args = parser.parse_args()
+
+    print("=" * 70)
+    print(" [DEPRECATION NOTICE] main.py is DEPRECATED in favor of pure OCaml.")
+    print(" Please use pure OCaml engine: ./ocaml/_build/default/bin/main.exe --run")
+    print("=" * 70)
+
+    if args.ocaml:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        ocaml_bin = os.path.join(base_dir, "ocaml", "_build", "default", "bin", "main.exe")
+        db_clean = args.db.replace("sqlite:///", "")
+        cmd = [ocaml_bin, "--run", "--zips", args.zip, "--db", db_clean]
+        res = subprocess.run(cmd)
+        sys.exit(res.returncode)
 
     run_pipeline(
         zip_code=args.zip,

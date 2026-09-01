@@ -1,5 +1,5 @@
 (executable
  (name main)
- (public_name roof_verif_cli)
- (libraries roof_verif str)
+ (public_name roof_pipeline)
+ (libraries roof_engine unix)
  (modules main))
