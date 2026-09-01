@@ -1,35 +1,27 @@
 # Roo4u - Agentic Lead Generation
 
-Roo4u is an automated, agentic lead generation pipeline specifically designed for roofing contractors targeting **Victorian** and **Flat** roofs in wealthy neighborhoods. 
+Roo4u is an automated, agentic lead generation pipeline specifically designed for roofing contractors targeting **Victorian** and **Flat** roofs in wealthy neighborhoods.
 
-## Overview
-This system uses a funnel-based methodology to extract, validate, and enrich leads autonomously using a series of specialized AI agents:
+## Architecture: The "Local Swarm" (Zero-Cost Cloud Alternative)
+Until we scale to paid cloud infrastructure with API keys, Roo4u leverages a brilliant "Local Compute Arbitrage" architecture. Instead of deploying to AWS or GCP, this system runs entirely within the **Antigravity Desktop Agent Environment** using **Global Scheduled Tasks**.
 
-1. **Discovery (Zillow/Redfin Agent):** Locates Victorian and Flat roof properties in targeted wealthy zip codes while explicitly filtering out HOAs and rental properties.
-2. **Owner & Property Agent (County GIS/Assessor):** Navigates complex county assessor websites to extract property tax data and owner entity information.
-3. **Permit Agent (Building Inspection):** Queries county/city permit databases to determine the age of the roof by parsing historical roofing permits (e.g., "tear off", "reroof").
-4. **Enrichment Agent (PeopleSearch):** Matches the owner name and address across public directories to retrieve valid phone numbers.
+Every time the scheduled cron job triggers, it spawns a fresh **sidecar agent** that executes our pipeline in the following priority order:
+
+1. **GitHub Issue Polling:** The agent acts as an autonomous worker, checking this GitHub repository's issues for new commands (e.g., a new zip code to target or a bug to fix) before beginning its run.
+2. **Database Maintenance:** It connects to the local SQLite database (`leads.db`) to clean up old data, enforce uniqueness, and prep the environment.
+3. **Agentic Web Browsing:** It invokes a browser subagent (via `/browser` concepts) to scrape Zillow, County GIS, Permit Tracking, and PeopleSearch platforms autonomously to validate leads without paying for commercial API data.
+4. **Execution & Export:** It records its findings back into the database and spits out a `validated_leads.csv` for human review.
 
 ## Tech Stack
-- **Language:** Python 3.10+
-- **Browser Automation:** Playwright
-- **Agent Orchestration:** LangChain / PydanticAI
-- **LLM Integration:** Google Gemini API (for parsing messy DOM/HTML into structured data)
-- **Storage Foundation:** SQLite3
-- **Exports:** CSV and Google Sheets API
+- **Environment:** Antigravity Global Scheduled Tasks (Cron)
+- **Orchestration:** Multi-Agent Swarm (Sidecar spawn via CLI / UI)
+- **Scraping:** Headless Browser Agents 
+- **Storage Foundation:** SQLite3 -> CSV
 
 ## Setup Instructions
 1. Clone the repository.
-2. Create a virtual environment: `python -m venv venv` and activate it.
-3. Install dependencies: `pip install -r requirements.txt`
-4. Install Playwright browsers: `playwright install`
-5. Set your `GEMINI_API_KEY` in a `.env` file.
+2. Ensure you have the Antigravity Desktop App installed.
+3. Set a Global Scheduled Task to run the orchestrator script on a recurring basis. The agent will handle the rest autonomously in sidecar chats!
 
-## Development Status
-- [x] Phase 1: Manual POC Validation
-- [x] Phase 2: Project Initialization & Database Setup
-- [ ] Phase 3: Agent Implementation
-- [ ] Phase 4: Pipeline Orchestration & Export
-
-## Database
-Leads are stored in a local SQLite database (`db/leads.db`). The schema strictly enforces uniqueness on the property address to prevent duplicate scraping.
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
