@@ -6,17 +6,17 @@
   <title>Roo4u Architecture Constellation | Repository Network Graph</title>
   <meta name="description" content="Interactive constellation-style force-directed network graph visualization of Roo4u repository architecture across Python (main) and Pure OCaml (v2) branches.">
   
-  <!-- Google Fonts: Inter, JetBrains Mono, Orbitron -->
+  <!-- Google Fonts: Inter, JetBrains Mono, Orbitron, Space Grotesk, Fira Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@600;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- D3.js v7 CDN with fallback -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
   
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-space">
+<body class="theme-event-horizon" data-theme="event-horizon">
   <!-- Top Cosmic Navigation Bar -->
   <header class="app-header">
     <div class="header-left">
@@ -65,6 +65,29 @@
         <div id="search-results" class="search-dropdown hidden"></div>
       </div>
 
+      <!-- Theme Selector Dropdown (M3) -->
+      <div class="theme-selector-wrapper">
+        <label for="theme-selector" class="theme-label" title="Cosmic Theme">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          Theme
+        </label>
+        <select id="theme-selector" class="theme-select" aria-label="Theme Selector">
+          <option value="event-horizon" selected>Event Horizon (Cyan / Violet)</option>
+          <option value="accretion-disk">Accretion Disk (Solar Gold / Amber)</option>
+          <option value="quantum-void">Quantum Void (Cyber Emerald / Teal)</option>
+        </select>
+      </div>
+
       <!-- Layout Selector Dropdown -->
       <div class="layout-selector">
         <label for="layout-mode" class="layout-label">
@@ -80,6 +103,11 @@
           <option value="layered">Layered Hierarchy</option>
           <option value="clusters">Galactic Sectors</option>
         </select>
+      </div>
+
+      <!-- Zoom Indicator Badge (Relocated from Minimap) -->
+      <div class="zoom-badge" title="Camera Zoom Level">
+        <span id="zoom-indicator" class="zoom-indicator">100%</span>
       </div>
 
       <!-- Controls Toggle Button -->
@@ -108,9 +136,8 @@
 
   <!-- Main Workspace Area -->
   <main class="workspace">
-    <!-- Starfield & Network Graph Canvas Layer -->
+    <!-- Network Graph Canvas Layer -->
     <div id="graph-container" class="graph-container">
-      <canvas id="starfield-canvas"></canvas>
       <canvas id="graph-canvas"></canvas>
       
       <!-- Interactive Tooltip Overlay -->
@@ -177,16 +204,7 @@
       <div id="category-chips" class="category-chips-grid"></div>
     </div>
 
-    <!-- Radar Minimap (Bottom-Right) -->
-    <div class="hud-panel hud-minimap">
-      <div class="minimap-header">
-        <span>GALACTIC RADAR</span>
-        <span id="zoom-indicator">100%</span>
-      </div>
-      <div class="minimap-canvas-wrapper">
-        <canvas id="minimap-canvas" width="180" height="120"></canvas>
-      </div>
-    </div>
+
 
     <!-- Physics & Simulation Control Drawer (Collapsible) -->
     <aside id="physics-panel" class="physics-drawer hidden">
@@ -273,7 +291,7 @@
               <dt>Constellation Layer</dt>
               <dd id="insp-meta-layer">Layer 2 (Autonomous Agents)</dd>
               <dt>SHA-256 Digest</dt>
-              <dd class="sha-box" id="insp-meta-sha">d9f482a... <button class="copy-sha-btn" id="copy-sha-btn" title="Copy SHA256">⧉</button></dd>
+              <dd class="sha-box" id="insp-meta-sha">d9f482a... <button class="copy-sha-btn sha-copy-btn" id="insp-sha-copy" title="Copy SHA256">⧉</button></dd>
             </dl>
           </div>
 

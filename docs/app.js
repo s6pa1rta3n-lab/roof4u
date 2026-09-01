@@ -1,14 +1,59 @@
 /**
- * app.js - Interactive Constellation Force-Directed Network Graph Engine
+ * app.js - Interactive Constellation 3D Depth Rendering Engine
  * Roo4u Architecture Visualizer for GitHub Pages
  */
 
 (function () {
   'use strict';
 
+  // --- Theme Configurations (M3) ---
+  const THEMES = {
+    'event-horizon': {
+      name: 'Event Horizon',
+      cssClass: 'theme-event-horizon',
+      palette: {
+        primary: '#00f0ff',
+        secondary: '#7000ff',
+        accent: '#ffffff',
+        glow: 'rgba(0, 240, 255, 0.4)'
+      },
+      nodeStyle: 'plasma',
+      filamentStyle: 'plasma-beam',
+      font: 'JetBrains Mono, monospace'
+    },
+    'accretion-disk': {
+      name: 'Accretion Disk',
+      cssClass: 'theme-accretion-disk',
+      palette: {
+        primary: '#ffaa00',
+        secondary: '#ff3300',
+        accent: '#fff3d1',
+        glow: 'rgba(255, 170, 0, 0.4)'
+      },
+      nodeStyle: 'solar',
+      filamentStyle: 'solar-flare',
+      font: 'Space Grotesk, sans-serif'
+    },
+    'quantum-void': {
+      name: 'Quantum Void',
+      cssClass: 'theme-quantum-void',
+      palette: {
+        primary: '#00ff88',
+        secondary: '#006644',
+        accent: '#e0fff0',
+        glow: 'rgba(0, 255, 136, 0.4)'
+      },
+      nodeStyle: 'matrix',
+      filamentStyle: 'quantum-flux',
+      font: 'Fira Code, monospace'
+    }
+  };
+
   // --- Configuration & State ---
   const state = {
     currentBranch: 'main',
+    activeBranch: 'main',
+    theme: 'event-horizon',
     activeLayout: 'cosmic',
     includeSwarm: true,
     activeCategoryFilters: new Set(),
@@ -17,6 +62,7 @@
     hoveredNode: null,
     isolatedNodeId: null,
     zoomTransform: d3.zoomIdentity,
+    nodes: [],
     physics: {
       charge: -350,
       linkDistance: 90,
@@ -26,8 +72,7 @@
       showPhotons: true,
       showNebulas: true
     },
-    photons: [],
-    starfield: []
+    photons: []
   };
 
   let graphData = null;
@@ -36,12 +81,8 @@
   let animFrameId = null;
 
   // DOM Elements
-  const starfieldCanvas = document.getElementById('starfield-canvas');
-  const starfieldCtx = starfieldCanvas.getContext('2d');
   const graphCanvas = document.getElementById('graph-canvas');
   const graphCtx = graphCanvas.getContext('2d');
-  const minimapCanvas = document.getElementById('minimap-canvas');
-  const minimapCtx = minimapCanvas.getContext('2d');
 
   const tooltipEl = document.getElementById('graph-tooltip');
   const searchInput = document.getElementById('node-search');
@@ -50,6 +91,7 @@
   const layoutSelect = document.getElementById('layout-mode');
   const toggleSwarmCheckbox = document.getElementById('toggle-swarm');
   const categoryChipsContainer = document.getElementById('category-chips');
+  const themeSelector = document.getElementById('theme-selector');
 
   // Inspector Elements
   const inspectorDrawer = document.getElementById('inspector-drawer');
@@ -77,7 +119,202 @@
 
   d3.select(graphCanvas).call(zoomBehavior);
 
-  // --- Initialization ---
+  // =========================================================================
+  // 3D DEPTH ENGINE CORE MATHEMATICAL FORMULAS (F01, F02, F05, F07)
+  // =========================================================================
+
+  /**
+   * F01: Computes deterministic continuous Z-coordinate in [-100.0, 100.0].
+   * Foreground nodes (Layer 1, High Importance) have z < 0.
+   * Background nodes (Layer 6, Low Importance) have z > 0.
+   * Deterministic 32-bit polynomial rolling hash on ID breaks planar stratification.
+   * @param {Object} node - Node object containing layer, importance, and id.
+   * @returns {number} z depth coordinate in [-100, 100].
+   */
+  function computeNodeZ(node) {
+    const layer = Number(node.layer) || 3;
+    const importance = Number(node.importance) || 3;
+
+    // Layer component: Layer 1 is -50, Layer 6 is +50
+    const layerOffset = (layer - 3.5) * 20.0;
+
+    // Importance component: Importance 5 is -30, Importance 1 is +30
+    const importanceOffset = (3.0 - importance) * 15.0;
+
+    // Deterministic 32-bit polynomial rolling hash on string ID
+    let h = 0;
+    const idStr = String(node.id || '');
+    for (let i = 0; i < idStr.length; i++) {
+      h = (Math.imul(31, h) + idStr.charCodeAt(i)) | 0;
+    }
+    const jitter = (((Math.sin(h) * 43758.5453123) % 1.0) || 0) * 15.0;
+
+    const z = layerOffset + importanceOffset + jitter;
+    return Math.max(-100.0, Math.min(100.0, z));
+  }
+
+  /**
+   * F02 & F05: Projects 3D world coordinate (x, y, z) into 2D canvas screen space
+   * with focal perspective scaling and non-linear parallax displacement.
+   * @param {number} x - World X
+   * @param {number} y - World Y
+   * @param {number} z - Depth Z [-100, 100]
+   * @param {number} width - Viewport width
+   * @param {number} height - Viewport height
+   * @param {number} panX - D3 pan transform X
+   * @param {number} panY - D3 pan transform Y
+   * @param {number} zoomScale - D3 zoom transform K
+   * @param {number} D - Focal distance (default 500)
+   * @returns {{ screenX: number, screenY: number, sz: number }}
+   */
+  function project3D(x, y, z, width, height, panX, panY, zoomScale, D = 500) {
+    const nodeZ = (z !== undefined && !isNaN(z)) ? Number(z) : 0;
+    // Clamping prevents division by zero and extreme negative singularities
+    const clampedZ = Math.max(-D * 0.95, Math.min(10000, nodeZ));
+    const sz = D / (D + clampedZ);
+    const pFactor = Math.pow(sz, 0.6);
+    const parallaxX = (panX || 0) * pFactor;
+    const parallaxY = (panY || 0) * pFactor;
+    const k = zoomScale || 1.0;
+
+    const screenX = (x * k + parallaxX) * sz + (width / 2) * (1 - sz);
+    const screenY = (y * k + parallaxY) * sz + (height / 2) * (1 - sz);
+
+    return { screenX, screenY, sz };
+  }
+
+  /**
+   * F07: Analytical exact inverse of project3D for interactive node dragging.
+   * Recovers (worldX, worldY) from screen coordinates at given depth z with zero drift.
+   * @param {number} screenX - Cursor screen X
+   * @param {number} screenY - Cursor screen Y
+   * @param {number} z - Node depth Z
+   * @param {number} width - Viewport width
+   * @param {number} height - Viewport height
+   * @param {number} panX - D3 pan transform X
+   * @param {number} panY - D3 pan transform Y
+   * @param {number} zoomScale - D3 zoom transform K
+   * @param {number} D - Focal distance (default 500)
+   * @returns {{ worldX: number, worldY: number, x: number, y: number }}
+   */
+  function unproject3D(screenX, screenY, z, width, height, panX, panY, zoomScale, D = 500) {
+    const nodeZ = (z !== undefined && !isNaN(z)) ? Number(z) : 0;
+    const clampedZ = Math.max(-D * 0.95, Math.min(10000, nodeZ));
+    const sz = D / (D + clampedZ);
+    const pFactor = Math.pow(sz, 0.6);
+    const parallaxX = (panX || 0) * pFactor;
+    const parallaxY = (panY || 0) * pFactor;
+    const k = zoomScale || 1.0;
+
+    const worldX = ((screenX - (width / 2) * (1 - sz)) / sz - parallaxX) / k;
+    const worldY = ((screenY - (height / 2) * (1 - sz)) / sz - parallaxY) / k;
+
+    return { worldX, worldY, x: worldX, y: worldY };
+  }
+
+  /**
+   * F05: Solves analytical camera pan translation (tx, ty) to center target 3D point (x, y, z)
+   * exactly at viewport center (W/2, H/2) at given zoom scale k.
+   * @param {number} x - Target world X
+   * @param {number} y - Target world Y
+   * @param {number} z - Target world Z
+   * @param {number} width - Viewport width
+   * @param {number} height - Viewport height
+   * @param {number} k - Zoom scale factor
+   * @param {number} D - Focal distance (default 500)
+   * @returns {{ tx: number, ty: number }}
+   */
+  function getPanToCenter(x, y, z, width, height, k, D = 500) {
+    const nodeZ = (z !== undefined && !isNaN(z)) ? Number(z) : 0;
+    const clampedZ = Math.max(-D * 0.95, Math.min(10000, nodeZ));
+    const sz = D / (D + clampedZ);
+    const pFactor = Math.pow(sz, 0.6);
+
+    const tx = (width / 2 - x * k) / pFactor;
+    const ty = (height / 2 - y * k) / pFactor;
+
+    return { tx, ty };
+  }
+
+  /**
+   * F07: Depth-aware screen-space hit detection with front-to-back priority.
+   * Tests projected screen distance against dynamic perspective radius.
+   * @param {number} screenX - Cursor screen X
+   * @param {number} screenY - Cursor screen Y
+   * @param {number|null} [maxDistance=null] - Proximity search fallback threshold
+   * @returns {Object|null} Top-most hit node or null
+   */
+  function findNodeAt(screenX, screenY, maxDistance = null) {
+    const width = window.innerWidth;
+    const height = window.innerHeight - 64;
+    const k = state.zoomTransform.k;
+    const tx = state.zoomTransform.x;
+    const ty = state.zoomTransform.y;
+
+    const candidates = [];
+    for (let i = 0; i < currentGraph.nodes.length; i++) {
+      const n = currentGraph.nodes[i];
+      if (n.x === undefined || n.y === undefined) continue;
+
+      const z = n.z !== undefined ? n.z : 0;
+      const proj = project3D(n.x, n.y, z, width, height, tx, ty, k);
+
+      const isSelected = state.selectedNode && state.selectedNode.id === n.id;
+      const isHovered = state.hoveredNode && state.hoveredNode.id === n.id;
+      const baseRadius = (n.importance * 2.2) + 3.5;
+      const radiusMultiplier = isSelected ? 1.6 : (isHovered ? 1.3 : 1.0);
+      const screenRadius = Math.max(8, baseRadius * radiusMultiplier * proj.sz * Math.sqrt(k) + 6);
+      const dist = Math.hypot(proj.screenX - screenX, proj.screenY - screenY);
+
+      candidates.push({
+        node: n,
+        dist: dist,
+        screenRadius: screenRadius,
+        z: z,
+        sz: proj.sz
+      });
+    }
+
+    // Depth-Priority Sorting: Foreground first (smallest z, largest sz)
+    candidates.sort((a, b) => a.z - b.z);
+
+    // 1. Direct Hit Check
+    for (let i = 0; i < candidates.length; i++) {
+      const c = candidates[i];
+      if (c.dist <= c.screenRadius) {
+        return c.node;
+      }
+    }
+
+    // 2. Fuzzy Proximity Fallback
+    if (maxDistance !== null && maxDistance > 0) {
+      let closestNode = null;
+      let minDist = maxDistance;
+      for (let i = 0; i < candidates.length; i++) {
+        const c = candidates[i];
+        if (c.dist < minDist) {
+          minDist = c.dist;
+          closestNode = c.node;
+        }
+      }
+      return closestNode;
+    }
+
+    return null;
+  }
+
+  function getNodeAtPosition(screenX, screenY) {
+    return findNodeAt(screenX, screenY);
+  }
+
+  function findClosestNode(screenX, screenY) {
+    return findNodeAt(screenX, screenY, 35);
+  }
+
+  // =========================================================================
+  // INITIALIZATION & LIFECYCLE
+  // =========================================================================
+
   function init() {
     if (!window.ROO4U_GRAPH_DATA) {
       console.error('ROO4U_GRAPH_DATA not found.');
@@ -85,17 +322,15 @@
     }
     graphData = window.ROO4U_GRAPH_DATA;
 
+    initTheme();
     resizeCanvases();
-    window.addEventListener('resize', () => {
-      resizeCanvases();
-      initStarfield();
-    });
+    window.addEventListener('resize', resizeCanvases);
 
-    initStarfield();
     setupEventListeners();
     setupComparisonModal();
     loadBranch(state.currentBranch);
     startRenderLoop();
+    syncWindowExports();
   }
 
   function resizeCanvases() {
@@ -103,80 +338,19 @@
     const height = window.innerHeight - 64; // header offset
     const dpr = window.devicePixelRatio || 1;
 
-    [starfieldCanvas, graphCanvas].forEach(canvas => {
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      const ctx = canvas.getContext('2d');
-      ctx.resetTransform();
-      ctx.scale(dpr, dpr);
-    });
-  }
-
-  // --- Starfield Background Generator ---
-  function initStarfield() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const starCount = Math.floor((width * height) / 3200);
-    state.starfield = [];
-
-    const colors = ['#ffffff', '#e0f2fe', '#fef08a', '#ede9fe', '#bae6fd'];
-
-    for (let i = 0; i < starCount; i++) {
-      state.starfield.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        radius: Math.random() * 1.5 + 0.3,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        alpha: Math.random() * 0.7 + 0.2,
-        twinkleSpeed: Math.random() * 0.03 + 0.005,
-        twinklePhase: Math.random() * Math.PI * 2
-      });
-    }
-  }
-
-  function renderStarfield() {
-    const width = window.innerWidth;
-    const height = window.innerHeight - 64;
-    starfieldCtx.clearRect(0, 0, width, height);
-
-    // Deep space gradient backdrop
-    const grad = starfieldCtx.createRadialGradient(
-      width * 0.5, height * 0.5, width * 0.1,
-      width * 0.5, height * 0.5, width * 0.8
-    );
-    grad.addColorStop(0, '#0a0f24');
-    grad.addColorStop(0.5, '#060814');
-    grad.addColorStop(1, '#020308');
-    starfieldCtx.fillStyle = grad;
-    starfieldCtx.fillRect(0, 0, width, height);
-
-    // Render twinkling stars with parallax
-    const px = state.zoomTransform.x * 0.08;
-    const py = state.zoomTransform.y * 0.08;
-
-    state.starfield.forEach(star => {
-      star.twinklePhase += star.twinkleSpeed;
-      const currentAlpha = star.alpha * (0.6 + 0.4 * Math.sin(star.twinklePhase));
-
-      let sx = (star.x + px) % width;
-      let sy = (star.y + py) % height;
-      if (sx < 0) sx += width;
-      if (sy < 0) sy += height;
-
-      starfieldCtx.beginPath();
-      starfieldCtx.arc(sx, sy, star.radius, 0, Math.PI * 2);
-      starfieldCtx.fillStyle = star.color;
-      starfieldCtx.globalAlpha = currentAlpha;
-      starfieldCtx.fill();
-    });
-    starfieldCtx.globalAlpha = 1.0;
+    graphCanvas.width = width * dpr;
+    graphCanvas.height = height * dpr;
+    graphCanvas.style.width = `${width}px`;
+    graphCanvas.style.height = `${height}px`;
+    const ctx = graphCanvas.getContext('2d');
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
   }
 
   // --- Branch & Graph Data Loading ---
   function loadBranch(branchName) {
     state.currentBranch = branchName;
+    state.activeBranch = branchName;
     const rawBranch = graphData.branches[branchName];
     if (!rawBranch) return;
 
@@ -195,8 +369,13 @@
       return nodeIds.has(srcId) && nodeIds.has(tgtId);
     });
 
-    // Clone data for D3-force mutation
-    const nodes = filteredNodes.map(n => ({ ...n }));
+    // F01: Clone data and compute deterministic 3D Z-coordinate for every node
+    const nodes = filteredNodes.map(n => {
+      const nodeClone = { ...n };
+      nodeClone.z = computeNodeZ(nodeClone);
+      return nodeClone;
+    });
+
     const links = filteredLinks.map(l => ({
       ...l,
       source: typeof l.source === 'object' ? l.source.id : l.source,
@@ -208,6 +387,7 @@
       links,
       clusters: rawBranch.clusters
     };
+    state.nodes = nodes;
 
     initPhotons(links);
     updateHUDStats(rawBranch.stats);
@@ -224,9 +404,10 @@
 
     initSimulation();
     centerCamera();
+    syncWindowExports();
   }
 
-  // --- Particle Photons (Animated Stardust along Links) ---
+  // --- Particle Photons (Animated Stardust along Links in 3D) ---
   function initPhotons(links) {
     state.photons = [];
     links.forEach((l, index) => {
@@ -258,10 +439,11 @@
       .force('y', d3.forceY(height / 2).strength(state.physics.gravity))
       .alphaDecay(0.025)
       .on('tick', () => {
-        // Animation handled in requestAnimationFrame loop
+        // Animation loop handles rendering
       });
 
     applyLayoutPositions(state.activeLayout);
+    syncWindowExports();
   }
 
   function applyLayoutPositions(layout) {
@@ -319,25 +501,31 @@
     simulation.alpha(0.6).restart();
   }
 
-  // --- Main Animation & Render Loop ---
+  // =========================================================================
+  // 3D RENDERING PIPELINE & PAINTER'S DEPTH SORTING (F03, F04, F06)
+  // =========================================================================
+
   function startRenderLoop() {
     function frame() {
-      renderStarfield();
       renderGraph();
-      renderMinimap();
       animFrameId = requestAnimationFrame(frame);
     }
     animFrameId = requestAnimationFrame(frame);
   }
 
+  /**
+   * F03: Main 3D Graph Render Pipeline with Painter's Algorithm.
+   * Deepest background elements are drawn first; nearest foreground elements are drawn on top.
+   */
   function renderGraph() {
     const width = window.innerWidth;
     const height = window.innerHeight - 64;
     graphCtx.clearRect(0, 0, width, height);
 
-    graphCtx.save();
-    graphCtx.translate(state.zoomTransform.x, state.zoomTransform.y);
-    graphCtx.scale(state.zoomTransform.k, state.zoomTransform.k);
+    const panX = state.zoomTransform.x;
+    const panY = state.zoomTransform.y;
+    const zoomScale = state.zoomTransform.k;
+    const activeTheme = THEMES[state.theme] || THEMES['event-horizon'];
 
     const activeNode = state.hoveredNode || state.selectedNode;
     let connectedNodeIds = null;
@@ -347,292 +535,551 @@
       connectedNodeIds = getConnectedNodeIds(state.isolatedNodeId);
     }
 
-    // 1. Render Cluster Nebulas (if enabled)
+    // 1. Render Cluster Nebulas in 3D Perspective (Backdrop)
     if (state.physics.showNebulas && state.activeLayout !== 'layered') {
-      renderClusterNebulas();
+      renderClusterNebulas3D(width, height, panX, panY, zoomScale);
     }
 
-    // 2. Render Constellation Links / Filaments
-    renderLinks(connectedNodeIds);
+    // 2. Build Unified 3D Render Queue
+    const renderQueue = [];
 
-    // 3. Render Flowing Photons
-    if (state.physics.showPhotons) {
-      renderPhotons(connectedNodeIds);
+    // Pre-pass: Compute 3D projected screen coordinates for all nodes
+    for (let i = 0; i < currentGraph.nodes.length; i++) {
+      const n = currentGraph.nodes[i];
+      if (n.x === undefined || n.y === undefined) continue;
+      if (n.z === undefined) n.z = computeNodeZ(n);
+
+      const proj = project3D(n.x, n.y, n.z, width, height, panX, panY, zoomScale);
+      n.screenX = proj.screenX;
+      n.screenY = proj.screenY;
+      n.sz = proj.sz;
+
+      renderQueue.push({ type: 'node', z: n.z, data: n, proj });
     }
 
-    // 4. Render Stellar Nodes
-    renderNodes(connectedNodeIds);
+    // Add Links to Render Queue
+    for (let i = 0; i < currentGraph.links.length; i++) {
+      const l = currentGraph.links[i];
+      const s = l.source;
+      const t = l.target;
+      if (!s.x || !s.y || !t.x || !t.y) continue;
 
-    // 5. Render Labels
-    renderLabels(connectedNodeIds);
+      if (s.screenX === undefined || s.screenY === undefined) {
+        const sProj = project3D(s.x, s.y, s.z || 0, width, height, panX, panY, zoomScale);
+        s.screenX = sProj.screenX; s.screenY = sProj.screenY; s.sz = sProj.sz;
+      }
+      if (t.screenX === undefined || t.screenY === undefined) {
+        const tProj = project3D(t.x, t.y, t.z || 0, width, height, panX, panY, zoomScale);
+        t.screenX = tProj.screenX; t.screenY = tProj.screenY; t.sz = tProj.sz;
+      }
 
-    graphCtx.restore();
+      const sProj = { screenX: s.screenX, screenY: s.screenY, sz: s.sz };
+      const tProj = { screenX: t.screenX, screenY: t.screenY, sz: t.sz };
+      const linkZ = ((s.z !== undefined ? s.z : 0) + (t.z !== undefined ? t.z : 0)) / 2 + 0.4;
+
+      renderQueue.push({ type: 'link', z: linkZ, data: l, sProj, tProj });
+    }
+
+    // Add Volumetric Photons to Render Queue
+    if (state.physics.showPhotons && (state.physics.photonSpeed || 1.0) > 0) {
+      for (let i = 0; i < state.photons.length; i++) {
+        const p = state.photons[i];
+        const s = p.link.source;
+        const t = p.link.target;
+        if (!s.x || !s.y || !t.x || !t.y) continue;
+
+        const sz_s = s.z !== undefined ? s.z : 0;
+        const sz_t = t.z !== undefined ? t.z : 0;
+        const pz = sz_s + (sz_t - sz_s) * p.progress;
+
+        renderQueue.push({ type: 'photon', z: pz - 0.2, data: p });
+      }
+    }
+
+    // 3. Painter's Algorithm Depth Sort: Furthest first (z descending = high to low)
+    renderQueue.sort((a, b) => b.z - a.z);
+
+    // 4. Rasterize in Strict Depth-Sorted Order
+    for (let i = 0; i < renderQueue.length; i++) {
+      const item = renderQueue[i];
+      if (item.type === 'link') {
+        renderLink3D(graphCtx, item.data, item.sProj, item.tProj, connectedNodeIds, activeTheme);
+      } else if (item.type === 'photon') {
+        drawPhotonParticle(graphCtx, item.data, connectedNodeIds, activeTheme, width, height, panX, panY, zoomScale);
+      } else if (item.type === 'node') {
+        renderNode3D(graphCtx, item.data, item.proj, connectedNodeIds, activeTheme);
+      }
+    }
+
+    // 5. Render Labels Overlay with Depth LOD
+    renderLabels3D(graphCtx, connectedNodeIds, activeTheme);
   }
 
-  // --- Cluster Nebula Glows ---
-  function renderClusterNebulas() {
+  // --- 3D Cluster Nebula Glows ---
+  function renderClusterNebulas3D(width, height, panX, panY, zoomScale) {
     const clusterMap = {};
     currentGraph.nodes.forEach(n => {
-      if (!n.x || !n.y) return;
+      if (n.x === undefined || n.y === undefined) return;
       if (!clusterMap[n.category]) {
-        clusterMap[n.category] = { color: n.color, points: [], sumX: 0, sumY: 0 };
+        clusterMap[n.category] = { color: n.color, points: [], sumX: 0, sumY: 0, sumZ: 0 };
       }
       clusterMap[n.category].points.push(n);
       clusterMap[n.category].sumX += n.x;
       clusterMap[n.category].sumY += n.y;
+      clusterMap[n.category].sumZ += (n.z !== undefined ? n.z : 0);
     });
 
-    Object.keys(clusterMap).forEach(cat => {
-      const c = clusterMap[cat];
-      if (c.points.length < 2) return;
-      const cx = c.sumX / c.points.length;
-      const cy = c.sumY / c.points.length;
+    const clusters = Object.values(clusterMap).filter(c => c.points.length >= 2);
+    // Sort clusters descending by depth
+    clusters.sort((a, b) => {
+      const za = a.sumZ / a.points.length;
+      const zb = b.sumZ / b.points.length;
+      return zb - za;
+    });
 
-      // Estimate cluster radius
+    clusters.forEach(c => {
+      const avgX = c.sumX / c.points.length;
+      const avgY = c.sumY / c.points.length;
+      const avgZ = c.sumZ / c.points.length;
+
+      const proj = project3D(avgX, avgY, avgZ, width, height, panX, panY, zoomScale);
+
       let maxDist = 40;
       c.points.forEach(p => {
-        const d = Math.hypot(p.x - cx, p.y - cy);
+        const d = Math.hypot(p.x - avgX, p.y - avgY);
         if (d > maxDist) maxDist = d;
       });
 
-      const radius = maxDist + 60;
-      const grad = graphCtx.createRadialGradient(cx, cy, 10, cx, cy, radius);
-      grad.addColorStop(0, hexToRgba(c.color, 0.14));
-      grad.addColorStop(0.6, hexToRgba(c.color, 0.04));
+      const radius = (maxDist + 60) * proj.sz * Math.sqrt(zoomScale);
+      if (radius < 5) return;
+
+      const grad = graphCtx.createRadialGradient(
+        proj.screenX, proj.screenY, 10 * proj.sz,
+        proj.screenX, proj.screenY, radius
+      );
+      grad.addColorStop(0, hexToRgba(c.color, 0.14 * Math.pow(proj.sz, 1.5)));
+      grad.addColorStop(0.6, hexToRgba(c.color, 0.04 * Math.pow(proj.sz, 1.5)));
       grad.addColorStop(1, 'rgba(0,0,0,0)');
 
       graphCtx.beginPath();
-      graphCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+      graphCtx.arc(proj.screenX, proj.screenY, radius, 0, Math.PI * 2);
       graphCtx.fillStyle = grad;
       graphCtx.fill();
     });
   }
 
-  // --- Links Rendering ---
-  function renderLinks(connectedNodeIds) {
-    currentGraph.links.forEach(l => {
-      const s = l.source;
-      const t = l.target;
-      if (!s.x || !s.y || !t.x || !t.y) return;
+  /**
+   * F04: Extrudes a trapezoidal polygon (Quad) between source and target screen positions
+   * tapering smoothly from half-width rs at source to rt at target.
+   */
+  function drawTaperedFilament(ctx, sScreen, tScreen, rs, rt, fillStyle, shadowColor, shadowBlur) {
+    const dx = tScreen.screenX - sScreen.screenX;
+    const dy = tScreen.screenY - sScreen.screenY;
+    const len = Math.hypot(dx, dy);
+    if (len < 0.5) return;
 
-      const isConnected = connectedNodeIds && connectedNodeIds.has(s.id) && connectedNodeIds.has(t.id);
-      const isDimmed = connectedNodeIds && !isConnected;
+    const nx = -dy / len;
+    const ny = dx / len;
 
-      graphCtx.beginPath();
-      graphCtx.moveTo(s.x, s.y);
-      graphCtx.lineTo(t.x, t.y);
+    const halfRs = Math.max(rs, 0.35);
+    const halfRt = Math.max(rt, 0.35);
 
-      if (isConnected) {
-        // Glowing highlighted filament
-        graphCtx.strokeStyle = 'rgba(0, 240, 255, 0.9)';
-        graphCtx.lineWidth = 2.4;
-        graphCtx.shadowColor = '#00f0ff';
-        graphCtx.shadowBlur = 10;
-      } else if (isDimmed) {
-        graphCtx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-        graphCtx.lineWidth = 0.6;
-        graphCtx.shadowBlur = 0;
+    const v1x = sScreen.screenX + nx * halfRs;
+    const v1y = sScreen.screenY + ny * halfRs;
+    const v2x = tScreen.screenX + nx * halfRt;
+    const v2y = tScreen.screenY + ny * halfRt;
+    const v3x = tScreen.screenX - nx * halfRt;
+    const v3y = tScreen.screenY - ny * halfRt;
+    const v4x = sScreen.screenX - nx * halfRs;
+    const v4y = sScreen.screenY - ny * halfRs;
+
+    ctx.beginPath();
+    ctx.moveTo(v1x, v1y);
+    ctx.lineTo(v2x, v2y);
+    ctx.lineTo(v3x, v3y);
+    ctx.lineTo(v4x, v4y);
+    ctx.closePath();
+
+    ctx.fillStyle = fillStyle;
+    if (shadowBlur > 0 && shadowColor) {
+      ctx.shadowColor = shadowColor;
+      ctx.shadowBlur = shadowBlur;
+    }
+    ctx.fill();
+    if (shadowBlur > 0) {
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  /**
+   * F04: Renders a depth-tapered connection between (xs, ys, zs) and (xt, yt, zt)
+   * with extruded quad polygons and depth-attenuated linear gradient shader.
+   */
+  function renderLink3D(ctx, link, sScreen, tScreen, connectedNodeIds, theme) {
+    const s = link.source;
+    const t = link.target;
+    const isConnected = connectedNodeIds && connectedNodeIds.has(s.id) && connectedNodeIds.has(t.id);
+    const isDimmed = connectedNodeIds && !isConnected;
+
+    const szS = sScreen.sz || 1.0;
+    const szT = tScreen.sz || 1.0;
+    const avgSz = (szS + szT) / 2;
+
+    let baseWidth = 1.0;
+    if (isConnected) {
+      baseWidth = 2.4;
+    } else if (isDimmed) {
+      baseWidth = 0.6;
+    }
+
+    const rs = (baseWidth * szS) / 2;
+    const rt = (baseWidth * szT) / 2;
+
+    // Depth alpha attenuation simulating void extinction
+    const alphaS = isConnected ? 0.95 : (isDimmed ? 0.02 * Math.pow(szS, 1.8) : Math.min(0.5, 0.22 * Math.pow(szS, 1.8)));
+    const alphaT = isConnected ? 0.95 : (isDimmed ? 0.02 * Math.pow(szT, 1.8) : Math.min(0.5, 0.22 * Math.pow(szT, 1.8)));
+
+    const grad = ctx.createLinearGradient(sScreen.screenX, sScreen.screenY, tScreen.screenX, tScreen.screenY);
+    const colorPrimary = (theme && theme.palette && theme.palette.primary) || '#00f0ff';
+    const colorSecondary = (theme && theme.palette && theme.palette.secondary) || '#7000ff';
+    const colorAccent = (theme && theme.palette && theme.palette.accent) || '#ffffff';
+
+    if (isConnected) {
+      // 3-stop high-energy plasma beam
+      grad.addColorStop(0, hexToRgba(colorPrimary, alphaS));
+      grad.addColorStop(0.5, hexToRgba(colorAccent, (alphaS + alphaT) * 0.5));
+      grad.addColorStop(1, hexToRgba(colorSecondary, alphaT));
+      drawTaperedFilament(ctx, sScreen, tScreen, rs, rt, grad, colorPrimary, 12 * avgSz);
+    } else if (isDimmed) {
+      grad.addColorStop(0, hexToRgba('#94a3b8', alphaS));
+      grad.addColorStop(1, hexToRgba('#64748b', alphaT));
+      drawTaperedFilament(ctx, sScreen, tScreen, rs, rt, grad, null, 0);
+    } else {
+      // Normal filament gradient from source color to target color
+      const colS = s.color || colorPrimary;
+      const colT = t.color || colorSecondary;
+      grad.addColorStop(0, hexToRgba(colS, alphaS));
+      grad.addColorStop(1, hexToRgba(colT, alphaT));
+      drawTaperedFilament(ctx, sScreen, tScreen, rs, rt, grad, null, 0);
+    }
+  }
+
+  /**
+   * F06: Simulates and renders volumetric 3D photons traversing links in perspective.
+   */
+  function drawPhotonParticle(ctx, photon, connectedNodeIds, theme, width, height, panX, panY, zoomScale) {
+    const s = photon.link.source;
+    const t = photon.link.target;
+    if (!s.x || !s.y || !t.x || !t.y) return;
+
+    const isConnected = connectedNodeIds && connectedNodeIds.has(s.id) && connectedNodeIds.has(t.id);
+    const isDimmed = connectedNodeIds && !isConnected;
+
+    const speedMult = (state.physics.photonSpeed || 1.0) * (isConnected ? 1.6 : 1.0);
+    photon.progress = (photon.progress + (photon.speed || 0.008) * speedMult);
+    if (photon.progress >= 1.0) photon.progress = photon.progress % 1.0;
+
+    const tau = photon.progress;
+    const sz_s = s.z !== undefined ? s.z : 0;
+    const sz_t = t.z !== undefined ? t.z : 0;
+
+    // 1. Calculate 3D Position of Head
+    const px = s.x + (t.x - s.x) * tau;
+    const py = s.y + (t.y - s.y) * tau;
+    const pz = sz_s + (sz_t - sz_s) * tau;
+    const headProj = project3D(px, py, pz, width, height, panX, panY, zoomScale);
+
+    // 2. Calculate 3D Position of Tail
+    const tauTail = Math.max(0, tau - 0.05);
+    const tx = s.x + (t.x - s.x) * tauTail;
+    const ty = s.y + (t.y - s.y) * tauTail;
+    const tz = sz_s + (sz_t - sz_s) * tauTail;
+    const tailProj = project3D(tx, ty, tz, width, height, panX, panY, zoomScale);
+
+    const radius = (photon.size || 1.5) * headProj.sz * (isConnected ? 1.4 : 1.0);
+    const alpha = isDimmed ? 0.06 : Math.min(1.0, 0.85 * Math.pow(headProj.sz, 1.5));
+    const particleColor = isConnected
+      ? ((theme && theme.palette && theme.palette.primary) || '#00f0ff')
+      : ((theme && theme.palette && theme.palette.accent) || '#ffffff');
+
+    // 3. Draw Comet Trail Streak
+    if (tau > 0.05 && !isDimmed) {
+      const trailGrad = ctx.createLinearGradient(
+        tailProj.screenX, tailProj.screenY,
+        headProj.screenX, headProj.screenY
+      );
+      trailGrad.addColorStop(0, hexToRgba(particleColor, 0));
+      trailGrad.addColorStop(1, hexToRgba(particleColor, alpha * 0.7));
+
+      ctx.strokeStyle = trailGrad;
+      ctx.lineWidth = Math.max(0.6, radius * 1.5);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(tailProj.screenX, tailProj.screenY);
+      ctx.lineTo(headProj.screenX, headProj.screenY);
+      ctx.stroke();
+    }
+
+    // 4. Draw Glowing Head
+    const glowR = Math.max(1.5, radius * 2.2);
+    const orbGrad = ctx.createRadialGradient(
+      headProj.screenX, headProj.screenY, radius * 0.2,
+      headProj.screenX, headProj.screenY, glowR
+    );
+    orbGrad.addColorStop(0, '#ffffff');
+    orbGrad.addColorStop(0.35, hexToRgba(particleColor, alpha));
+    orbGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+    ctx.fillStyle = orbGrad;
+    ctx.beginPath();
+    ctx.arc(headProj.screenX, headProj.screenY, glowR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  /**
+   * F02, F15, F16, F17: Renders a stellar node with depth-scaled radius, core brightness,
+   * atmospheric halo glow, pulsing beacon, and theme-specific node shader.
+   */
+  function renderNode3D(ctx, n, proj, connectedNodeIds, theme) {
+    const isConnected = connectedNodeIds && connectedNodeIds.has(n.id);
+    const isDimmed = connectedNodeIds && !isConnected;
+    const isSelected = state.selectedNode && state.selectedNode.id === n.id;
+    const isHovered = state.hoveredNode && state.hoveredNode.id === n.id;
+
+    const k = state.zoomTransform.k;
+    const sz = proj.sz || 1.0;
+    const sx = proj.screenX;
+    const sy = proj.screenY;
+
+    const baseRadius = (n.importance * 2.2) + 3.5;
+    const radiusMultiplier = isSelected ? 1.6 : (isHovered ? 1.3 : 1.0);
+    const radius = Math.max(0.8, baseRadius * radiusMultiplier * sz * Math.sqrt(k));
+
+    const nodeStyle = (theme && theme.nodeStyle) || 'plasma';
+    const colorPrimary = (theme && theme.palette && theme.palette.primary) || '#00f0ff';
+    const colorSecondary = (theme && theme.palette && theme.palette.secondary) || '#7000ff';
+    const colorAccent = (theme && theme.palette && theme.palette.accent) || '#ffffff';
+
+    // Depth alpha modulation factor
+    const alphaZ = Math.max(0.20, Math.min(1.0, 0.25 + 0.75 * sz));
+
+    if (nodeStyle === 'solar') {
+      // -------------------------------------------------------------
+      // Theme 2: Accretion Disk / Solar Corona Node Shader (F16)
+      // -------------------------------------------------------------
+      // 1. Thermal radiant corona halo (Golden core radiating to fiery crimson)
+      const coronaRadius = Math.max(radius * 1.8, radius * (2.2 + 2.5 * sz));
+      const baseCoronaAlpha = isConnected ? 0.75 : (isDimmed ? 0.05 : 0.45);
+      const coronaAlpha = Math.max(0.02, Math.min(1.0, baseCoronaAlpha * Math.pow(sz, 1.5)));
+
+      const coronaGrad = ctx.createRadialGradient(sx, sy, radius * 0.3, sx, sy, coronaRadius);
+      coronaGrad.addColorStop(0, hexToRgba(colorPrimary, coronaAlpha));
+      coronaGrad.addColorStop(0.5, hexToRgba(colorSecondary, coronaAlpha * 0.6));
+      coronaGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+      ctx.beginPath();
+      ctx.arc(sx, sy, coronaRadius, 0, Math.PI * 2);
+      ctx.fillStyle = coronaGrad;
+      ctx.fill();
+
+      // 2. Solar Flare Pulsing Aura for Selected Node
+      if (isSelected) {
+        const time = Date.now() * 0.004;
+        const flareR = radius + (8 + Math.sin(time) * 5) * sz;
+        ctx.beginPath();
+        ctx.arc(sx, sy, flareR, 0, Math.PI * 2);
+        ctx.strokeStyle = hexToRgba(colorPrimary, 0.9);
+        ctx.lineWidth = Math.max(1.2, 2.5 * sz);
+        ctx.stroke();
+      }
+
+      // 3. Thermal Radiant Core
+      ctx.beginPath();
+      ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+      if (isDimmed) {
+        ctx.fillStyle = hexToRgba(n.color, 0.25 * alphaZ);
+      } else if (isConnected || isSelected) {
+        ctx.fillStyle = n.color;
       } else {
-        // Normal filament
-        graphCtx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
-        graphCtx.lineWidth = 1.0;
-        graphCtx.shadowBlur = 0;
+        ctx.fillStyle = hexToRgba(n.color, alphaZ);
+      }
+      ctx.fill();
+
+      // 4. Warm Center Specular Flare Highlight
+      if (!isDimmed) {
+        const specR = Math.max(0.4, radius * 0.5 * sz);
+        const specAlpha = Math.max(0.2, Math.min(1.0, (isConnected ? 0.95 : 0.7) * sz));
+        ctx.beginPath();
+        ctx.arc(sx, sy, specR, 0, Math.PI * 2);
+        ctx.fillStyle = colorAccent;
+        ctx.globalAlpha = specAlpha;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+    } else if (nodeStyle === 'matrix') {
+      // -------------------------------------------------------------
+      // Theme 3: Quantum Void / Matrix Grid Node Shader (F17)
+      // -------------------------------------------------------------
+      // 1. Digital Cyber Grid / Quantum Flux Glow
+      const gridRadius = Math.max(radius * 1.5, radius * (1.9 + 2.0 * sz));
+      const baseGridAlpha = isConnected ? 0.70 : (isDimmed ? 0.05 : 0.40);
+      const gridAlpha = Math.max(0.02, Math.min(1.0, baseGridAlpha * Math.pow(sz, 1.5)));
+
+      const gridGrad = ctx.createRadialGradient(sx, sy, radius * 0.3, sx, sy, gridRadius);
+      gridGrad.addColorStop(0, hexToRgba(colorPrimary, gridAlpha));
+      gridGrad.addColorStop(0.6, hexToRgba(colorSecondary, gridAlpha * 0.5));
+      gridGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+      ctx.beginPath();
+      ctx.arc(sx, sy, gridRadius, 0, Math.PI * 2);
+      ctx.fillStyle = gridGrad;
+      ctx.fill();
+
+      // 2. Quantum Crosshair Marker for Selected
+      if (isSelected) {
+        const crossSize = radius + 10 * sz;
+        ctx.strokeStyle = hexToRgba(colorPrimary, 0.85);
+        ctx.lineWidth = Math.max(1, 1.5 * sz);
+        ctx.beginPath();
+        ctx.moveTo(sx - crossSize, sy); ctx.lineTo(sx + crossSize, sy);
+        ctx.moveTo(sx, sy - crossSize); ctx.lineTo(sx, sy + crossSize);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, radius + 4 * sz, 0, Math.PI * 2);
+        ctx.stroke();
       }
 
-      graphCtx.stroke();
-      graphCtx.shadowBlur = 0; // reset shadow
-    });
-  }
-
-  // --- Photon Stardust Stream ---
-  function renderPhotons(connectedNodeIds) {
-    const speedMultiplier = state.physics.photonSpeed;
-    if (speedMultiplier <= 0) return;
-
-    state.photons.forEach(p => {
-      const s = p.link.source;
-      const t = p.link.target;
-      if (!s.x || !s.y || !t.x || !t.y) return;
-
-      p.progress += p.speed * speedMultiplier;
-      if (p.progress >= 1.0) p.progress = 0;
-
-      const px = s.x + (t.x - s.x) * p.progress;
-      const py = s.y + (t.y - s.y) * p.progress;
-
-      const isConnected = connectedNodeIds && connectedNodeIds.has(s.id) && connectedNodeIds.has(t.id);
-      const isDimmed = connectedNodeIds && !isConnected;
-
-      graphCtx.beginPath();
-      graphCtx.arc(px, py, isConnected ? p.size * 1.5 : p.size, 0, Math.PI * 2);
-      graphCtx.fillStyle = isConnected ? '#00f0ff' : (isDimmed ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.75)');
-      if (isConnected) {
-        graphCtx.shadowColor = '#00f0ff';
-        graphCtx.shadowBlur = 8;
+      // 3. Cyber Matrix Core
+      ctx.beginPath();
+      ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+      if (isDimmed) {
+        ctx.fillStyle = hexToRgba(n.color, 0.25 * alphaZ);
+      } else if (isConnected || isSelected) {
+        ctx.fillStyle = n.color;
+      } else {
+        ctx.fillStyle = hexToRgba(n.color, alphaZ);
       }
-      graphCtx.fill();
-      graphCtx.shadowBlur = 0;
-    });
-  }
+      ctx.fill();
 
-  // --- Stellar Nodes Rendering ---
-  function renderNodes(connectedNodeIds) {
-    currentGraph.nodes.forEach(n => {
-      if (!n.x || !n.y) return;
-
-      const isConnected = connectedNodeIds && connectedNodeIds.has(n.id);
-      const isDimmed = connectedNodeIds && !isConnected;
-      const isSelected = state.selectedNode && state.selectedNode.id === n.id;
-      const isHovered = state.hoveredNode && state.hoveredNode.id === n.id;
-
-      const baseRadius = (n.importance * 2.2) + 3.5;
-      const radius = isSelected ? baseRadius * 1.6 : (isHovered ? baseRadius * 1.3 : baseRadius);
-
+      // 4. Digital Specular Mint Highlight
+      if (!isDimmed) {
+        const specR = Math.max(0.4, radius * 0.4 * sz);
+        const specAlpha = Math.max(0.2, Math.min(1.0, (isConnected ? 0.95 : 0.65) * sz));
+        ctx.beginPath();
+        ctx.arc(sx, sy, specR, 0, Math.PI * 2);
+        ctx.fillStyle = colorAccent;
+        ctx.globalAlpha = specAlpha;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+    } else {
+      // -------------------------------------------------------------
+      // Theme 1: Event Horizon / Plasma Node Shader (Default / F15)
+      // -------------------------------------------------------------
       // 1. Soft Outer Atmospheric Halo
-      const haloRadius = radius * 3.2;
-      const haloGrad = graphCtx.createRadialGradient(n.x, n.y, radius * 0.5, n.x, n.y, haloRadius);
-      haloGrad.addColorStop(0, hexToRgba(n.color, isConnected ? 0.6 : (isDimmed ? 0.05 : 0.35)));
+      const haloRadius = Math.max(radius * 1.5, radius * (1.8 + 2.2 * sz));
+      const baseHaloAlpha = isConnected ? 0.60 : (isDimmed ? 0.05 : 0.35);
+      const haloAlpha = Math.max(0.02, Math.min(1.0, baseHaloAlpha * Math.pow(sz, 1.5)));
+
+      const haloGrad = ctx.createRadialGradient(sx, sy, radius * 0.4, sx, sy, haloRadius);
+      haloGrad.addColorStop(0, hexToRgba(n.color, haloAlpha));
       haloGrad.addColorStop(1, 'rgba(0,0,0,0)');
 
-      graphCtx.beginPath();
-      graphCtx.arc(n.x, n.y, haloRadius, 0, Math.PI * 2);
-      graphCtx.fillStyle = haloGrad;
-      graphCtx.fill();
+      ctx.beginPath();
+      ctx.arc(sx, sy, haloRadius, 0, Math.PI * 2);
+      ctx.fillStyle = haloGrad;
+      ctx.fill();
 
       // 2. Pulsing Beacon Ring for Selected Node
       if (isSelected) {
         const time = Date.now() * 0.003;
-        const pulseR = radius + 6 + Math.sin(time) * 4;
-        graphCtx.beginPath();
-        graphCtx.arc(n.x, n.y, pulseR, 0, Math.PI * 2);
-        graphCtx.strokeStyle = 'rgba(0, 240, 255, 0.8)';
-        graphCtx.lineWidth = 2;
-        graphCtx.setLineDash([4, 4]);
-        graphCtx.stroke();
-        graphCtx.setLineDash([]);
+        const pulseR = radius + (6 + Math.sin(time) * 4) * sz;
+        ctx.beginPath();
+        ctx.arc(sx, sy, pulseR, 0, Math.PI * 2);
+        ctx.strokeStyle = hexToRgba(colorPrimary, 0.85);
+        ctx.lineWidth = Math.max(1, 2 * sz);
+        ctx.setLineDash([4 * sz, 4 * sz]);
+        ctx.stroke();
+        ctx.setLineDash([]);
       }
 
       // 3. Stellar Solid Core
-      graphCtx.beginPath();
-      graphCtx.arc(n.x, n.y, radius, 0, Math.PI * 2);
-      graphCtx.fillStyle = isDimmed ? hexToRgba(n.color, 0.25) : n.color;
-      graphCtx.fill();
+      ctx.beginPath();
+      ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+      if (isDimmed) {
+        ctx.fillStyle = hexToRgba(n.color, 0.25 * alphaZ);
+      } else if (isConnected || isSelected) {
+        ctx.fillStyle = n.color;
+      } else {
+        ctx.fillStyle = hexToRgba(n.color, alphaZ);
+      }
+      ctx.fill();
 
       // 4. White Center Specular Glow
       if (!isDimmed) {
-        graphCtx.beginPath();
-        graphCtx.arc(n.x, n.y, radius * 0.45, 0, Math.PI * 2);
-        graphCtx.fillStyle = '#ffffff';
-        graphCtx.globalAlpha = isConnected ? 0.95 : 0.7;
-        graphCtx.fill();
-        graphCtx.globalAlpha = 1.0;
+        const specR = Math.max(0.4, radius * 0.45 * sz);
+        const specAlpha = Math.max(0.2, Math.min(1.0, (isConnected ? 0.95 : 0.65) * sz));
+        ctx.beginPath();
+        ctx.arc(sx, sy, specR, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = specAlpha;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
       }
-    });
+    }
   }
 
-  // --- Labels Rendering ---
-  function renderLabels(connectedNodeIds) {
+  /**
+   * F02, F15, F16, F17: Renders labels overlay with Level-of-Detail (LOD) and depth-scaled typography.
+   */
+  function renderLabels3D(ctx, connectedNodeIds, theme) {
     const k = state.zoomTransform.k;
-    const showAll = k > 1.3;
-    const showImportant = k > 0.55;
 
-    graphCtx.font = '10px Inter, sans-serif';
-    graphCtx.textAlign = 'center';
-    graphCtx.textBaseline = 'top';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
 
     currentGraph.nodes.forEach(n => {
-      if (!n.x || !n.y) return;
+      if (n.screenX === undefined || n.screenY === undefined) return;
 
       const isConnected = connectedNodeIds && connectedNodeIds.has(n.id);
       const isDimmed = connectedNodeIds && !isConnected;
       const isSelected = state.selectedNode && state.selectedNode.id === n.id;
       const isMajor = n.importance >= 4;
 
+      const sz = n.sz || 1.0;
+      const kEff = k * sz;
+      const showAll = kEff > 1.3;
+      const showImportant = kEff > 0.55;
+
       if (isConnected || isSelected || showAll || (showImportant && isMajor)) {
         const baseRadius = (n.importance * 2.2) + 3.5;
-        const labelY = n.y + baseRadius + 4;
+        const radiusMultiplier = isSelected ? 1.6 : 1.0;
+        const r = Math.max(0.8, baseRadius * radiusMultiplier * sz * Math.sqrt(k));
+        const labelY = n.screenY + r + 4;
+
+        const fontSize = Math.max(8, Math.round(10 * sz));
+        const fontFace = (theme && theme.font) ? theme.font : 'Inter, sans-serif';
 
         if (isConnected || isSelected) {
-          graphCtx.fillStyle = '#ffffff';
-          graphCtx.font = 'bold 11px Inter, sans-serif';
-          graphCtx.shadowColor = '#000000';
-          graphCtx.shadowBlur = 4;
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${fontSize + 1}px ${fontFace}`;
+          ctx.shadowColor = '#000000';
+          ctx.shadowBlur = 4;
         } else if (isDimmed) {
-          graphCtx.fillStyle = 'rgba(148, 163, 184, 0.2)';
-          graphCtx.font = '10px Inter, sans-serif';
-          graphCtx.shadowBlur = 0;
+          ctx.fillStyle = 'rgba(148, 163, 184, 0.2)';
+          ctx.font = `${fontSize}px ${fontFace}`;
+          ctx.shadowBlur = 0;
         } else {
-          graphCtx.fillStyle = '#cbd5e1';
-          graphCtx.font = '10px Inter, sans-serif';
-          graphCtx.shadowBlur = 0;
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = `${fontSize}px ${fontFace}`;
+          ctx.shadowBlur = 0;
         }
 
-        graphCtx.fillText(n.label, n.x, labelY);
-        graphCtx.shadowBlur = 0;
+        ctx.fillText(n.label, n.screenX, labelY);
+        ctx.shadowBlur = 0;
       }
     });
-  }
-
-  // --- Radar Minimap Rendering ---
-  function renderMinimap() {
-    const w = minimapCanvas.width;
-    const h = minimapCanvas.height;
-    minimapCtx.clearRect(0, 0, w, h);
-
-    if (currentGraph.nodes.length === 0) return;
-
-    // Determine bounding box of nodes
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    currentGraph.nodes.forEach(n => {
-      if (n.x < minX) minX = n.x;
-      if (n.x > maxX) maxX = n.x;
-      if (n.y < minY) minY = n.y;
-      if (n.y > maxY) maxY = n.y;
-    });
-
-    const pad = 80;
-    minX -= pad; maxX += pad;
-    minY -= pad; maxY += pad;
-
-    const spanX = Math.max(maxX - minX, 1);
-    const spanY = Math.max(maxY - minY, 1);
-    const scale = Math.min(w / spanX, h / spanY);
-
-    const offsetX = (w - spanX * scale) / 2;
-    const offsetY = (h - spanY * scale) / 2;
-
-    // Render node dots
-    currentGraph.nodes.forEach(n => {
-      const mx = (n.x - minX) * scale + offsetX;
-      const my = (n.y - minY) * scale + offsetY;
-      minimapCtx.beginPath();
-      minimapCtx.arc(mx, my, n.importance >= 4 ? 2 : 1, 0, Math.PI * 2);
-      minimapCtx.fillStyle = n.color;
-      minimapCtx.fill();
-    });
-
-    // Render Camera Viewport Frustum Box
-    const winW = window.innerWidth;
-    const winH = window.innerHeight - 64;
-    const k = state.zoomTransform.k;
-    const tx = state.zoomTransform.x;
-    const ty = state.zoomTransform.y;
-
-    const camX1 = (-tx) / k;
-    const camY1 = (-ty) / k;
-    const camX2 = (winW - tx) / k;
-    const camY2 = (winH - ty) / k;
-
-    const vmx1 = (camX1 - minX) * scale + offsetX;
-    const vmy1 = (camY1 - minY) * scale + offsetY;
-    const vmx2 = (camX2 - minX) * scale + offsetX;
-    const vmy2 = (camY2 - minY) * scale + offsetY;
-
-    minimapCtx.strokeStyle = 'rgba(0, 240, 255, 0.85)';
-    minimapCtx.lineWidth = 1;
-    minimapCtx.strokeRect(vmx1, vmy1, vmx2 - vmx1, vmy2 - vmy1);
-    minimapCtx.fillStyle = 'rgba(0, 240, 255, 0.08)';
-    minimapCtx.fillRect(vmx1, vmy1, vmx2 - vmx1, vmy2 - vmy1);
   }
 
   // --- Helper: Get Connected Nodes (1-hop & 2-hop) ---
@@ -647,35 +1094,50 @@
     return connected;
   }
 
-  // --- Interactive Hit Detection & Mouse Events ---
+  // =========================================================================
+  // INTERACTIVE LISTENERS & CONTROLS (F05, F07)
+  // =========================================================================
+
   function setupEventListeners() {
     // 1. Branch Switcher Tabs
-    document.getElementById('tab-main').addEventListener('click', () => {
-      loadBranch('main');
-    });
+    const tabMain = document.getElementById('tab-main');
+    if (tabMain) tabMain.addEventListener('click', () => loadBranch('main'));
 
-    document.getElementById('tab-v2').addEventListener('click', () => {
-      loadBranch('v2');
-    });
+    const tabV2 = document.getElementById('tab-v2');
+    if (tabV2) tabV2.addEventListener('click', () => loadBranch('v2'));
 
-    document.getElementById('tab-compare').addEventListener('click', () => {
-      showComparisonModal();
-    });
+    const tabCompare = document.getElementById('tab-compare');
+    if (tabCompare) tabCompare.addEventListener('click', showComparisonModal);
 
     // 2. Swarm Filter Checkbox
-    toggleSwarmCheckbox.addEventListener('change', (e) => {
-      state.includeSwarm = e.target.checked;
-      loadBranch(state.currentBranch);
-    });
+    if (toggleSwarmCheckbox) {
+      toggleSwarmCheckbox.addEventListener('change', (e) => {
+        state.includeSwarm = e.target.checked;
+        loadBranch(state.currentBranch);
+      });
+    }
 
     // 3. Layout Mode Selector
-    layoutSelect.addEventListener('change', (e) => {
-      applyLayoutPositions(e.target.value);
-    });
+    if (layoutSelect) {
+      layoutSelect.addEventListener('change', (e) => {
+        applyLayoutPositions(e.target.value);
+      });
+    }
 
-    // 4. Canvas Mouse Move (Hover & Tooltip)
+    // 4. Live Theme Selector
+    if (themeSelector) {
+      themeSelector.addEventListener('change', (e) => {
+        setTheme(e.target.value);
+      });
+    }
+
+    // 5. Canvas Mouse Move (Hover & Tooltip with Depth Priority)
     graphCanvas.addEventListener('mousemove', (e) => {
-      const node = getNodeAtPosition(e.clientX, e.clientY - 64);
+      const rect = graphCanvas.getBoundingClientRect();
+      const screenX = e.clientX - rect.left;
+      const screenY = e.clientY - rect.top;
+
+      const node = findNodeAt(screenX, screenY);
       if (node !== state.hoveredNode) {
         state.hoveredNode = node;
         if (node) {
@@ -688,9 +1150,13 @@
       }
     });
 
-    // 5. Canvas Click (Select Node)
+    // 6. Canvas Click (Select Node with Depth Priority)
     graphCanvas.addEventListener('click', (e) => {
-      const node = getNodeAtPosition(e.clientX, e.clientY - 64);
+      const rect = graphCanvas.getBoundingClientRect();
+      const screenX = e.clientX - rect.left;
+      const screenY = e.clientY - rect.top;
+
+      const node = findNodeAt(screenX, screenY);
       if (node) {
         selectNode(node);
       } else if (!state.isolatedNodeId) {
@@ -699,70 +1165,94 @@
       }
     });
 
-    // 6. Node Dragging via D3
+    // 7. Node Dragging via D3 using analytical unproject3D
     d3.select(graphCanvas).call(
       d3.drag()
         .container(graphCanvas)
         .subject(event => {
-          const p = getTransformedPoint(event.x, event.y);
-          return findClosestNode(p.x, p.y);
+          // event.x and event.y are container-relative pixel coordinates
+          return findNodeAt(event.x, event.y, 25);
         })
         .on('start', (event) => {
+          if (!event.subject) return;
           if (!event.active && simulation) simulation.alphaTarget(0.3).restart();
           event.subject.fx = event.subject.x;
           event.subject.fy = event.subject.y;
         })
         .on('drag', (event) => {
-          const p = getTransformedPoint(event.x, event.y);
-          event.subject.fx = p.x;
-          event.subject.fy = p.y;
+          if (!event.subject) return;
+          const width = window.innerWidth;
+          const height = window.innerHeight - 64;
+          const unproj = unproject3D(
+            event.x,
+            event.y,
+            event.subject.z || 0,
+            width,
+            height,
+            state.zoomTransform.x,
+            state.zoomTransform.y,
+            state.zoomTransform.k
+          );
+          event.subject.fx = unproj.worldX;
+          event.subject.fy = unproj.worldY;
         })
         .on('end', (event) => {
+          if (!event.subject) return;
           if (!event.active && simulation) simulation.alphaTarget(0);
           event.subject.fx = null;
           event.subject.fy = null;
         })
     );
 
-    // 7. Search Input Handlers
-    searchInput.addEventListener('input', (e) => {
-      handleSearch(e.target.value.trim());
-    });
+    // 8. Search Input Handlers
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        handleSearch(e.target.value.trim());
+      });
 
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        clearSearch();
-      } else if (e.key === 'Enter') {
-        const first = searchResultsEl.querySelector('.search-item');
-        if (first) first.click();
-      }
-    });
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          clearSearch();
+        } else if (e.key === 'Enter') {
+          const first = searchResultsEl ? searchResultsEl.querySelector('.search-item') : null;
+          if (first) first.click();
+        }
+      });
+    }
 
-    searchClearBtn.addEventListener('click', clearSearch);
+    if (searchClearBtn) searchClearBtn.addEventListener('click', clearSearch);
 
-    // 8. Drawer Controls
-    closeInspectorBtn.addEventListener('click', hideInspector);
-    focusConstellationBtn.addEventListener('click', () => {
-      if (state.selectedNode) {
-        state.isolatedNodeId = state.selectedNode.id;
-        focusConstellationBtn.classList.add('hidden');
-        clearFocusBtn.classList.remove('hidden');
-      }
-    });
+    // 9. Drawer Controls
+    if (closeInspectorBtn) closeInspectorBtn.addEventListener('click', hideInspector);
+    if (focusConstellationBtn) {
+      focusConstellationBtn.addEventListener('click', () => {
+        if (state.selectedNode) {
+          state.isolatedNodeId = state.selectedNode.id;
+          state.isIsolated = true;
+          focusConstellationBtn.classList.add('hidden');
+          if (clearFocusBtn) clearFocusBtn.classList.remove('hidden');
+        }
+      });
+    }
 
-    clearFocusBtn.addEventListener('click', () => {
-      state.isolatedNodeId = null;
-      clearFocusBtn.classList.add('hidden');
-      focusConstellationBtn.classList.remove('hidden');
-    });
+    if (clearFocusBtn) {
+      clearFocusBtn.addEventListener('click', () => {
+        state.isolatedNodeId = null;
+        state.isIsolated = false;
+        clearFocusBtn.classList.add('hidden');
+        if (focusConstellationBtn) focusConstellationBtn.classList.remove('hidden');
+      });
+    }
 
-    copyShaBtn.addEventListener('click', () => {
-      if (state.selectedNode && state.selectedNode.sha256Full) {
-        navigator.clipboard.writeText(state.selectedNode.sha256Full);
-        copyShaBtn.textContent = '✓';
-        setTimeout(() => { copyShaBtn.textContent = '⧉'; }, 2000);
-      }
-    });
+    if (copyShaBtn) {
+      copyShaBtn.addEventListener('click', () => {
+        if (state.selectedNode && state.selectedNode.sha256Full) {
+          navigator.clipboard.writeText(state.selectedNode.sha256Full);
+          copyShaBtn.textContent = '✓';
+          setTimeout(() => { copyShaBtn.textContent = '⧉'; }, 2000);
+        }
+      });
+    }
 
     // Inspector Tabs
     document.querySelectorAll('.insp-tab-btn').forEach(btn => {
@@ -770,72 +1260,115 @@
         document.querySelectorAll('.insp-tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.insp-tab-content').forEach(c => c.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
+        const content = document.getElementById(btn.dataset.tab);
+        if (content) content.classList.add('active');
       });
     });
 
-    // 9. Physics Drawer Controls
-    toggleControlsBtn.addEventListener('click', () => {
-      physicsPanel.classList.toggle('hidden');
-      toggleControlsBtn.classList.toggle('active');
-    });
+    // 10. Physics Drawer Controls
+    if (toggleControlsBtn) {
+      toggleControlsBtn.addEventListener('click', () => {
+        if (physicsPanel) physicsPanel.classList.toggle('hidden');
+        toggleControlsBtn.classList.toggle('active');
+      });
+    }
 
-    closePhysicsBtn.addEventListener('click', () => {
-      physicsPanel.classList.add('hidden');
-      toggleControlsBtn.classList.remove('active');
-    });
+    if (closePhysicsBtn) {
+      closePhysicsBtn.addEventListener('click', () => {
+        if (physicsPanel) physicsPanel.classList.add('hidden');
+        if (toggleControlsBtn) toggleControlsBtn.classList.remove('active');
+      });
+    }
 
-    document.getElementById('slider-charge').addEventListener('input', (e) => {
-      state.physics.charge = +e.target.value;
-      document.getElementById('val-charge').textContent = e.target.value;
-      if (simulation) simulation.force('charge').strength(state.physics.charge).alpha(0.3).restart();
-    });
+    const sliderCharge = document.getElementById('slider-charge');
+    if (sliderCharge) {
+      sliderCharge.addEventListener('input', (e) => {
+        state.physics.charge = +e.target.value;
+        const valEl = document.getElementById('val-charge');
+        if (valEl) valEl.textContent = e.target.value;
+        if (simulation) {
+          simulation.force('charge').strength(state.physics.charge);
+          simulation.alpha(0.3).restart();
+        }
+      });
+    }
 
-    document.getElementById('slider-link-dist').addEventListener('input', (e) => {
-      state.physics.linkDistance = +e.target.value;
-      document.getElementById('val-link-dist').textContent = e.target.value;
-      if (simulation) simulation.force('link').distance(state.physics.linkDistance).alpha(0.3).restart();
-    });
+    const sliderLinkDist = document.getElementById('slider-link-dist');
+    if (sliderLinkDist) {
+      sliderLinkDist.addEventListener('input', (e) => {
+        state.physics.linkDistance = +e.target.value;
+        const valEl = document.getElementById('val-link-dist');
+        if (valEl) valEl.textContent = e.target.value;
+        if (simulation) {
+          simulation.force('link').distance(state.physics.linkDistance);
+          simulation.alpha(0.3).restart();
+        }
+      });
+    }
 
-    document.getElementById('slider-collision').addEventListener('input', (e) => {
-      state.physics.collision = +e.target.value;
-      document.getElementById('val-collision').textContent = e.target.value;
-      if (simulation) simulation.force('collide').radius(d => (d.importance * 3) + state.physics.collision).alpha(0.3).restart();
-    });
+    const sliderCollision = document.getElementById('slider-collision');
+    if (sliderCollision) {
+      sliderCollision.addEventListener('input', (e) => {
+        state.physics.collision = +e.target.value;
+        const valEl = document.getElementById('val-collision');
+        if (valEl) valEl.textContent = e.target.value;
+        if (simulation) {
+          simulation.force('collide').radius(d => (d.importance * 3) + state.physics.collision);
+          simulation.alpha(0.3).restart();
+        }
+      });
+    }
 
-    document.getElementById('slider-gravity').addEventListener('input', (e) => {
-      state.physics.gravity = +e.target.value;
-      document.getElementById('val-gravity').textContent = e.target.value;
-      if (simulation) {
-        simulation.force('x').strength(state.physics.gravity);
-        simulation.force('y').strength(state.physics.gravity);
-        simulation.alpha(0.3).restart();
-      }
-    });
+    const sliderGravity = document.getElementById('slider-gravity');
+    if (sliderGravity) {
+      sliderGravity.addEventListener('input', (e) => {
+        state.physics.gravity = +e.target.value;
+        const valEl = document.getElementById('val-gravity');
+        if (valEl) valEl.textContent = e.target.value;
+        if (simulation) {
+          simulation.force('x').strength(state.physics.gravity);
+          simulation.force('y').strength(state.physics.gravity);
+          simulation.alpha(0.3).restart();
+        }
+      });
+    }
 
-    document.getElementById('slider-photon-speed').addEventListener('input', (e) => {
-      state.physics.photonSpeed = +e.target.value;
-      document.getElementById('val-photon-speed').textContent = `${e.target.value}x`;
-    });
+    const sliderPhotonSpeed = document.getElementById('slider-photon-speed');
+    if (sliderPhotonSpeed) {
+      sliderPhotonSpeed.addEventListener('input', (e) => {
+        state.physics.photonSpeed = +e.target.value;
+        const valEl = document.getElementById('val-photon-speed');
+        if (valEl) valEl.textContent = `${e.target.value}x`;
+      });
+    }
 
-    document.getElementById('toggle-photons').addEventListener('change', (e) => {
-      state.physics.showPhotons = e.target.checked;
-    });
+    const togglePhotons = document.getElementById('toggle-photons');
+    if (togglePhotons) {
+      togglePhotons.addEventListener('change', (e) => {
+        state.physics.showPhotons = e.target.checked;
+      });
+    }
 
-    document.getElementById('toggle-nebulas').addEventListener('change', (e) => {
-      state.physics.showNebulas = e.target.checked;
-    });
+    const toggleNebulas = document.getElementById('toggle-nebulas');
+    if (toggleNebulas) {
+      toggleNebulas.addEventListener('change', (e) => {
+        state.physics.showNebulas = e.target.checked;
+      });
+    }
 
-    document.getElementById('reset-physics-btn').addEventListener('click', resetPhysics);
-    document.getElementById('reheat-sim-btn').addEventListener('click', () => {
-      if (simulation) simulation.alpha(0.8).restart();
-    });
+    const resetPhysicsBtn = document.getElementById('reset-physics-btn');
+    if (resetPhysicsBtn) resetPhysicsBtn.addEventListener('click', resetPhysics);
 
-    // 10. Reset Camera Button
-    document.getElementById('reset-cam-btn').addEventListener('click', centerCamera);
+    const reheatSimBtn = document.getElementById('reheat-sim-btn');
+    if (reheatSimBtn) {
+      reheatSimBtn.addEventListener('click', () => {
+        if (simulation) simulation.alpha(0.8).restart();
+      });
+    }
 
-    // 11. Minimap Click to Pan
-    minimapCanvas.addEventListener('click', handleMinimapClick);
+    // 11. Reset Camera Button
+    const resetCamBtn = document.getElementById('reset-cam-btn');
+    if (resetCamBtn) resetCamBtn.addEventListener('click', centerCamera);
 
     // 12. Close Modals on ESC
     window.addEventListener('keydown', (e) => {
@@ -845,6 +1378,31 @@
         clearSearch();
       }
     });
+  }
+
+  function initTheme() {
+    let savedTheme = 'event-horizon';
+    try {
+      savedTheme = localStorage.getItem('roo4u_theme') || 'event-horizon';
+    } catch (e) {}
+    if (!THEMES[savedTheme]) savedTheme = 'event-horizon';
+    setTheme(savedTheme);
+  }
+
+  function setTheme(themeKey) {
+    if (!THEMES[themeKey]) return;
+    state.theme = themeKey;
+    document.body.setAttribute('data-theme', themeKey);
+    document.body.className = `theme-${themeKey}`;
+    const selector = document.getElementById('theme-selector');
+    if (selector && selector.value !== themeKey) {
+      selector.value = themeKey;
+    }
+    try {
+      localStorage.setItem('roo4u_theme', themeKey);
+    } catch (e) {
+      // Ignore storage errors
+    }
   }
 
   function resetPhysics() {
@@ -857,76 +1415,66 @@
       showPhotons: true,
       showNebulas: true
     };
-    document.getElementById('slider-charge').value = -350;
-    document.getElementById('val-charge').textContent = -350;
-    document.getElementById('slider-link-dist').value = 90;
-    document.getElementById('val-link-dist').textContent = 90;
-    document.getElementById('slider-collision').value = 18;
-    document.getElementById('val-collision').textContent = 18;
-    document.getElementById('slider-gravity').value = 0.08;
-    document.getElementById('val-gravity').textContent = 0.08;
-    document.getElementById('slider-photon-speed').value = 1;
-    document.getElementById('val-photon-speed').textContent = '1.0x';
-    document.getElementById('toggle-photons').checked = true;
-    document.getElementById('toggle-nebulas').checked = true;
+    const sliderCharge = document.getElementById('slider-charge');
+    if (sliderCharge) sliderCharge.value = -350;
+    const valCharge = document.getElementById('val-charge');
+    if (valCharge) valCharge.textContent = -350;
+
+    const sliderLinkDist = document.getElementById('slider-link-dist');
+    if (sliderLinkDist) sliderLinkDist.value = 90;
+    const valLinkDist = document.getElementById('val-link-dist');
+    if (valLinkDist) valLinkDist.textContent = 90;
+
+    const sliderCollision = document.getElementById('slider-collision');
+    if (sliderCollision) sliderCollision.value = 18;
+    const valCollision = document.getElementById('val-collision');
+    if (valCollision) valCollision.textContent = 18;
+
+    const sliderGravity = document.getElementById('slider-gravity');
+    if (sliderGravity) sliderGravity.value = 0.08;
+    const valGravity = document.getElementById('val-gravity');
+    if (valGravity) valGravity.textContent = 0.08;
+
+    const sliderPhotonSpeed = document.getElementById('slider-photon-speed');
+    if (sliderPhotonSpeed) sliderPhotonSpeed.value = 1;
+    const valPhotonSpeed = document.getElementById('val-photon-speed');
+    if (valPhotonSpeed) valPhotonSpeed.textContent = '1.0x';
+
+    const togglePhotons = document.getElementById('toggle-photons');
+    if (togglePhotons) togglePhotons.checked = true;
+    const toggleNebulas = document.getElementById('toggle-nebulas');
+    if (toggleNebulas) toggleNebulas.checked = true;
+
     initSimulation();
-  }
-
-  // --- Point Transformations & Hit Testing ---
-  function getTransformedPoint(clientX, clientY) {
-    const k = state.zoomTransform.k;
-    const tx = state.zoomTransform.x;
-    const ty = state.zoomTransform.y;
-    return {
-      x: (clientX - tx) / k,
-      y: (clientY - ty) / k
-    };
-  }
-
-  function getNodeAtPosition(clientX, clientY) {
-    const p = getTransformedPoint(clientX, clientY);
-    for (let i = currentGraph.nodes.length - 1; i >= 0; i--) {
-      const n = currentGraph.nodes[i];
-      if (!n.x || !n.y) continue;
-      const r = (n.importance * 2.2) + 5;
-      const d = Math.hypot(n.x - p.x, n.y - p.y);
-      if (d <= r) return n;
-    }
-    return null;
-  }
-
-  function findClosestNode(x, y) {
-    let closest = null;
-    let minDist = 30;
-    currentGraph.nodes.forEach(n => {
-      if (!n.x || !n.y) return;
-      const d = Math.hypot(n.x - x, n.y - y);
-      if (d < minDist) {
-        minDist = d;
-        closest = n;
-      }
-    });
-    return closest;
   }
 
   // --- Tooltip & Inspector ---
   function showTooltip(node, x, y) {
-    document.getElementById('tt-category').textContent = node.categoryName;
-    document.getElementById('tt-category').style.backgroundColor = hexToRgba(node.color, 0.2);
-    document.getElementById('tt-category').style.color = node.color;
-    document.getElementById('tt-lang').textContent = node.language;
-    document.getElementById('tt-title').textContent = node.label;
-    document.getElementById('tt-path').textContent = node.path;
-    document.getElementById('tt-summary').textContent = node.summary;
-    document.getElementById('tt-loc').textContent = node.loc;
+    if (!tooltipEl) return;
+    const ttCategory = document.getElementById('tt-category');
+    if (ttCategory) {
+      ttCategory.textContent = node.categoryName;
+      ttCategory.style.backgroundColor = hexToRgba(node.color, 0.2);
+      ttCategory.style.color = node.color;
+    }
+    const ttLang = document.getElementById('tt-lang');
+    if (ttLang) ttLang.textContent = node.language;
+    const ttTitle = document.getElementById('tt-title');
+    if (ttTitle) ttTitle.textContent = node.label;
+    const ttPath = document.getElementById('tt-path');
+    if (ttPath) ttPath.textContent = node.path;
+    const ttSummary = document.getElementById('tt-summary');
+    if (ttSummary) ttSummary.textContent = node.summary;
+    const ttLoc = document.getElementById('tt-loc');
+    if (ttLoc) ttLoc.textContent = node.loc;
 
-    // Calculate node degree
     const linksCount = currentGraph.links.filter(l => {
       const sId = typeof l.source === 'object' ? l.source.id : l.source;
       const tId = typeof l.target === 'object' ? l.target.id : l.target;
       return sId === node.id || tId === node.id;
     }).length;
-    document.getElementById('tt-degree').textContent = linksCount;
+    const ttDegree = document.getElementById('tt-degree');
+    if (ttDegree) ttDegree.textContent = linksCount;
 
     tooltipEl.style.left = `${x}px`;
     tooltipEl.style.top = `${y}px`;
@@ -934,41 +1482,59 @@
   }
 
   function moveTooltip(x, y) {
+    if (!tooltipEl) return;
     tooltipEl.style.left = `${x}px`;
     tooltipEl.style.top = `${y}px`;
   }
 
   function hideTooltip() {
-    tooltipEl.classList.add('hidden');
+    if (tooltipEl) tooltipEl.classList.add('hidden');
   }
 
   function selectNode(node) {
     state.selectedNode = node;
     showInspector(node);
+    panToNode(node);
   }
 
   function showInspector(node) {
-    document.getElementById('insp-category').textContent = node.categoryName;
-    document.getElementById('insp-category').style.backgroundColor = hexToRgba(node.color, 0.2);
-    document.getElementById('insp-category').style.color = node.color;
-    document.getElementById('insp-name').textContent = node.label;
-    document.getElementById('insp-path').textContent = node.path;
-    document.getElementById('insp-summary').textContent = node.summary;
-    document.getElementById('insp-meta-lang').textContent = node.language;
-    document.getElementById('insp-meta-loc').textContent = `${node.loc} LOC`;
-    document.getElementById('insp-meta-size').textContent = `${(node.size / 1024).toFixed(1)} KB`;
-    document.getElementById('insp-meta-layer').textContent = `Layer ${node.layer} (${node.categoryName})`;
-    document.getElementById('insp-meta-sha').innerHTML = `${node.sha256} <button class="copy-sha-btn" id="copy-sha-btn" title="Copy SHA256">⧉</button>`;
+    if (!inspectorDrawer) return;
 
-    // Reattach copy listener
-    document.getElementById('copy-sha-btn').addEventListener('click', () => {
-      if (node.sha256Full) {
-        navigator.clipboard.writeText(node.sha256Full);
-        const btn = document.getElementById('copy-sha-btn');
-        btn.textContent = '✓';
-        setTimeout(() => { btn.textContent = '⧉'; }, 2000);
+    const inspCategory = document.getElementById('insp-category');
+    if (inspCategory) {
+      inspCategory.textContent = node.categoryName;
+      inspCategory.style.backgroundColor = hexToRgba(node.color, 0.2);
+      inspCategory.style.color = node.color;
+    }
+    const inspName = document.getElementById('insp-name');
+    if (inspName) inspName.textContent = node.label;
+    const inspPath = document.getElementById('insp-path');
+    if (inspPath) inspPath.textContent = node.path;
+    const inspSummary = document.getElementById('insp-summary');
+    if (inspSummary) inspSummary.textContent = node.summary;
+    const inspMetaLang = document.getElementById('insp-meta-lang');
+    if (inspMetaLang) inspMetaLang.textContent = node.language;
+    const inspMetaLoc = document.getElementById('insp-meta-loc');
+    if (inspMetaLoc) inspMetaLoc.textContent = `${node.loc} LOC`;
+    const inspMetaSize = document.getElementById('insp-meta-size');
+    if (inspMetaSize) inspMetaSize.textContent = `${(node.size / 1024).toFixed(1)} KB`;
+    const inspMetaLayer = document.getElementById('insp-meta-layer');
+    if (inspMetaLayer) inspMetaLayer.textContent = `Layer ${node.layer} (${node.categoryName})`;
+
+    const inspMetaSha = document.getElementById('insp-meta-sha');
+    if (inspMetaSha) {
+      inspMetaSha.innerHTML = `${node.sha256} <button class="copy-sha-btn sha-copy-btn" id="insp-sha-copy" title="Copy SHA256">⧉</button>`;
+      const copyBtn = document.getElementById('insp-sha-copy');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          if (node.sha256Full) {
+            navigator.clipboard.writeText(node.sha256Full);
+            copyBtn.textContent = '✓';
+            setTimeout(() => { copyBtn.textContent = '⧉'; }, 2000);
+          }
+        });
       }
-    });
+    }
 
     // Inbound & Outbound Dependencies
     const inbound = [];
@@ -986,47 +1552,59 @@
       }
     });
 
-    document.getElementById('insp-deps-count').textContent = inbound.length + outbound.length;
+    const depsCountEl = document.getElementById('insp-deps-count');
+    if (depsCountEl) depsCountEl.textContent = inbound.length + outbound.length;
     renderDepList('insp-inbound-list', inbound);
     renderDepList('insp-outbound-list', outbound);
 
     // Symbols list
     const symbolsListEl = document.getElementById('insp-symbols-list');
-    symbolsListEl.innerHTML = '';
-    document.getElementById('insp-syms-count').textContent = (node.symbols || []).length;
-    if (node.symbols && node.symbols.length > 0) {
-      node.symbols.forEach(sym => {
-        const li = document.createElement('li');
-        li.className = 'symbol-item';
-        li.textContent = sym;
-        symbolsListEl.appendChild(li);
-      });
-    } else {
-      symbolsListEl.innerHTML = '<li class="symbol-item" style="color:var(--text-dim);">No explicit exported AST symbols found.</li>';
+    if (symbolsListEl) {
+      symbolsListEl.innerHTML = '';
+      const symsCountEl = document.getElementById('insp-syms-count');
+      if (symsCountEl) symsCountEl.textContent = (node.symbols || []).length;
+      if (node.symbols && node.symbols.length > 0) {
+        node.symbols.forEach(sym => {
+          const li = document.createElement('li');
+          li.className = 'symbol-item';
+          li.textContent = sym;
+          symbolsListEl.appendChild(li);
+        });
+      } else {
+        symbolsListEl.innerHTML = '<li class="symbol-item" style="color:var(--text-dim);">No explicit exported AST symbols found.</li>';
+      }
     }
 
     // Code Preview
-    document.getElementById('code-preview-filename').textContent = node.label;
-    document.getElementById('insp-code-content').textContent = node.preview || '[Empty Content]';
+    const codeFilename = document.getElementById('code-preview-filename');
+    if (codeFilename) codeFilename.textContent = node.label;
+    const codeContent = document.getElementById('insp-code-content');
+    if (codeContent) codeContent.textContent = node.preview || '[Empty Content]';
 
     // Focus state button
-    if (state.isolatedNodeId === node.id) {
-      focusConstellationBtn.classList.add('hidden');
-      clearFocusBtn.classList.remove('hidden');
-    } else {
-      focusConstellationBtn.classList.remove('hidden');
-      clearFocusBtn.classList.add('hidden');
+    if (focusConstellationBtn && clearFocusBtn) {
+      if (state.isolatedNodeId === node.id) {
+        focusConstellationBtn.classList.add('hidden');
+        clearFocusBtn.classList.remove('hidden');
+      } else {
+        focusConstellationBtn.classList.remove('hidden');
+        clearFocusBtn.classList.add('hidden');
+      }
     }
 
     inspectorDrawer.classList.remove('hidden');
+    inspectorDrawer.classList.add('open');
   }
 
   function hideInspector() {
+    if (!inspectorDrawer) return;
     inspectorDrawer.classList.add('hidden');
+    inspectorDrawer.classList.remove('open');
   }
 
   function renderDepList(elementId, items) {
     const el = document.getElementById(elementId);
+    if (!el) return;
     el.innerHTML = '';
     if (items.length === 0) {
       el.innerHTML = '<li class="dep-item" style="color:var(--text-dim);">None</li>';
@@ -1044,7 +1622,6 @@
         const targetNode = currentGraph.nodes.find(n => n.id === item.id);
         if (targetNode) {
           selectNode(targetNode);
-          panToNode(targetNode);
         }
       });
       el.appendChild(li);
@@ -1068,13 +1645,14 @@
 
   function handleSearch(query) {
     state.searchQuery = query;
+    if (!searchResultsEl) return;
     if (!query) {
       searchResultsEl.classList.add('hidden');
-      searchClearBtn.classList.add('hidden');
+      if (searchClearBtn) searchClearBtn.classList.add('hidden');
       return;
     }
 
-    searchClearBtn.classList.remove('hidden');
+    if (searchClearBtn) searchClearBtn.classList.remove('hidden');
     const qLower = query.toLowerCase();
 
     const matches = searchIndex.filter(item => {
@@ -1093,17 +1671,16 @@
     searchResultsEl.innerHTML = '';
     matches.forEach(m => {
       const div = document.createElement('div');
-      div.className = 'search-item';
+      div.className = 'search-item search-result-item';
       div.innerHTML = `
         <div class="search-item-top">
-          <span class="search-item-title">${m.label}</span>
-          <span class="search-item-cat" style="background:${hexToRgba(m.color, 0.2)};color:${m.color}">${m.categoryName}</span>
+          <span class="search-item-title">${escapeHtml(m.label)}</span>
+          <span class="search-item-cat" style="background:${hexToRgba(m.color, 0.2)};color:${m.color}">${escapeHtml(m.categoryName)}</span>
         </div>
-        <div class="search-item-path">${m.path}</div>
+        <div class="search-item-path">${escapeHtml(m.path)}</div>
       `;
       div.addEventListener('click', () => {
         selectNode(m.node);
-        panToNode(m.node);
         clearSearch();
       });
       searchResultsEl.appendChild(div);
@@ -1112,86 +1689,133 @@
   }
 
   function clearSearch() {
-    searchInput.value = '';
-    searchResultsEl.classList.add('hidden');
-    searchClearBtn.classList.add('hidden');
+    if (searchInput) searchInput.value = '';
+    if (searchResultsEl) searchResultsEl.classList.add('hidden');
+    if (searchClearBtn) searchClearBtn.classList.add('hidden');
   }
 
-  // --- Camera Operations (Pan, Zoom, Center) ---
-  function panToNode(node) {
-    if (!node.x || !node.y) return;
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // =========================================================================
+  // CAMERA OPERATIONS & TRANSITIONS (F05)
+  // =========================================================================
+
+  /**
+   * F05: Smoothly pan and zoom camera to center on a target 3D node with depth compensation.
+   */
+  function panToNode(node, targetZoom = 1.6, duration = 750) {
+    if (!node || node.x === undefined || node.y === undefined) return;
     const width = window.innerWidth;
     const height = window.innerHeight - 64;
-    const k = 1.6;
+    const k = targetZoom;
+    const z = node.z !== undefined ? node.z : 0;
 
-    const t = d3.zoomIdentity
-      .translate(width / 2 - node.x * k, height / 2 - node.y * k)
-      .scale(k);
+    const { tx, ty } = getPanToCenter(node.x, node.y, z, width, height, k);
+    const targetTransform = d3.zoomIdentity.translate(tx, ty).scale(k);
 
-    d3.select(graphCanvas).transition().duration(750).call(zoomBehavior.transform, t);
+    d3.select(graphCanvas)
+      .transition()
+      .duration(duration)
+      .ease(d3.easeCubicOut)
+      .call(zoomBehavior.transform, targetTransform);
   }
 
-  function centerCamera() {
+  /**
+   * F05: Frame a cluster or constellation within the viewport in 3D perspective.
+   */
+  function focusCluster(nodes, duration = 800) {
+    if (!nodes || nodes.length === 0) return;
     const width = window.innerWidth;
     const height = window.innerHeight - 64;
-    const t = d3.zoomIdentity.translate(0, 0).scale(1.0);
-    d3.select(graphCanvas).transition().duration(600).call(zoomBehavior.transform, t);
-  }
 
-  function handleMinimapClick(e) {
-    const rect = minimapCanvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+    let sumX = 0, sumY = 0, sumZ = 0;
+    let count = 0;
 
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    currentGraph.nodes.forEach(n => {
+    nodes.forEach(n => {
+      if (n.x === undefined || n.y === undefined) return;
       if (n.x < minX) minX = n.x;
       if (n.x > maxX) maxX = n.x;
       if (n.y < minY) minY = n.y;
       if (n.y > maxY) maxY = n.y;
+      sumX += n.x;
+      sumY += n.y;
+      sumZ += (n.z !== undefined ? n.z : 0);
+      count++;
     });
 
-    const pad = 80;
-    minX -= pad; maxX += pad;
-    minY -= pad; maxY += pad;
+    if (count === 0) return;
 
-    const spanX = Math.max(maxX - minX, 1);
-    const spanY = Math.max(maxY - minY, 1);
-    const scale = Math.min(minimapCanvas.width / spanX, minimapCanvas.height / spanY);
+    const avgX = sumX / count;
+    const avgY = sumY / count;
+    const avgZ = sumZ / count;
 
-    const offsetX = (minimapCanvas.width - spanX * scale) / 2;
-    const offsetY = (minimapCanvas.height - spanY * scale) / 2;
+    const spanX = Math.max(maxX - minX + 80, 150);
+    const spanY = Math.max(maxY - minY + 80, 150);
 
-    const targetWorldX = minX + (clickX - offsetX) / scale;
-    const targetWorldY = minY + (clickY - offsetY) / scale;
+    const fitK = Math.min((width * 0.75) / spanX, (height * 0.75) / spanY);
+    const k = Math.max(0.3, Math.min(2.2, fitK));
 
-    const width = window.innerWidth;
-    const height = window.innerHeight - 64;
-    const k = state.zoomTransform.k;
+    const { tx, ty } = getPanToCenter(avgX, avgY, avgZ, width, height, k);
+    const targetTransform = d3.zoomIdentity.translate(tx, ty).scale(k);
 
-    const t = d3.zoomIdentity
-      .translate(width / 2 - targetWorldX * k, height / 2 - targetWorldY * k)
-      .scale(k);
-
-    d3.select(graphCanvas).transition().duration(500).call(zoomBehavior.transform, t);
+    d3.select(graphCanvas)
+      .transition()
+      .duration(duration)
+      .ease(d3.easeCubicOut)
+      .call(zoomBehavior.transform, targetTransform);
   }
 
+  /**
+   * F05: Centers camera on the entire graph's center of mass in 3D.
+   */
+  function centerCamera() {
+    const visibleNodes = currentGraph.nodes.filter(n => n.x !== undefined && n.y !== undefined);
+    if (visibleNodes.length === 0) {
+      const t = d3.zoomIdentity.translate(0, 0).scale(1.0);
+      d3.select(graphCanvas).transition().duration(600).ease(d3.easeCubicOut).call(zoomBehavior.transform, t);
+      return;
+    }
+    focusCluster(visibleNodes, 650);
+  }
+
+
+
   function updateZoomIndicator() {
-    const pct = Math.round(state.zoomTransform.k * 100);
-    document.getElementById('zoom-indicator').textContent = `${pct}%`;
+    const indicator = document.getElementById('zoom-indicator');
+    if (indicator) {
+      const pct = Math.round(state.zoomTransform.k * 100);
+      indicator.textContent = `${pct}%`;
+    }
   }
 
   // --- HUD Updates ---
   function updateHUDStats(stats) {
-    document.getElementById('stat-nodes').textContent = stats.totalFiles;
-    document.getElementById('stat-links').textContent = stats.linksCount;
-    document.getElementById('stat-loc').textContent = stats.totalLoc.toLocaleString();
-    document.getElementById('stat-clusters').textContent = stats.clustersCount;
-    document.getElementById('hud-cert-text').textContent = stats.certStatus;
-    document.getElementById('hud-branch-tag').textContent = `${state.currentBranch.toUpperCase()} BRANCH`;
+    const statNodes = document.getElementById('stat-nodes');
+    if (statNodes) statNodes.textContent = stats.totalFiles;
+    const statLinks = document.getElementById('stat-links');
+    if (statLinks) statLinks.textContent = stats.linksCount;
+    const statLoc = document.getElementById('stat-loc');
+    if (statLoc) statLoc.textContent = stats.totalLoc.toLocaleString();
+    const statClusters = document.getElementById('stat-clusters');
+    if (statClusters) statClusters.textContent = stats.clustersCount;
+    const hudCertText = document.getElementById('hud-cert-text');
+    if (hudCertText) hudCertText.textContent = stats.certStatus;
+    const hudBranchTag = document.getElementById('hud-branch-tag');
+    if (hudBranchTag) hudBranchTag.textContent = `${state.currentBranch.toUpperCase()} BRANCH`;
   }
 
   function updateCategoryChips(clusters) {
+    if (!categoryChipsContainer) return;
     categoryChipsContainer.innerHTML = '';
     clusters.forEach(c => {
       const chip = document.createElement('div');
@@ -1236,46 +1860,48 @@
     const comp = graphData.comparison;
     if (!comp) return;
 
-    // Metrics table
     const tbody = document.getElementById('compare-metrics-tbody');
-    tbody.innerHTML = '';
-    comp.metrics.forEach(m => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${m.category}</td>
-        <td>${m.python}</td>
-        <td>${m.ocaml}</td>
-        <td>${m.winner === 'ocaml' ? '✓ Pure Type Invariants' : 'Standard'}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    if (tbody) {
+      tbody.innerHTML = '';
+      comp.metrics.forEach(m => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${m.category}</td>
+          <td>${m.python}</td>
+          <td>${m.ocaml}</td>
+          <td>${m.winner === 'ocaml' ? '✓ Pure Type Invariants' : 'Standard'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-    // Mappings grid
     const grid = document.getElementById('compare-mappings-grid');
-    grid.innerHTML = '';
-    comp.moduleMappings.forEach(map => {
-      const card = document.createElement('div');
-      card.className = 'mapping-card';
-      card.innerHTML = `
-        <div class="mapping-paths">
-          <span class="mapping-py">${map.pyFile}</span>
-          <span class="mapping-arrow">➔</span>
-          <span class="mapping-ocaml">${map.ocamlFile}</span>
-        </div>
-        <div class="mapping-desc">${map.description}</div>
-      `;
-      grid.appendChild(card);
-    });
+    if (grid) {
+      grid.innerHTML = '';
+      comp.moduleMappings.forEach(map => {
+        const card = document.createElement('div');
+        card.className = 'mapping-card';
+        card.innerHTML = `
+          <div class="mapping-paths">
+            <span class="mapping-py">${map.pyFile}</span>
+            <span class="mapping-arrow">➔</span>
+            <span class="mapping-ocaml">${map.ocamlFile}</span>
+          </div>
+          <div class="mapping-desc">${map.description}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
 
-    closeCompareBtn.addEventListener('click', hideComparisonModal);
+    if (closeCompareBtn) closeCompareBtn.addEventListener('click', hideComparisonModal);
   }
 
   function showComparisonModal() {
-    compareModal.classList.remove('hidden');
+    if (compareModal) compareModal.classList.remove('hidden');
   }
 
   function hideComparisonModal() {
-    compareModal.classList.add('hidden');
+    if (compareModal) compareModal.classList.add('hidden');
   }
 
   // --- Utilities ---
@@ -1297,6 +1923,31 @@
   function getBasename(path) {
     const parts = path.split('/');
     return parts[parts.length - 1];
+  }
+
+  // --- Synchronization with Global Scope ---
+  function syncWindowExports() {
+    window.state = state;
+    window.currentGraph = currentGraph;
+    window.graphNodes = currentGraph.nodes;
+    window.simulation = simulation;
+    window.zoomBehavior = zoomBehavior;
+    window.computeNodeZ = computeNodeZ;
+    window.project3D = project3D;
+    window.projectNode = project3D;
+    window.unproject3D = unproject3D;
+    window.findNodeAt = findNodeAt;
+    window.getNodeAtPosition = getNodeAtPosition;
+    window.findClosestNode = findClosestNode;
+    window.panToNode = panToNode;
+    window.centerCamera = centerCamera;
+    window.focusCluster = focusCluster;
+    window.loadBranch = loadBranch;
+    window.selectNode = selectNode;
+    window.THEMES = THEMES;
+    window.setTheme = setTheme;
+    window.showComparisonModal = showComparisonModal;
+    window.hideComparisonModal = hideComparisonModal;
   }
 
   // Bootstrap when DOM is ready
