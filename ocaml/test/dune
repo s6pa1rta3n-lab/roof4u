@@ -1,0 +1,4 @@
+(test
+ (name test_verif)
+ (libraries roof_verif str)
+ (modules test_verif))
