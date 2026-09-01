@@ -1,0 +1,11 @@
+playwright
+pydantic
+pydantic-ai
+langchain
+langchain-google-genai
+google-genai
+python-dotenv
+pandas
+sqlalchemy
+requests
+beautifulsoup4
