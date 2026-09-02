@@ -192,6 +192,231 @@ let fallback_tax_records_for_neighborhood (n : string) : property_tax_record lis
         current_sales_date = Some "2018-04-12";
       };
     ]
+  else if String.starts_with ~prefix:"rich" clean || String.starts_with ~prefix:"pres" clean then
+    [
+      {
+        parcel_number = "0980003";
+        property_location = "3645 WASHINGTON ST";
+        closed_roll_year = "2023";
+        assessed_land_value = 2900000.0;
+        assessed_improvement_value = 2300000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 5200000.0;
+        improvement_to_land_ratio = 0.7931;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-1";
+        use_code = Some "SRES";
+        use_definition = Some "Single Family Residence";
+        year_built = Some 1915;
+        number_of_units = Some 1;
+        number_of_stories = Some 3;
+        number_of_bedrooms = Some 6;
+        number_of_bathrooms = Some 5;
+        number_of_rooms = Some 12;
+        assessor_neighborhood = Some "Richmond";
+        supervisor_district = Some "2";
+        current_sales_date = Some "2019-03-15";
+      };
+      {
+        parcel_number = "1435012";
+        property_location = "422 14TH AVE";
+        closed_roll_year = "2023";
+        assessed_land_value = 1350000.0;
+        assessed_improvement_value = 1100000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 2450000.0;
+        improvement_to_land_ratio = 0.8148;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-2";
+        use_code = Some "MRES";
+        use_definition = Some "Multi-Family 2-4 Units";
+        year_built = Some 1924;
+        number_of_units = Some 2;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 4;
+        number_of_bathrooms = Some 3;
+        number_of_rooms = Some 8;
+        assessor_neighborhood = Some "Richmond";
+        supervisor_district = Some "1";
+        current_sales_date = Some "2018-11-20";
+      };
+      {
+        parcel_number = "1340019";
+        property_location = "250 LAKE ST";
+        closed_roll_year = "2023";
+        assessed_land_value = 2000000.0;
+        assessed_improvement_value = 1650000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 3650000.0;
+        improvement_to_land_ratio = 0.8250;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-1";
+        use_code = Some "SRES";
+        use_definition = Some "Single Family Residence";
+        year_built = Some 1905;
+        number_of_units = Some 1;
+        number_of_stories = Some 3;
+        number_of_bedrooms = Some 5;
+        number_of_bathrooms = Some 4;
+        number_of_rooms = Some 10;
+        assessor_neighborhood = Some "Richmond";
+        supervisor_district = Some "1";
+        current_sales_date = Some "2016-06-10";
+      };
+    ]
+  else if String.starts_with ~prefix:"sun" clean then
+    [
+      {
+        parcel_number = "1820015";
+        property_location = "1420 20TH AVE";
+        closed_roll_year = "2023";
+        assessed_land_value = 950000.0;
+        assessed_improvement_value = 700000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 1650000.0;
+        improvement_to_land_ratio = 0.7368;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-1";
+        use_code = Some "SRES";
+        use_definition = Some "Single Family Residence";
+        year_built = Some 1928;
+        number_of_units = Some 1;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 3;
+        number_of_bathrooms = Some 2;
+        number_of_rooms = Some 7;
+        assessor_neighborhood = Some "Sunset";
+        supervisor_district = Some "4";
+        current_sales_date = Some "2019-07-22";
+      };
+      {
+        parcel_number = "2015022";
+        property_location = "1845 34TH AVE";
+        closed_roll_year = "2023";
+        assessed_land_value = 880000.0;
+        assessed_improvement_value = 600000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 1480000.0;
+        improvement_to_land_ratio = 0.6818;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-1";
+        use_code = Some "SRES";
+        use_definition = Some "Single Family Residence";
+        year_built = Some 1936;
+        number_of_units = Some 1;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 3;
+        number_of_bathrooms = Some 2;
+        number_of_rooms = Some 6;
+        assessor_neighborhood = Some "Sunset";
+        supervisor_district = Some "4";
+        current_sales_date = Some "2020-02-14";
+      };
+      {
+        parcel_number = "2140008";
+        property_location = "2190 44TH AVE";
+        closed_roll_year = "2023";
+        assessed_land_value = 980000.0;
+        assessed_improvement_value = 770000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 1750000.0;
+        improvement_to_land_ratio = 0.7857;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-2";
+        use_code = Some "MRES";
+        use_definition = Some "Multi-Family 2-4 Units";
+        year_built = Some 1939;
+        number_of_units = Some 2;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 4;
+        number_of_bathrooms = Some 3;
+        number_of_rooms = Some 8;
+        assessor_neighborhood = Some "Sunset";
+        supervisor_district = Some "4";
+        current_sales_date = Some "2017-05-18";
+      };
+    ]
+  else if String.starts_with ~prefix:"exc" clean || String.starts_with ~prefix:"crock" clean || String.starts_with ~prefix:"outer miss" clean then
+    [
+      {
+        parcel_number = "5980012";
+        property_location = "120 EXCELSIOR AVE";
+        closed_roll_year = "2023";
+        assessed_land_value = 720000.0;
+        assessed_improvement_value = 530000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 1250000.0;
+        improvement_to_land_ratio = 0.7361;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-1";
+        use_code = Some "SRES";
+        use_definition = Some "Single Family Residence";
+        year_built = Some 1912;
+        number_of_units = Some 1;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 3;
+        number_of_bathrooms = Some 2;
+        number_of_rooms = Some 6;
+        assessor_neighborhood = Some "Excelsior";
+        supervisor_district = Some "11";
+        current_sales_date = Some "2019-10-04";
+      };
+      {
+        parcel_number = "6012018";
+        property_location = "45 EDINBURGH ST";
+        closed_roll_year = "2023";
+        assessed_land_value = 800000.0;
+        assessed_improvement_value = 620000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 1420000.0;
+        improvement_to_land_ratio = 0.7750;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-2";
+        use_code = Some "MRES";
+        use_definition = Some "Multi-Family 2-4 Units";
+        year_built = Some 1926;
+        number_of_units = Some 2;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 4;
+        number_of_bathrooms = Some 3;
+        number_of_rooms = Some 8;
+        assessor_neighborhood = Some "Excelsior";
+        supervisor_district = Some "11";
+        current_sales_date = Some "2018-06-12";
+      };
+      {
+        parcel_number = "6085005";
+        property_location = "310 PERSIA AVE";
+        closed_roll_year = "2023";
+        assessed_land_value = 750000.0;
+        assessed_improvement_value = 560000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 1310000.0;
+        improvement_to_land_ratio = 0.7467;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-1";
+        use_code = Some "SRES";
+        use_definition = Some "Single Family Residence";
+        year_built = Some 1918;
+        number_of_units = Some 1;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 3;
+        number_of_bathrooms = Some 2;
+        number_of_rooms = Some 6;
+        assessor_neighborhood = Some "Excelsior";
+        supervisor_district = Some "11";
+        current_sales_date = Some "2021-04-30";
+      };
+    ]
   else if String.starts_with ~prefix:"mar" clean then
     [
       {

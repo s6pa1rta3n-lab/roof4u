@@ -1,5 +1,1397 @@
 [
   {
+    "id": "af7ecce90ecb7067-6a988784",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:59Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:59Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:59Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:59Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988783",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:58Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:58Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:58Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:58Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988782",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:58Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:58Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:58Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:58Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988782",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:57Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:57Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:57Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:57Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98877e",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:53Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:53Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:53Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:53Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98877d",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:53Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:53Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:53Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:53Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98877d",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:52Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:52Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:52Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:52Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98877c",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:52Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:52Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:52Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:52Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98875d",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794109%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94109",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:20Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794109%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:20Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794109%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:20Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:20Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98875c",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:19Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:19Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:19Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:19Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98875b",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794123%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94123",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:17Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794123%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:17Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794123%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:17Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:17Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988759",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:16Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:16Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:16Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:16Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988758",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:15Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:15Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:15Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:15Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988757",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:14Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:14Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:14Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:14Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988756",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:13Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:13Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:13Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:13Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988755",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:30:11Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:30:11Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:30:11Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:30:11Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988742",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:29:53Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:29:53Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:29:53Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:29:53Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988741",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:29:53Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:29:53Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:29:53Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:29:53Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988741",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:29:52Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:29:52Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:29:52Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:29:52Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988740",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:29:52Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:29:52Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:29:52Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:29:52Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988668",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:26:16Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:26:16Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:26:16Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:26:16Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988668",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:26:15Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:26:15Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:26:15Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:26:15Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988667",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:26:15Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:26:15Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:26:15Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:26:15Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988667",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:26:14Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:26:14Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:26:14Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:26:14Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98864e",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:48Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:48Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:48Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:48Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98864c",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:45Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:45Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:45Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:45Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988649",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:43Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:43Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:43Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:43Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988647",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:41Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:41Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:41Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:41Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988645",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:39Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:39Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:39Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:39Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988643",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:36Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:36Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:36Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:36Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988640",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:34Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:34Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:34Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:34Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98863e",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:32Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:32Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:32Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:32Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98862f",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:14Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:14Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:14Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:14Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98862a",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:09Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:09Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:09Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:09Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988625",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:25:04Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:25:04Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:25:04Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:25:04Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988620",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:24:59Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:24:59Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:24:59Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:24:59Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98857f",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:22:21Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:22:21Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:22:21Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:22:21Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98857d",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:22:21Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:22:21Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:22:21Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:22:21Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98857d",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:22:20Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:22:20Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:22:20Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:22:20Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a98857c",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:22:19Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:22:19Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=15&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:22:19Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:22:19Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988549",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:21:28Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:21:28Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:21:28Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:21:28Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988548",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:21:28Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:21:28Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:21:28Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:21:28Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988548",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:21:27Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:21:27Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:21:27Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:21:27Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988547",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:21:27Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:21:27Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=10&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:21:27Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:21:27Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988524",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94115",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:20:51Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:20:51Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794115%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:20:51Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:20:51Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988523",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94112",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:20:51Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:20:51Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794112%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:20:51Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:20:51Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988523",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94118",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:20:50Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:20:50Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794118%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:20:50Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:20:50Z"
+  },
+  {
+    "id": "af7ecce90ecb7067-6a988522",
+    "fingerprint": "af7ecce90ecb7067",
+    "event": {
+      "domain": "data.sfgov.org",
+      "url": "https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc",
+      "failure_type": "DATA_INGESTION_ERROR",
+      "error_message": "DataSF SODA API unreachable or returned non-200 status",
+      "selector": null,
+      "stack_trace": null,
+      "dom_snippet": null,
+      "suggested_fix": "Apply municipal registry fallback seed dataset",
+      "lead_address": null,
+      "phase": "DISCOVERY",
+      "attempted_action": "Fetch building permits for zip 94122",
+      "exception_class": "Http_client.Http_error",
+      "retry_count": 1,
+      "timestamp": "2026-09-02T20:20:49Z"
+    },
+    "title": "[Scraping Failure] data.sfgov.org - DATA_INGESTION_ERROR: DataSF SODA API unreachable or returned non-200 status",
+    "body": "## 🚨 Automated Scraping Failure Telemetry\n\n<!-- ROO4U_TELEMETRY_START\ndomain: data.sfgov.org\nurl: https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc\nfailure_type: DATA_INGESTION_ERROR\nselector: N/A\nfingerprint: af7ecce90ecb7067\ntimestamp: 2026-09-02T20:20:49Z\nlead_address: N/A\nROO4U_TELEMETRY_END -->\n\n### 1. Incident Overview\n| Attribute | Detail |\n|---|---|\n| **Domain** | `data.sfgov.org` |\n| **Target URL** | `https://data.sfgov.org/resource/i98e-djp9.json?%24where=zipcode%3D%2794122%27%20and%20existing_units%20in%28%271.0%27%2C%20%272.0%27%2C%20%273.0%27%2C%20%274.0%27%2C%20%271%27%2C%20%272%27%2C%20%273%27%2C%20%274%27%29%20and%20description%20like%20%27%25roof%25%27&%24limit=5&%24order=filed_date%20desc` |\n| **Failure Classification** | `DATA_INGESTION_ERROR` |\n| **Failed Selector** | `N/A` |\n| **Lead Address** | `N/A` |\n| **Error Fingerprint** | `af7ecce90ecb7067` |\n| **Timestamp (UTC)** | `2026-09-02T20:20:49Z` |\n\n### 2. Error Message & Stack Trace\n**Exception**: `DataSF SODA API unreachable or returned non-200 status`\n\n```python\nNo stack trace provided.\n```\n\n### 3. DOM Context Snippet\n```html\n<!-- No DOM snippet captured -->\n```\n\n### 4. Self-Healing & Remediation Analysis\n- **Root Cause Assessment**: Automated detection indicates selector drift or municipal portal structure changes.\n- **Suggested Remediation**: Apply municipal registry fallback seed dataset\n- **Feedforward Status**: Ingested into `lessons_learned.json` and `LocalVectorStore` for active query adaptation.\n\n---\n*Reported automatically by Roo4u Self-Healing Learning Agent*\n",
+    "labels": [
+      "scraping-failure",
+      "automated-telemetry",
+      "domain:data.sfgov.org",
+      "type:data_ingestion_error"
+    ],
+    "queued_at": "2026-09-02T20:20:49Z"
+  },
+  {
     "id": "af7ecce90ecb7067-6a96aee2",
     "fingerprint": "af7ecce90ecb7067",
     "event": {

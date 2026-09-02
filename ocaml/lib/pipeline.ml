@@ -20,7 +20,7 @@ type config = {
 }
 
 let default_config = {
-  target_zips = ["94115"; "94123"; "94118"; "94109"];
+  target_zips = ["94122"; "94118"; "94112"; "94115"];
   limit_per_zip = 15;
   db_path = "leads.db";
   csv_path = "validated_leads.csv";
@@ -423,6 +423,192 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
               year = Some 2003;
               is_roof_replacement = true;
               cost = Some 39000.0;
+            }
+          ];
+        };
+      ]
+  | "94122" ->
+      [
+        {
+          address = "1420 20th Ave";
+          zip_code = "94122";
+          property_type = SingleFamily;
+          roof_type = Victorian;
+          property_type_raw = Some "Single-Family";
+          roof_type_raw = Some "Victorian";
+          estimated_value = Some 1650000.0;
+          owner_name = Some "Sunset Family Heritage Trust";
+          is_hoa = false;
+          is_rental = false;
+          apn = Some "1820-015";
+          last_roof_permit_date = Some "2004-06-01";
+          roof_age_years = Some 22.0;
+          year_built = Some 1928;
+          phone_number = Some "415-555-0721";
+          permits = [
+            {
+              permit_number = "20040510";
+              permit_type = Some "Building Permit";
+              description = "Victorian pitched tile and shingle roof replacement";
+              date_filed = Some "2004-05-10";
+              date_issued = Some "2004-06-01";
+              status = Some "COMPLETED";
+              year = Some 2004;
+              is_roof_replacement = true;
+              cost = Some 28000.0;
+            }
+          ];
+        };
+        {
+          address = "1845 34th Ave";
+          zip_code = "94122";
+          property_type = SingleFamily;
+          roof_type = Flat;
+          property_type_raw = Some "Single-Family";
+          roof_type_raw = Some "Flat";
+          estimated_value = Some 1480000.0;
+          owner_name = Some "Irving Sunset Holdings LLC";
+          is_hoa = false;
+          is_rental = false;
+          apn = Some "2015-022";
+          last_roof_permit_date = Some "2007-09-02";
+          roof_age_years = Some 19.0;
+          year_built = Some 1936;
+          phone_number = None;
+          permits = [
+            {
+              permit_number = "20070814";
+              permit_type = Some "Building Permit";
+              description = "Built-up tar and gravel flat roof replacement";
+              date_filed = Some "2007-08-14";
+              date_issued = Some "2007-09-02";
+              status = Some "COMPLETED";
+              year = Some 2007;
+              is_roof_replacement = true;
+              cost = Some 24000.0;
+            }
+          ];
+        };
+        {
+          address = "2190 44th Ave";
+          zip_code = "94122";
+          property_type = MultiUnit2To4;
+          roof_type = Flat;
+          property_type_raw = Some "Multi-Unit (2-4 Units)";
+          roof_type_raw = Some "Flat";
+          estimated_value = Some 1750000.0;
+          owner_name = Some "Judah Noriega Residential Trust";
+          is_hoa = false;
+          is_rental = false;
+          apn = Some "2140-008";
+          last_roof_permit_date = Some "2008-04-10";
+          roof_age_years = Some 18.0;
+          year_built = Some 1939;
+          phone_number = Some "415-555-0789";
+          permits = [
+            {
+              permit_number = "20080322";
+              permit_type = Some "Building Permit";
+              description = "Modified bitumen flat roofing installation";
+              date_filed = Some "2008-03-22";
+              date_issued = Some "2008-04-10";
+              status = Some "COMPLETED";
+              year = Some 2008;
+              is_roof_replacement = true;
+              cost = Some 26500.0;
+            }
+          ];
+        };
+      ]
+  | "94112" ->
+      [
+        {
+          address = "120 Excelsior Ave";
+          zip_code = "94112";
+          property_type = SingleFamily;
+          roof_type = Victorian;
+          property_type_raw = Some "Single-Family";
+          roof_type_raw = Some "Victorian";
+          estimated_value = Some 1250000.0;
+          owner_name = Some "Excelsior District Heritage Trust";
+          is_hoa = false;
+          is_rental = false;
+          apn = Some "5980-012";
+          last_roof_permit_date = Some "2001-05-05";
+          roof_age_years = Some 25.0;
+          year_built = Some 1912;
+          phone_number = Some "415-555-0812";
+          permits = [
+            {
+              permit_number = "20010418";
+              permit_type = Some "Building Permit";
+              description = "Victorian cottage roof tear-off and replacement";
+              date_filed = Some "2001-04-18";
+              date_issued = Some "2001-05-05";
+              status = Some "COMPLETED";
+              year = Some 2001;
+              is_roof_replacement = true;
+              cost = Some 22000.0;
+            }
+          ];
+        };
+        {
+          address = "45 Edinburgh St";
+          zip_code = "94112";
+          property_type = MultiUnit2To4;
+          roof_type = Flat;
+          property_type_raw = Some "Multi-Unit (2-4 Units)";
+          roof_type_raw = Some "Flat";
+          estimated_value = Some 1420000.0;
+          owner_name = Some "Mission Terrace Residential LLC";
+          is_hoa = false;
+          is_rental = false;
+          apn = Some "6012-018";
+          last_roof_permit_date = Some "2006-09-25";
+          roof_age_years = Some 20.0;
+          year_built = Some 1926;
+          phone_number = None;
+          permits = [
+            {
+              permit_number = "20060908";
+              permit_type = Some "Building Permit";
+              description = "Flat built-up tar and gravel roof restoration";
+              date_filed = Some "2006-09-08";
+              date_issued = Some "2006-09-25";
+              status = Some "COMPLETED";
+              year = Some 2006;
+              is_roof_replacement = true;
+              cost = Some 25000.0;
+            }
+          ];
+        };
+        {
+          address = "310 Persia Ave";
+          zip_code = "94112";
+          property_type = SingleFamily;
+          roof_type = Victorian;
+          property_type_raw = Some "Single-Family";
+          roof_type_raw = Some "Victorian";
+          estimated_value = Some 1310000.0;
+          owner_name = Some "Persia Real Estate Holdings";
+          is_hoa = false;
+          is_rental = false;
+          apn = Some "6085-005";
+          last_roof_permit_date = Some "2003-12-01";
+          roof_age_years = Some 23.0;
+          year_built = Some 1918;
+          phone_number = Some "415-555-0865";
+          permits = [
+            {
+              permit_number = "20031112";
+              permit_type = Some "Building Permit";
+              description = "Victorian shingle complete roof replacement";
+              date_filed = Some "2003-11-12";
+              date_issued = Some "2003-12-01";
+              status = Some "COMPLETED";
+              year = Some 2003;
+              is_roof_replacement = true;
+              cost = Some 24500.0;
             }
           ];
         };

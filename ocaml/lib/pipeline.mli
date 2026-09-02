@@ -38,6 +38,9 @@ val run_pipeline : ?config:config -> unit -> pipeline_summary
     4. Phase 4: Persists status transitions to SQLite database.
     5. Phase 5: Updates lesson store & vector store and exports qualified leads to CSV. *)
 
+val default_seed_leads_for_zip : string -> Types.raw_lead list
+(** [default_seed_leads_for_zip zip] returns authentic municipal seed leads for the specified postal code. *)
+
 val verify_single_lead_json : ?current_year:int -> string -> (Types.verified_lead, string) result
 (** [verify_single_lead_json ?current_year json_str]
     Parses a single JSON lead string, executes mathematical verification,

@@ -259,22 +259,40 @@ let run_orchestrator_tests () =
   assert_true "PUB.ORCH.4: Permits source answer present" (String.length answers.permits_source > 0);
   assert_true "PUB.ORCH.5: Tax source answer present" (String.length answers.tax_source > 0);
 
-  let acq_res = Public_records_orchestrator.acquire_neighborhood_public_records ~neighborhood:"Pacific Heights" ~limit:3 () in
-  (match acq_res with
-  | Ok verified_list ->
-      assert_true "PUB.ORCH.6: Orchestrator acquired and qualified neighborhood leads" (List.length verified_list = 3);
-      List.iter (fun (v : verified_lead) ->
-        assert_true "PUB.ORCH.7: Lead has valid SHA-256 proof (64 hex characters)" (String.length v.sha256_proof = 64);
-        assert_true "PUB.ORCH.8: Proof ID starts with PROOF-OCAML-" (String.starts_with ~prefix:"PROOF-OCAML-" v.proof_id);
-        (match v.verdict with
-        | Qualified { score; invariants_passed; _ } ->
-            assert_true "PUB.ORCH.9: Qualified lead has score >= 60.0" (score.total_score >= 60.0);
-            assert_equal_int "PUB.ORCH.10: Qualified lead passed all 4 formal invariants" 4 (List.length invariants_passed)
-        | Disqualified _ ->
-            assert_true "PUB.ORCH.9: Unexpected disqualification for valid Pacific Heights property" false)
-      ) verified_list
-  | Error err ->
-      assert_true ("PUB.ORCH.6: Orchestrator acquisition failed: " ^ err) false)
+  let target_districts = ["Pacific Heights"; "Richmond"; "Sunset"; "Excelsior"] in
+  List.iter (fun district ->
+    Printf.printf "  Testing public records acquisition for %s...\n%!" district;
+    let acq_res = Public_records_orchestrator.acquire_neighborhood_public_records ~neighborhood:district ~limit:3 () in
+    match acq_res with
+    | Ok verified_list ->
+        assert_true (Printf.sprintf "PUB.ORCH.%s.1: Acquired 3 leads for %s" district district) (List.length verified_list = 3);
+        List.iteri (fun idx (v : verified_lead) ->
+          assert_true (Printf.sprintf "PUB.ORCH.%s.%d.2: Valid SHA-256 proof (64 hex chars)" district idx) (String.length v.sha256_proof = 64);
+          let expected_proof_id = "PROOF-OCAML-" ^ (String.sub v.sha256_proof 0 16 |> String.uppercase_ascii) in
+          assert_equal_str (Printf.sprintf "PUB.ORCH.%s.%d.3: Proof ID matches first 16 chars" district idx) expected_proof_id v.proof_id;
+          match v.verdict with
+          | Qualified { score; invariants_passed; _ } ->
+              assert_true (Printf.sprintf "PUB.ORCH.%s.%d.4: Score >= 60.0 (got %.2f)" district idx score.total_score) (score.total_score >= 60.0);
+              assert_equal_int (Printf.sprintf "PUB.ORCH.%s.%d.5: Passed all 4 formal invariants" district idx) 4 (List.length invariants_passed);
+              let status_str = "QUALIFIED" in
+              let canonical =
+                Printf.sprintf "ROO4U-PROOF-V1|%s|%s|%s|%s|%s|%.2f|%s"
+                  v.lead.address
+                  v.lead.zip_code
+                  (string_of_property_type v.lead.property_type)
+                  (string_of_roof_type v.lead.roof_type)
+                  status_str
+                  score.total_score
+                  v.timestamp
+              in
+              let recomputed_sha = Crypto.sha256_string canonical in
+              assert_equal_str (Printf.sprintf "PUB.ORCH.%s.%d.6: Cryptographic proof matches canonical SHA-256" district idx) recomputed_sha v.sha256_proof
+          | Disqualified _ ->
+              assert_true (Printf.sprintf "PUB.ORCH.%s.%d.4: Unexpected disqualification for valid district property" district idx) false
+        ) verified_list
+    | Error err ->
+        assert_true (Printf.sprintf "PUB.ORCH.%s.1: Orchestrator acquisition failed: %s" district err) false
+  ) target_districts
 
 let () =
   Printf.printf "\n======================================================================\n";

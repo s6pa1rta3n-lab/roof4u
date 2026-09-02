@@ -242,7 +242,7 @@ let () =
      String.starts_with ~prefix:"'+@EVIL" (List.nth sanitized_row 5));
 
   (* -------------------------------------------------------------------------- *)
-  (* SCENARIO 5: Complete Ingestion to CSV Parity Verification                  *)
+  (* SCENARIO 5: Complete Ingestion to CSV Parity Verification across 4 SF Zips *)
   (* -------------------------------------------------------------------------- *)
   Printf.printf "\n--- Scenario 5: Complete Ingestion to CSV Parity Verification ---\n";
   let temp_e2e_db = Filename.temp_file "e2e_leads_" ".db" in
@@ -251,7 +251,7 @@ let () =
   let temp_e2e_vec = Filename.temp_file "e2e_vector_" ".sqlite" in
 
   let cfg = {
-    target_zips = ["94115"; "94123"; "94118"; "94109"];
+    target_zips = ["94122"; "94118"; "94112"; "94115"];
     limit_per_zip = 5;
     db_path = temp_e2e_db;
     csv_path = temp_e2e_csv;
@@ -293,11 +293,55 @@ let () =
   assert_true "T4.S5.7: CSV row count equals exported lead count"
     (data_row_count = summary.leads_exported);
 
-  (* Cleanup temporary test files *)
   (try Sys.remove temp_e2e_db with _ -> ());
   (try Sys.remove temp_e2e_csv with _ -> ());
   (try Sys.remove temp_e2e_lessons with _ -> ());
   (try Sys.remove temp_e2e_vec with _ -> ());
+
+  (* -------------------------------------------------------------------------- *)
+  (* SCENARIO 6: Four Target Neighborhoods Cryptographic Proof Verification    *)
+  (* -------------------------------------------------------------------------- *)
+  Printf.printf "\n--- Scenario 6: Four Target Neighborhoods Cryptographic Proofs ---\n";
+  let sunset_lead = List.hd (Pipeline.default_seed_leads_for_zip "94122") in
+  let richmond_lead = List.hd (Pipeline.default_seed_leads_for_zip "94118") in
+  let excelsior_lead = List.hd (Pipeline.default_seed_leads_for_zip "94112") in
+  let pac_heights_lead_s6 = List.hd (Pipeline.default_seed_leads_for_zip "94115") in
+
+  let verify_and_check_district dist_name (lead : Types.raw_lead) expected_min_score =
+    let verif = Scorer.verify_lead lead in
+    assert_true (Printf.sprintf "T4.S6.%s.1: %s property qualifies under INV1-4" dist_name dist_name)
+      (match verif.verdict with Qualified _ -> true | Disqualified _ -> false);
+    let score =
+      match verif.verdict with
+      | Qualified { score; _ } -> score.total_score
+      | Disqualified { partial_score; _ } -> partial_score
+    in
+    assert_true (Printf.sprintf "T4.S6.%s.2: %s score exceeds %.1f (got %.2f)" dist_name dist_name expected_min_score score)
+      (score >= expected_min_score);
+    assert_true (Printf.sprintf "T4.S6.%s.3: %s SHA-256 proof is 64 hex characters" dist_name dist_name)
+      (String.length verif.sha256_proof = 64);
+    let expected_pid = "PROOF-OCAML-" ^ (String.sub verif.sha256_proof 0 16 |> String.uppercase_ascii) in
+    assert_true (Printf.sprintf "T4.S6.%s.4: %s proof ID matches prefix format" dist_name dist_name)
+      (verif.proof_id = expected_pid);
+    let canonical =
+      Printf.sprintf "ROO4U-PROOF-V1|%s|%s|%s|%s|%s|%.2f|%s"
+        lead.address
+        lead.zip_code
+        (string_of_property_type lead.property_type)
+        (string_of_roof_type lead.roof_type)
+        "QUALIFIED"
+        score
+        verif.timestamp
+    in
+    let recomputed = Crypto.sha256_string canonical in
+    assert_true (Printf.sprintf "T4.S6.%s.5: %s proof matches canonical SHA-256 hash" dist_name dist_name)
+      (verif.sha256_proof = recomputed)
+  in
+
+  verify_and_check_district "Sunset" sunset_lead 70.0;
+  verify_and_check_district "Richmond" richmond_lead 85.0;
+  verify_and_check_district "Excelsior" excelsior_lead 70.0;
+  verify_and_check_district "Pacific Heights" pac_heights_lead_s6 90.0;
 
   Printf.printf "\n=================================================================\n";
   Printf.printf "=== All Tier 4 Real-World Application Scenarios Completed: %d/%d ===\n"

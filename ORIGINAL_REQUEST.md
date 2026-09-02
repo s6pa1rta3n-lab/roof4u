@@ -62,3 +62,34 @@ Develop the solutions using completely custom logic under strict red team standa
 ### Security Remediation Verification
 - [ ] A formal audit report (`security_audit.md`) is generated documenting the identified vulnerabilities, attack vectors, and the specific OCaml patches applied.
 - [ ] All patched vulnerabilities are verified as closed via an independent programmatic test or agent-as-judge evaluation.
+
+## Follow-up — 2026-09-02T16:11:39-04:00
+
+# Teamwork Project Prompt — Launched
+
+> Status: Launched
+> Goal: Craft prompt → get user approval → delegate to teamwork_preview
+> Requested team: Full team
+
+Execute and validate the Roo4u end-to-end lead generation pipeline across four target San Francisco neighborhoods: Sunset, Richmond, Excelsior, and Pacific Heights.
+
+Working directory: ~/Desktop/activeProjects/Roo4u
+Integrity mode: development (strict red team standards)
+
+## Requirements
+
+### R1. Automated Pipeline Verification
+Extend the OCaml automated test suite to programmatically verify the lead generation pipeline for the four target districts. The tests must execute the end-to-end workflow and assert successful lead qualification and cryptographic proof generation.
+
+### R2. Mandatory Build Process Documentation
+Document every blocker, unexpected error, failed approach, or debugging cycle encountered during the testing and implementation process as a GitHub sub-issue linked to parent issue #30 on `s6pa1rta3n-lab/roof4u` in real-time.
+
+## Acceptance Criteria
+
+### Automated Tests
+- [ ] `dune runtest` completes successfully with the new district test cases fully integrated.
+- [ ] No cryptographic proofs or invariants are mocked or bypassed in the test suite.
+
+### Process Integrity
+- [ ] Any encountered failures or blockers are documented as sub-issues on issue #30 using the `issue_write` and `sub_issue_write` MCP tools.
+

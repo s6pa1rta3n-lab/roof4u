@@ -84,6 +84,8 @@ let parse_homeowner_address_record (j : Json.t) : (homeowner_address_record, str
       | n when String.starts_with ~prefix:"mar" n || String.starts_with ~prefix:"cow" n -> "94123"
       | n when String.starts_with ~prefix:"pres" n || String.starts_with ~prefix:"rich" n -> "94118"
       | n when String.starts_with ~prefix:"russ" n || String.starts_with ~prefix:"nob" n -> "94109"
+      | n when String.starts_with ~prefix:"sun" n || String.starts_with ~prefix:"inner sun" n || String.starts_with ~prefix:"outer sun" n || String.starts_with ~prefix:"park" n -> "94122"
+      | n when String.starts_with ~prefix:"exc" n || String.starts_with ~prefix:"crock" n || String.starts_with ~prefix:"outer miss" n -> "94112"
       | _ -> "94115"
     in
     Ok {
@@ -154,6 +156,132 @@ let fallback_addresses_for_neighborhood (n : string) : homeowner_address_record 
         property_class_definition = Some "Multi-Unit (2-4 Units)";
         is_residential = true;
         units_count = 3;
+      };
+    ]
+  else if String.starts_with ~prefix:"rich" clean || String.starts_with ~prefix:"pres" clean then
+    [
+      {
+        parcel_number = "0980003";
+        property_location = "3645 WASHINGTON ST";
+        street_number = "3645";
+        street_name = "Washington St";
+        unit_number = None;
+        zip_code = "94118";
+        neighborhood = "Richmond";
+        property_class_code = Some "D";
+        property_class_definition = Some "Single Family Residence";
+        is_residential = true;
+        units_count = 1;
+      };
+      {
+        parcel_number = "1435012";
+        property_location = "422 14TH AVE";
+        street_number = "422";
+        street_name = "14th Ave";
+        unit_number = None;
+        zip_code = "94118";
+        neighborhood = "Richmond";
+        property_class_code = Some "D";
+        property_class_definition = Some "Multi-Unit (2-4 Units)";
+        is_residential = true;
+        units_count = 2;
+      };
+      {
+        parcel_number = "1340019";
+        property_location = "250 LAKE ST";
+        street_number = "250";
+        street_name = "Lake St";
+        unit_number = None;
+        zip_code = "94118";
+        neighborhood = "Richmond";
+        property_class_code = Some "D";
+        property_class_definition = Some "Single Family Residence";
+        is_residential = true;
+        units_count = 1;
+      };
+    ]
+  else if String.starts_with ~prefix:"sun" clean then
+    [
+      {
+        parcel_number = "1820015";
+        property_location = "1420 20TH AVE";
+        street_number = "1420";
+        street_name = "20th Ave";
+        unit_number = None;
+        zip_code = "94122";
+        neighborhood = "Sunset";
+        property_class_code = Some "D";
+        property_class_definition = Some "Single Family Residence";
+        is_residential = true;
+        units_count = 1;
+      };
+      {
+        parcel_number = "2015022";
+        property_location = "1845 34TH AVE";
+        street_number = "1845";
+        street_name = "34th Ave";
+        unit_number = None;
+        zip_code = "94122";
+        neighborhood = "Sunset";
+        property_class_code = Some "D";
+        property_class_definition = Some "Single Family Residence";
+        is_residential = true;
+        units_count = 1;
+      };
+      {
+        parcel_number = "2140008";
+        property_location = "2190 44TH AVE";
+        street_number = "2190";
+        street_name = "44th Ave";
+        unit_number = None;
+        zip_code = "94122";
+        neighborhood = "Sunset";
+        property_class_code = Some "D";
+        property_class_definition = Some "Multi-Unit (2-4 Units)";
+        is_residential = true;
+        units_count = 2;
+      };
+    ]
+  else if String.starts_with ~prefix:"exc" clean || String.starts_with ~prefix:"crock" clean || String.starts_with ~prefix:"outer miss" clean then
+    [
+      {
+        parcel_number = "5980012";
+        property_location = "120 EXCELSIOR AVE";
+        street_number = "120";
+        street_name = "Excelsior Ave";
+        unit_number = None;
+        zip_code = "94112";
+        neighborhood = "Excelsior";
+        property_class_code = Some "D";
+        property_class_definition = Some "Single Family Residence";
+        is_residential = true;
+        units_count = 1;
+      };
+      {
+        parcel_number = "6012018";
+        property_location = "45 EDINBURGH ST";
+        street_number = "45";
+        street_name = "Edinburgh St";
+        unit_number = None;
+        zip_code = "94112";
+        neighborhood = "Excelsior";
+        property_class_code = Some "D";
+        property_class_definition = Some "Multi-Unit (2-4 Units)";
+        is_residential = true;
+        units_count = 2;
+      };
+      {
+        parcel_number = "6085005";
+        property_location = "310 PERSIA AVE";
+        street_number = "310";
+        street_name = "Persia Ave";
+        unit_number = None;
+        zip_code = "94112";
+        neighborhood = "Excelsior";
+        property_class_code = Some "D";
+        property_class_definition = Some "Single Family Residence";
+        is_residential = true;
+        units_count = 1;
       };
     ]
   else if String.starts_with ~prefix:"mar" clean then

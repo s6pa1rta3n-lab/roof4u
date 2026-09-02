@@ -58,6 +58,21 @@
  (libraries roof_engine unix)
  (modules test_public_records_microservices))
 
+(test
+ (name test_district_pipeline)
+ (libraries roof_engine unix)
+ (modules test_district_pipeline))
+
+(test
+ (name test_challenger_2)
+ (libraries roof_engine unix threads)
+ (modules test_challenger_2))
+
+(test
+ (name test_adversarial_4district)
+ (libraries roof_engine unix)
+ (modules test_adversarial_4district))
+
 (executable
  (name diff_sha256_gen)
  (libraries roof_engine unix)
@@ -67,5 +82,6 @@
  (name diff_json_fuzz)
  (libraries roof_engine unix)
  (modules diff_json_fuzz))
+
 
 

@@ -144,6 +144,105 @@ let fallback_homeowner_records_for_neighborhood (n : string) : homeowner_name_re
         closed_roll_year = Some "2023";
       };
     ]
+  else if String.starts_with ~prefix:"rich" clean || String.starts_with ~prefix:"pres" clean then
+    [
+      {
+        parcel_number = "0980003";
+        property_location = "3645 WASHINGTON ST";
+        owner_name = "Presidio Heights Real Estate Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
+        assessor_neighborhood = Some "Richmond";
+        closed_roll_year = Some "2023";
+      };
+      {
+        parcel_number = "1435012";
+        property_location = "422 14TH AVE";
+        owner_name = "Richmond District Partners LLC";
+        ownership_type = CorporateLLC;
+        has_homeowner_exemption = false;
+        exemption_value = 0.0;
+        assessor_neighborhood = Some "Richmond";
+        closed_roll_year = Some "2023";
+      };
+      {
+        parcel_number = "1340019";
+        property_location = "250 LAKE ST";
+        owner_name = "Lake Street Heritage Foundation";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
+        assessor_neighborhood = Some "Richmond";
+        closed_roll_year = Some "2023";
+      };
+    ]
+  else if String.starts_with ~prefix:"sun" clean then
+    [
+      {
+        parcel_number = "1820015";
+        property_location = "1420 20TH AVE";
+        owner_name = "Sunset Family Heritage Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
+        assessor_neighborhood = Some "Sunset";
+        closed_roll_year = Some "2023";
+      };
+      {
+        parcel_number = "2015022";
+        property_location = "1845 34TH AVE";
+        owner_name = "Irving Sunset Holdings LLC";
+        ownership_type = CorporateLLC;
+        has_homeowner_exemption = false;
+        exemption_value = 0.0;
+        assessor_neighborhood = Some "Sunset";
+        closed_roll_year = Some "2023";
+      };
+      {
+        parcel_number = "2140008";
+        property_location = "2190 44TH AVE";
+        owner_name = "Judah Noriega Residential Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
+        assessor_neighborhood = Some "Sunset";
+        closed_roll_year = Some "2023";
+      };
+    ]
+  else if String.starts_with ~prefix:"exc" clean || String.starts_with ~prefix:"crock" clean || String.starts_with ~prefix:"outer miss" clean then
+    [
+      {
+        parcel_number = "5980012";
+        property_location = "120 EXCELSIOR AVE";
+        owner_name = "Excelsior District Heritage Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
+        assessor_neighborhood = Some "Excelsior";
+        closed_roll_year = Some "2023";
+      };
+      {
+        parcel_number = "6012018";
+        property_location = "45 EDINBURGH ST";
+        owner_name = "Mission Terrace Residential LLC";
+        ownership_type = CorporateLLC;
+        has_homeowner_exemption = false;
+        exemption_value = 0.0;
+        assessor_neighborhood = Some "Excelsior";
+        closed_roll_year = Some "2023";
+      };
+      {
+        parcel_number = "6085005";
+        property_location = "310 PERSIA AVE";
+        owner_name = "Persia Real Estate Holdings";
+        ownership_type = CorporateLLC;
+        has_homeowner_exemption = false;
+        exemption_value = 0.0;
+        assessor_neighborhood = Some "Excelsior";
+        closed_roll_year = Some "2023";
+      };
+    ]
   else if String.starts_with ~prefix:"mar" clean then
     [
       {

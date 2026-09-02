@@ -55,7 +55,7 @@ let usage ?(exit_code = 1) () =
   print_endline "";
   print_endline "Pipeline Execution:";
   print_endline "  --run                   Execute the end-to-end live pipeline";
-  print_endline "  --zips <string>         Target zip codes (comma-separated, default: \"94115,94123,94118,94109\")";
+  print_endline "  --zips <string>         Target zip codes (comma-separated, default: \"94122,94118,94112,94115\")";
   print_endline "  --limit <int>           Record limit per zip code (default: 15)";
   print_endline "  --csv <path>            Output CSV file path (default: \"validated_leads.csv\")";
   print_endline "  --db <path>             SQLite database file path (default: \"leads.db\")";
@@ -153,7 +153,7 @@ let main () =
   if args = [] then usage ~exit_code:0 ()
   else
     let run_mode = ref false in
-    let zips = ref ["94115"; "94123"; "94118"; "94109"] in
+    let zips = ref ["94122"; "94118"; "94112"; "94115"] in
     let limit = ref 15 in
     let csv_path = ref "validated_leads.csv" in
     let db_path = ref "leads.db" in

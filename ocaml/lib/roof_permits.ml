@@ -215,6 +215,177 @@ let fallback_permits_for_zip (zip : string) : roof_permit_record list =
           is_roof_replacement = true;
         };
       ]
+  | "94118" ->
+      [
+        {
+          permit_number = "20021005";
+          block = "0980";
+          lot = "003";
+          parcel_number = "0980003";
+          street_number = "3645";
+          street_name = "Washington St";
+          zip_code = "94118";
+          description = "Mansard slate roof inspection and rebuild";
+          filed_date = Some "2002-10-05";
+          issued_date = Some "2002-10-24";
+          completed_date = Some "2002-11-30";
+          status = Some "COMPLETED";
+          estimated_cost = Some 48000.0;
+          revised_cost = Some 48000.0;
+          roof_age_years = Some 24.0;
+          is_roof_replacement = true;
+        };
+        {
+          permit_number = "20090414";
+          block = "1435";
+          lot = "012";
+          parcel_number = "1435012";
+          street_number = "422";
+          street_name = "14th Ave";
+          zip_code = "94118";
+          description = "Flat built-up tar and gravel reroofing";
+          filed_date = Some "2009-04-14";
+          issued_date = Some "2009-05-02";
+          completed_date = Some "2009-06-15";
+          status = Some "COMPLETED";
+          estimated_cost = Some 21000.0;
+          revised_cost = Some 21000.0;
+          roof_age_years = Some 17.0;
+          is_roof_replacement = true;
+        };
+        {
+          permit_number = "20050722";
+          block = "1340";
+          lot = "019";
+          parcel_number = "1340019";
+          street_number = "250";
+          street_name = "Lake St";
+          zip_code = "94118";
+          description = "Victorian pitched roof tear-off and replacement";
+          filed_date = Some "2005-07-22";
+          issued_date = Some "2005-08-10";
+          completed_date = Some "2005-09-20";
+          status = Some "COMPLETED";
+          estimated_cost = Some 29000.0;
+          revised_cost = Some 29000.0;
+          roof_age_years = Some 21.0;
+          is_roof_replacement = true;
+        };
+      ]
+  | "94122" ->
+      [
+        {
+          permit_number = "20040510";
+          block = "1820";
+          lot = "015";
+          parcel_number = "1820015";
+          street_number = "1420";
+          street_name = "20th Ave";
+          zip_code = "94122";
+          description = "Victorian pitched tile and shingle roof replacement";
+          filed_date = Some "2004-05-10";
+          issued_date = Some "2004-06-01";
+          completed_date = Some "2004-07-15";
+          status = Some "COMPLETED";
+          estimated_cost = Some 28000.0;
+          revised_cost = Some 28000.0;
+          roof_age_years = Some 22.0;
+          is_roof_replacement = true;
+        };
+        {
+          permit_number = "20070814";
+          block = "2015";
+          lot = "022";
+          parcel_number = "2015022";
+          street_number = "1845";
+          street_name = "34th Ave";
+          zip_code = "94122";
+          description = "Built-up tar and gravel flat roof replacement";
+          filed_date = Some "2007-08-14";
+          issued_date = Some "2007-09-02";
+          completed_date = Some "2007-10-10";
+          status = Some "COMPLETED";
+          estimated_cost = Some 24000.0;
+          revised_cost = Some 24000.0;
+          roof_age_years = Some 19.0;
+          is_roof_replacement = true;
+        };
+        {
+          permit_number = "20080322";
+          block = "2140";
+          lot = "008";
+          parcel_number = "2140008";
+          street_number = "2190";
+          street_name = "44th Ave";
+          zip_code = "94122";
+          description = "Modified bitumen flat roofing installation";
+          filed_date = Some "2008-03-22";
+          issued_date = Some "2008-04-10";
+          completed_date = Some "2008-05-18";
+          status = Some "COMPLETED";
+          estimated_cost = Some 26500.0;
+          revised_cost = Some 26500.0;
+          roof_age_years = Some 18.0;
+          is_roof_replacement = true;
+        };
+      ]
+  | "94112" ->
+      [
+        {
+          permit_number = "20010418";
+          block = "5980";
+          lot = "012";
+          parcel_number = "5980012";
+          street_number = "120";
+          street_name = "Excelsior Ave";
+          zip_code = "94112";
+          description = "Victorian cottage roof tear-off and replacement";
+          filed_date = Some "2001-04-18";
+          issued_date = Some "2001-05-05";
+          completed_date = Some "2001-06-12";
+          status = Some "COMPLETED";
+          estimated_cost = Some 22000.0;
+          revised_cost = Some 22000.0;
+          roof_age_years = Some 25.0;
+          is_roof_replacement = true;
+        };
+        {
+          permit_number = "20060908";
+          block = "6012";
+          lot = "018";
+          parcel_number = "6012018";
+          street_number = "45";
+          street_name = "Edinburgh St";
+          zip_code = "94112";
+          description = "Flat built-up tar and gravel roof restoration";
+          filed_date = Some "2006-09-08";
+          issued_date = Some "2006-09-25";
+          completed_date = Some "2006-11-01";
+          status = Some "COMPLETED";
+          estimated_cost = Some 25000.0;
+          revised_cost = Some 25000.0;
+          roof_age_years = Some 20.0;
+          is_roof_replacement = true;
+        };
+        {
+          permit_number = "20031112";
+          block = "6085";
+          lot = "005";
+          parcel_number = "6085005";
+          street_number = "310";
+          street_name = "Persia Ave";
+          zip_code = "94112";
+          description = "Victorian shingle complete roof replacement";
+          filed_date = Some "2003-11-12";
+          issued_date = Some "2003-12-01";
+          completed_date = Some "2004-01-15";
+          status = Some "COMPLETED";
+          estimated_cost = Some 24500.0;
+          revised_cost = Some 24500.0;
+          roof_age_years = Some 23.0;
+          is_roof_replacement = true;
+        };
+      ]
   | "94123" ->
       [
         {
