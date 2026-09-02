@@ -1,12 +1,11 @@
 /**
- * app.js - Interactive Constellation 3D Depth Rendering Engine
- * Roo4u Architecture Visualizer for GitHub Pages
+ * Interactive Constellation 3D Depth Rendering Engine.
+ * Roo4u Architecture Visualizer for GitHub Pages.
  */
 
 (function () {
   'use strict';
 
-  // --- Theme Configurations (M3) ---
   const THEMES = {
     'event-horizon': {
       name: 'Event Horizon',
@@ -60,6 +59,7 @@
     selectedNode: null,
     hoveredNode: null,
     isolatedNodeId: null,
+    userHasPannedOrZoomed: false,
     zoomTransform: d3.zoomIdentity,
     nodes: [],
     physics: {
@@ -104,39 +104,30 @@
   const compareModal = document.getElementById('compare-modal');
   const closeCompareBtn = document.getElementById('close-compare-btn');
 
-  // --- D3 Zoom Setup ---
   const zoomBehavior = d3.zoom()
     .scaleExtent([0.15, 4.0])
     .on('zoom', (event) => {
       state.zoomTransform = event.transform;
+      if (event.sourceEvent) {
+        state.userHasPannedOrZoomed = true;
+      }
       updateZoomIndicator();
     });
 
   d3.select(graphCanvas).call(zoomBehavior);
 
-  // =========================================================================
-  // 3D DEPTH ENGINE CORE MATHEMATICAL FORMULAS (F01, F02, F05, F07)
-  // =========================================================================
-
   /**
-   * F01: Computes deterministic continuous Z-coordinate in [-100.0, 100.0].
-   * Foreground nodes (Layer 1, High Importance) have z < 0.
-   * Background nodes (Layer 6, Low Importance) have z > 0.
-   * Deterministic 32-bit polynomial rolling hash on ID breaks planar stratification.
-   * @param {Object} node - Node object containing layer, importance, and id.
-   * @returns {number} z depth coordinate in [-100, 100].
+   * Computes deterministic continuous Z-coordinate in range [-100.0, 100.0].
+   *
+   * @param {Object} node Node object containing layer, importance, and id.
+   * @returns {number} Z-depth coordinate in range [-100.0, 100.0].
    */
   function computeNodeZ(node) {
     const layer = Number(node.layer) || 3;
     const importance = Number(node.importance) || 3;
-
-    // Layer component: Layer 1 is -50, Layer 6 is +50
     const layerOffset = (layer - 3.5) * 20.0;
-
-    // Importance component: Importance 5 is -30, Importance 1 is +30
     const importanceOffset = (3.0 - importance) * 15.0;
 
-    // Deterministic 32-bit polynomial rolling hash on string ID
     let h = 0;
     const idStr = String(node.id || '');
     for (let i = 0; i < idStr.length; i++) {
@@ -149,22 +140,21 @@
   }
 
   /**
-   * F02 & F05: Projects 3D world coordinate (x, y, z) into 2D canvas screen space
-   * with focal perspective scaling and non-linear parallax displacement.
-   * @param {number} x - World X
-   * @param {number} y - World Y
-   * @param {number} z - Depth Z [-100, 100]
-   * @param {number} width - Viewport width
-   * @param {number} height - Viewport height
-   * @param {number} panX - D3 pan transform X
-   * @param {number} panY - D3 pan transform Y
-   * @param {number} zoomScale - D3 zoom transform K
-   * @param {number} D - Focal distance (default 500)
-   * @returns {{ screenX: number, screenY: number, sz: number }}
+   * Projects 3D world coordinate (x, y, z) into 2D canvas screen space.
+   *
+   * @param {number} x World X coordinate.
+   * @param {number} y World Y coordinate.
+   * @param {number} z Depth Z coordinate in [-100, 100].
+   * @param {number} width Viewport width in pixels.
+   * @param {number} height Viewport height in pixels.
+   * @param {number} panX D3 pan transform X translation.
+   * @param {number} panY D3 pan transform Y translation.
+   * @param {number} zoomScale D3 zoom transform K scale factor.
+   * @param {number} [D=500] Focal distance constant.
+   * @returns {{ screenX: number, screenY: number, sz: number }} Projected screen coordinates and perspective scale.
    */
   function project3D(x, y, z, width, height, panX, panY, zoomScale, D = 500) {
     const nodeZ = (z !== undefined && !isNaN(z)) ? Number(z) : 0;
-    // Clamping prevents division by zero and extreme negative singularities
     const clampedZ = Math.max(-D * 0.95, Math.min(10000, nodeZ));
     const sz = D / (D + clampedZ);
     const pFactor = Math.pow(sz, 0.6);
@@ -179,18 +169,18 @@
   }
 
   /**
-   * F07: Analytical exact inverse of project3D for interactive node dragging.
-   * Recovers (worldX, worldY) from screen coordinates at given depth z with zero drift.
-   * @param {number} screenX - Cursor screen X
-   * @param {number} screenY - Cursor screen Y
-   * @param {number} z - Node depth Z
-   * @param {number} width - Viewport width
-   * @param {number} height - Viewport height
-   * @param {number} panX - D3 pan transform X
-   * @param {number} panY - D3 pan transform Y
-   * @param {number} zoomScale - D3 zoom transform K
-   * @param {number} D - Focal distance (default 500)
-   * @returns {{ worldX: number, worldY: number, x: number, y: number }}
+   * Analytical exact inverse of project3D for interactive node dragging.
+   *
+   * @param {number} screenX Cursor screen X coordinate.
+   * @param {number} screenY Cursor screen Y coordinate.
+   * @param {number} z Node depth Z coordinate.
+   * @param {number} width Viewport width in pixels.
+   * @param {number} height Viewport height in pixels.
+   * @param {number} panX D3 pan transform X translation.
+   * @param {number} panY D3 pan transform Y translation.
+   * @param {number} zoomScale D3 zoom transform K scale factor.
+   * @param {number} [D=500] Focal distance constant.
+   * @returns {{ worldX: number, worldY: number, x: number, y: number }} Recovered world space coordinates.
    */
   function unproject3D(screenX, screenY, z, width, height, panX, panY, zoomScale, D = 500) {
     const nodeZ = (z !== undefined && !isNaN(z)) ? Number(z) : 0;
@@ -208,16 +198,16 @@
   }
 
   /**
-   * F05: Solves analytical camera pan translation (tx, ty) to center target 3D point (x, y, z)
-   * exactly at viewport center (W/2, H/2) at given zoom scale k.
-   * @param {number} x - Target world X
-   * @param {number} y - Target world Y
-   * @param {number} z - Target world Z
-   * @param {number} width - Viewport width
-   * @param {number} height - Viewport height
-   * @param {number} k - Zoom scale factor
-   * @param {number} D - Focal distance (default 500)
-   * @returns {{ tx: number, ty: number }}
+   * Solves analytical camera pan translation to center target 3D point at viewport center.
+   *
+   * @param {number} x Target world X coordinate.
+   * @param {number} y Target world Y coordinate.
+   * @param {number} z Target world Z coordinate.
+   * @param {number} width Viewport width in pixels.
+   * @param {number} height Viewport height in pixels.
+   * @param {number} k Zoom scale factor.
+   * @param {number} [D=500] Focal distance constant.
+   * @returns {{ tx: number, ty: number }} Pan translation coordinates.
    */
   function getPanToCenter(x, y, z, width, height, k, D = 500) {
     const nodeZ = (z !== undefined && !isNaN(z)) ? Number(z) : 0;
@@ -232,18 +222,23 @@
   }
 
   /**
-   * F07: Depth-aware screen-space hit detection with front-to-back priority.
-   * Tests projected screen distance against dynamic perspective radius.
-   * @param {number} screenX - Cursor screen X
-   * @param {number} screenY - Cursor screen Y
-   * @param {number|null} [maxDistance=null] - Proximity search fallback threshold
-   * @returns {Object|null} Top-most hit node or null
+   * Retrieves the dynamic rendered height of the application top header.
+   *
+   * @returns {number} Header height in pixels.
    */
   function getHeaderHeight() {
     const el = document.querySelector('.app-header');
     return el ? el.offsetHeight : 48;
   }
 
+  /**
+   * Performs depth-aware screen-space hit detection with front-to-back priority.
+   *
+   * @param {number} screenX Cursor screen X coordinate.
+   * @param {number} screenY Cursor screen Y coordinate.
+   * @param {number|null} [maxDistance=null] Optional fallback distance threshold.
+   * @returns {Object|null} Top-most hit node or null if no node intersected.
+   */
   function findNodeAt(screenX, screenY, maxDistance = null) {
     const width = window.innerWidth;
     const height = window.innerHeight - getHeaderHeight();
@@ -300,14 +295,31 @@
     return null;
   }
 
+  /**
+   * Retrieves node located at screen position coordinates.
+   *
+   * @param {number} screenX Screen X coordinate.
+   * @param {number} screenY Screen Y coordinate.
+   * @returns {Object|null} Intersected node or null.
+   */
   function getNodeAtPosition(screenX, screenY) {
     return findNodeAt(screenX, screenY);
   }
 
+  /**
+   * Finds closest node within proximity fallback radius.
+   *
+   * @param {number} screenX Screen X coordinate.
+   * @param {number} screenY Screen Y coordinate.
+   * @returns {Object|null} Closest node or null.
+   */
   function findClosestNode(screenX, screenY) {
     return findNodeAt(screenX, screenY, 35);
   }
 
+  /**
+   * Bootstraps application theme, canvas listeners, data, and render loops.
+   */
   function init() {
     if (!window.ROO4U_GRAPH_DATA) {
       return;
@@ -325,6 +337,9 @@
     syncWindowExports();
   }
 
+  /**
+   * Resizes canvases to viewport dimensions with device pixel ratio scaling.
+   */
   function resizeCanvases() {
     const width = window.innerWidth;
     const height = window.innerHeight - getHeaderHeight();
@@ -352,7 +367,16 @@
     }
   }
 
+  /**
+   * Loads specified branch dataset, initializes graph structures, and restarts simulation.
+   *
+   * @param {string} branchName Branch identifier key ('main' or 'v2').
+   */
   function loadBranch(branchName) {
+    if (state.currentBranch !== branchName) {
+      state.activeCategoryFilters.clear();
+      state.userHasPannedOrZoomed = false;
+    }
     state.currentBranch = branchName;
     state.activeBranch = branchName;
     const rawBranch = graphData.branches[branchName];
@@ -406,6 +430,11 @@
     syncWindowExports();
   }
 
+  /**
+   * Initializes volumetric photon particles traversing graph filaments.
+   *
+   * @param {Array<Object>} links Graph links array.
+   */
   function initPhotons(links) {
     state.photons = [];
     links.forEach((l, index) => {
@@ -421,6 +450,9 @@
     });
   }
 
+  /**
+   * Initializes force simulation with warm-up settling iterations and viewport framing.
+   */
   function initSimulation() {
     if (simulation) simulation.stop();
 
@@ -460,7 +492,7 @@
     fitToViewport(0);
 
     setTimeout(() => {
-      if (state.selectedNode === null && state.isolatedNodeId === null) {
+      if (state.selectedNode === null && state.isolatedNodeId === null && !state.userHasPannedOrZoomed) {
         fitToViewport(600);
       }
     }, 1200);
@@ -468,6 +500,11 @@
     syncWindowExports();
   }
 
+  /**
+   * Applies layout positioning forces based on selected mode.
+   *
+   * @param {string} layout Layout name ('cosmic', 'concentric', 'layered', 'clusters').
+   */
   function applyLayoutPositions(layout) {
     state.activeLayout = layout;
     const width = window.innerWidth;
@@ -520,6 +557,9 @@
     simulation.alpha(0.6).restart();
   }
 
+  /**
+   * Starts continuous animation frame rendering loop.
+   */
   function startRenderLoop() {
     function frame() {
       renderGraph();
@@ -528,6 +568,9 @@
     animFrameId = requestAnimationFrame(frame);
   }
 
+  /**
+   * Unified 3D depth render pipeline executing painter algorithm rasterization.
+   */
   function renderGraph() {
     const width = window.innerWidth;
     const height = window.innerHeight - getHeaderHeight();
@@ -546,15 +589,12 @@
       connectedNodeIds = getConnectedNodeIds(state.isolatedNodeId);
     }
 
-    // 1. Render Cluster Nebulas in 3D Perspective (Backdrop)
     if (state.physics.showNebulas && state.activeLayout !== 'layered') {
       renderClusterNebulas3D(width, height, panX, panY, zoomScale);
     }
 
-    // 2. Build Unified 3D Render Queue
     const renderQueue = [];
 
-    // Pre-pass: Compute 3D projected screen coordinates for all nodes
     for (let i = 0; i < currentGraph.nodes.length; i++) {
       const n = currentGraph.nodes[i];
       if (n.x === undefined || n.y === undefined) continue;
@@ -568,7 +608,6 @@
       renderQueue.push({ type: 'node', z: n.z, data: n, proj });
     }
 
-    // Add Links to Render Queue
     for (let i = 0; i < currentGraph.links.length; i++) {
       const l = currentGraph.links[i];
       const s = l.source;
@@ -591,7 +630,6 @@
       renderQueue.push({ type: 'link', z: linkZ, data: l, sProj, tProj });
     }
 
-    // Add Volumetric Photons to Render Queue
     if (state.physics.showPhotons && (state.physics.photonSpeed || 1.0) > 0) {
       for (let i = 0; i < state.photons.length; i++) {
         const p = state.photons[i];
@@ -607,10 +645,8 @@
       }
     }
 
-    // 3. Painter's Algorithm Depth Sort: Furthest first (z descending = high to low)
     renderQueue.sort((a, b) => b.z - a.z);
 
-    // 4. Rasterize in Strict Depth-Sorted Order
     for (let i = 0; i < renderQueue.length; i++) {
       const item = renderQueue[i];
       if (item.type === 'link') {
@@ -622,11 +658,18 @@
       }
     }
 
-    // 5. Render Labels Overlay with Depth LOD
     renderLabels3D(graphCtx, connectedNodeIds, activeTheme);
   }
 
-  // --- 3D Cluster Nebula Glows ---
+  /**
+   * Renders volumetric radial gradients for constellation clusters in 3D perspective.
+   *
+   * @param {number} width Viewport width in pixels.
+   * @param {number} height Viewport height in pixels.
+   * @param {number} panX Camera pan X translation.
+   * @param {number} panY Camera pan Y translation.
+   * @param {number} zoomScale Camera zoom scale factor.
+   */
   function renderClusterNebulas3D(width, height, panX, panY, zoomScale) {
     const clusterMap = {};
     currentGraph.nodes.forEach(n => {
@@ -641,7 +684,6 @@
     });
 
     const clusters = Object.values(clusterMap).filter(c => c.points.length >= 2);
-    // Sort clusters descending by depth
     clusters.sort((a, b) => {
       const za = a.sumZ / a.points.length;
       const zb = b.sumZ / b.points.length;
@@ -680,8 +722,16 @@
   }
 
   /**
-   * F04: Extrudes a trapezoidal polygon (Quad) between source and target screen positions
-   * tapering smoothly from half-width rs at source to rt at target.
+   * Extrudes a trapezoidal polygon (Quad) between source and target screen positions.
+   *
+   * @param {CanvasRenderingContext2D} ctx Canvas 2D rendering context.
+   * @param {{ screenX: number, screenY: number }} sScreen Source screen coordinate object.
+   * @param {{ screenX: number, screenY: number }} tScreen Target screen coordinate object.
+   * @param {number} rs Radius at source star.
+   * @param {number} rt Radius at target star.
+   * @param {string|CanvasGradient} fillStyle Fill style for extruded polygon.
+   * @param {string|null} shadowColor Glow shadow color string.
+   * @param {number} shadowBlur Glow shadow blur radius in pixels.
    */
   function drawTaperedFilament(ctx, sScreen, tScreen, rs, rt, fillStyle, shadowColor, shadowBlur) {
     const dx = tScreen.screenX - sScreen.screenX;
@@ -723,8 +773,14 @@
   }
 
   /**
-   * F04: Renders a depth-tapered connection between (xs, ys, zs) and (xt, yt, zt)
-   * with extruded quad polygons and depth-attenuated linear gradient shader.
+   * Renders a depth-tapered connection between source and target stars in 3D space.
+   *
+   * @param {CanvasRenderingContext2D} ctx Canvas 2D rendering context.
+   * @param {Object} link Link object connecting two nodes.
+   * @param {{ screenX: number, screenY: number, sz: number }} sScreen Source projected screen position.
+   * @param {{ screenX: number, screenY: number, sz: number }} tScreen Target projected screen position.
+   * @param {Set<string>|null} connectedNodeIds Active connected node ID set.
+   * @param {Object} theme Active theme configuration object.
    */
   function renderLink3D(ctx, link, sScreen, tScreen, connectedNodeIds, theme) {
     const s = link.source;
@@ -746,7 +802,6 @@
     const rs = (baseWidth * szS) / 2;
     const rt = (baseWidth * szT) / 2;
 
-    // Depth alpha attenuation simulating void extinction
     const alphaS = isConnected ? 0.95 : (isDimmed ? 0.02 * Math.pow(szS, 1.8) : Math.min(0.5, 0.22 * Math.pow(szS, 1.8)));
     const alphaT = isConnected ? 0.95 : (isDimmed ? 0.02 * Math.pow(szT, 1.8) : Math.min(0.5, 0.22 * Math.pow(szT, 1.8)));
 
@@ -756,7 +811,6 @@
     const colorAccent = (theme && theme.palette && theme.palette.accent) || '#ffffff';
 
     if (isConnected) {
-      // 3-stop high-energy plasma beam
       grad.addColorStop(0, hexToRgba(colorPrimary, alphaS));
       grad.addColorStop(0.5, hexToRgba(colorAccent, (alphaS + alphaT) * 0.5));
       grad.addColorStop(1, hexToRgba(colorSecondary, alphaT));
@@ -766,7 +820,6 @@
       grad.addColorStop(1, hexToRgba('#64748b', alphaT));
       drawTaperedFilament(ctx, sScreen, tScreen, rs, rt, grad, null, 0);
     } else {
-      // Normal filament gradient from source color to target color
       const colS = s.color || colorPrimary;
       const colT = t.color || colorSecondary;
       grad.addColorStop(0, hexToRgba(colS, alphaS));
@@ -776,7 +829,17 @@
   }
 
   /**
-   * F06: Simulates and renders volumetric 3D photons traversing links in perspective.
+   * Simulates and renders volumetric 3D photons traversing links in perspective.
+   *
+   * @param {CanvasRenderingContext2D} ctx Canvas 2D rendering context.
+   * @param {Object} photon Photon particle state object.
+   * @param {Set<string>|null} connectedNodeIds Active connected node ID set.
+   * @param {Object} theme Active theme configuration object.
+   * @param {number} width Viewport width in pixels.
+   * @param {number} height Viewport height in pixels.
+   * @param {number} panX Camera pan X translation.
+   * @param {number} panY Camera pan Y translation.
+   * @param {number} zoomScale Camera zoom scale factor.
    */
   function drawPhotonParticle(ctx, photon, connectedNodeIds, theme, width, height, panX, panY, zoomScale) {
     const s = photon.link.source;
@@ -794,13 +857,11 @@
     const sz_s = s.z !== undefined ? s.z : 0;
     const sz_t = t.z !== undefined ? t.z : 0;
 
-    // 1. Calculate 3D Position of Head
     const px = s.x + (t.x - s.x) * tau;
     const py = s.y + (t.y - s.y) * tau;
     const pz = sz_s + (sz_t - sz_s) * tau;
     const headProj = project3D(px, py, pz, width, height, panX, panY, zoomScale);
 
-    // 2. Calculate 3D Position of Tail
     const tauTail = Math.max(0, tau - 0.05);
     const tx = s.x + (t.x - s.x) * tauTail;
     const ty = s.y + (t.y - s.y) * tauTail;
@@ -813,7 +874,6 @@
       ? ((theme && theme.palette && theme.palette.primary) || '#00f0ff')
       : ((theme && theme.palette && theme.palette.accent) || '#ffffff');
 
-    // 3. Draw Comet Trail Streak
     if (tau > 0.05 && !isDimmed) {
       const trailGrad = ctx.createLinearGradient(
         tailProj.screenX, tailProj.screenY,
@@ -831,7 +891,6 @@
       ctx.stroke();
     }
 
-    // 4. Draw Glowing Head
     const glowR = Math.max(1.5, radius * 2.2);
     const orbGrad = ctx.createRadialGradient(
       headProj.screenX, headProj.screenY, radius * 0.2,
@@ -848,8 +907,13 @@
   }
 
   /**
-   * F02, F15, F16, F17: Renders a stellar node with depth-scaled radius, core brightness,
-   * atmospheric halo glow, pulsing beacon, and theme-specific node shader.
+   * Renders a stellar node with depth-scaled radius, core brightness, and theme-specific shaders.
+   *
+   * @param {CanvasRenderingContext2D} ctx Canvas 2D rendering context.
+   * @param {Object} n Stellar node data object.
+   * @param {{ screenX: number, screenY: number, sz: number }} proj Projected screen coordinates and scale.
+   * @param {Set<string>|null} connectedNodeIds Active connected node ID set.
+   * @param {Object} theme Active theme configuration object.
    */
   function renderNode3D(ctx, n, proj, connectedNodeIds, theme) {
     const isConnected = connectedNodeIds && connectedNodeIds.has(n.id);
@@ -871,14 +935,9 @@
     const colorSecondary = (theme && theme.palette && theme.palette.secondary) || '#7000ff';
     const colorAccent = (theme && theme.palette && theme.palette.accent) || '#ffffff';
 
-    // Depth alpha modulation factor
     const alphaZ = Math.max(0.20, Math.min(1.0, 0.25 + 0.75 * sz));
 
     if (nodeStyle === 'solar') {
-      // -------------------------------------------------------------
-      // Theme 2: Accretion Disk / Solar Corona Node Shader (F16)
-      // -------------------------------------------------------------
-      // 1. Thermal radiant corona halo (Golden core radiating to fiery crimson)
       const coronaRadius = Math.max(radius * 1.8, radius * (2.2 + 2.5 * sz));
       const baseCoronaAlpha = isConnected ? 0.75 : (isDimmed ? 0.05 : 0.45);
       const coronaAlpha = Math.max(0.02, Math.min(1.0, baseCoronaAlpha * Math.pow(sz, 1.5)));
@@ -893,7 +952,6 @@
       ctx.fillStyle = coronaGrad;
       ctx.fill();
 
-      // 2. Solar Flare Pulsing Aura for Selected Node
       if (isSelected) {
         const time = Date.now() * 0.004;
         const flareR = radius + (8 + Math.sin(time) * 5) * sz;
@@ -904,7 +962,6 @@
         ctx.stroke();
       }
 
-      // 3. Thermal Radiant Core
       ctx.beginPath();
       ctx.arc(sx, sy, radius, 0, Math.PI * 2);
       if (isDimmed) {
@@ -916,7 +973,6 @@
       }
       ctx.fill();
 
-      // 4. Warm Center Specular Flare Highlight
       if (!isDimmed) {
         const specR = Math.max(0.4, radius * 0.5 * sz);
         const specAlpha = Math.max(0.2, Math.min(1.0, (isConnected ? 0.95 : 0.7) * sz));
@@ -928,10 +984,6 @@
         ctx.globalAlpha = 1.0;
       }
     } else if (nodeStyle === 'matrix') {
-      // -------------------------------------------------------------
-      // Theme 3: Quantum Void / Matrix Grid Node Shader (F17)
-      // -------------------------------------------------------------
-      // 1. Digital Cyber Grid / Quantum Flux Glow
       const gridRadius = Math.max(radius * 1.5, radius * (1.9 + 2.0 * sz));
       const baseGridAlpha = isConnected ? 0.70 : (isDimmed ? 0.05 : 0.40);
       const gridAlpha = Math.max(0.02, Math.min(1.0, baseGridAlpha * Math.pow(sz, 1.5)));
@@ -946,7 +998,6 @@
       ctx.fillStyle = gridGrad;
       ctx.fill();
 
-      // 2. Quantum Crosshair Marker for Selected
       if (isSelected) {
         const crossSize = radius + 10 * sz;
         ctx.strokeStyle = hexToRgba(colorPrimary, 0.85);
@@ -961,7 +1012,6 @@
         ctx.stroke();
       }
 
-      // 3. Cyber Matrix Core
       ctx.beginPath();
       ctx.arc(sx, sy, radius, 0, Math.PI * 2);
       if (isDimmed) {
@@ -973,7 +1023,6 @@
       }
       ctx.fill();
 
-      // 4. Digital Specular Mint Highlight
       if (!isDimmed) {
         const specR = Math.max(0.4, radius * 0.4 * sz);
         const specAlpha = Math.max(0.2, Math.min(1.0, (isConnected ? 0.95 : 0.65) * sz));
@@ -985,10 +1034,6 @@
         ctx.globalAlpha = 1.0;
       }
     } else {
-      // -------------------------------------------------------------
-      // Theme 1: Event Horizon / Plasma Node Shader (Default / F15)
-      // -------------------------------------------------------------
-      // 1. Soft Outer Atmospheric Halo
       const haloRadius = Math.max(radius * 1.5, radius * (1.8 + 2.2 * sz));
       const baseHaloAlpha = isConnected ? 0.60 : (isDimmed ? 0.05 : 0.35);
       const haloAlpha = Math.max(0.02, Math.min(1.0, baseHaloAlpha * Math.pow(sz, 1.5)));
@@ -1002,7 +1047,6 @@
       ctx.fillStyle = haloGrad;
       ctx.fill();
 
-      // 2. Pulsing Beacon Ring for Selected Node
       if (isSelected) {
         const time = Date.now() * 0.003;
         const pulseR = radius + (6 + Math.sin(time) * 4) * sz;
@@ -1015,7 +1059,6 @@
         ctx.setLineDash([]);
       }
 
-      // 3. Stellar Solid Core
       ctx.beginPath();
       ctx.arc(sx, sy, radius, 0, Math.PI * 2);
       if (isDimmed) {
@@ -1027,7 +1070,6 @@
       }
       ctx.fill();
 
-      // 4. White Center Specular Glow
       if (!isDimmed) {
         const specR = Math.max(0.4, radius * 0.45 * sz);
         const specAlpha = Math.max(0.2, Math.min(1.0, (isConnected ? 0.95 : 0.65) * sz));
@@ -1042,7 +1084,11 @@
   }
 
   /**
-   * F02, F15, F16, F17: Renders labels overlay with Level-of-Detail (LOD) and depth-scaled typography.
+   * Renders labels overlay with Level-of-Detail (LOD) and depth-scaled typography.
+   *
+   * @param {CanvasRenderingContext2D} ctx Canvas 2D rendering context.
+   * @param {Set<string>|null} connectedNodeIds Active connected node ID set.
+   * @param {Object} theme Active theme configuration object.
    */
   function renderLabels3D(ctx, connectedNodeIds, theme) {
     const k = state.zoomTransform.k;
@@ -1093,7 +1139,12 @@
     });
   }
 
-  // --- Helper: Get Connected Nodes (1-hop & 2-hop) ---
+  /**
+   * Retrieves adjacent connected node IDs for 1-hop and 2-hop graph traversal.
+   *
+   * @param {string} nodeId Target node identifier.
+   * @returns {Set<string>} Set of connected node identifiers.
+   */
   function getConnectedNodeIds(nodeId) {
     const connected = new Set([nodeId]);
     currentGraph.links.forEach(l => {
@@ -1105,10 +1156,9 @@
     return connected;
   }
 
-  // =========================================================================
-  // INTERACTIVE LISTENERS & CONTROLS (F05, F07)
-  // =========================================================================
-
+  /**
+   * Binds user interaction listeners across DOM controls, keyboard, search, and canvas.
+   */
   function setupEventListeners() {
     const tabMain = document.getElementById('tab-main');
     if (tabMain) tabMain.addEventListener('click', () => loadBranch('main'));
@@ -1390,6 +1440,9 @@
     });
   }
 
+  /**
+   * Opens the settings and physics controls drawer.
+   */
   function openSettings() {
     if (!settingsDrawer) return;
     settingsDrawer.classList.remove('hidden');
@@ -1398,6 +1451,9 @@
     hideInspector();
   }
 
+  /**
+   * Closes the settings and physics controls drawer.
+   */
   function hideSettings() {
     if (!settingsDrawer) return;
     settingsDrawer.classList.add('hidden');
@@ -1405,6 +1461,9 @@
     if (toggleSettingsBtn) toggleSettingsBtn.classList.remove('active');
   }
 
+  /**
+   * Toggles visibility state of the settings and controls drawer.
+   */
   function toggleSettings() {
     if (!settingsDrawer) return;
     if (settingsDrawer.classList.contains('hidden')) {
@@ -1414,6 +1473,9 @@
     }
   }
 
+  /**
+   * Initializes theme preference from localStorage with Event Horizon default fallback.
+   */
   function initTheme() {
     let savedTheme = 'event-horizon';
     try {
@@ -1423,6 +1485,11 @@
     setTheme(savedTheme);
   }
 
+  /**
+   * Sets current active theme palette and updates CSS custom properties.
+   *
+   * @param {string} themeKey Theme configuration key ('event-horizon', 'accretion-disk', 'quantum-void').
+   */
   function setTheme(themeKey) {
     if (!THEMES[themeKey]) return;
     state.theme = themeKey;
@@ -1437,6 +1504,9 @@
     } catch (e) {}
   }
 
+  /**
+   * Restores default physics simulation parameters and restarts simulation.
+   */
   function resetPhysics() {
     state.physics = {
       charge: -480,
@@ -1480,7 +1550,13 @@
     initSimulation();
   }
 
-  // --- Tooltip & Inspector ---
+  /**
+   * Displays node summary tooltip at specified cursor coordinates.
+   *
+   * @param {Object} node Target node data object.
+   * @param {number} x Screen cursor X position in pixels.
+   * @param {number} y Screen cursor Y position in pixels.
+   */
   function showTooltip(node, x, y) {
     if (!tooltipEl) return;
     const ttCategory = document.getElementById('tt-category');
@@ -1513,16 +1589,30 @@
     tooltipEl.classList.remove('hidden');
   }
 
+  /**
+   * Moves tooltip overlay to follow current cursor coordinates.
+   *
+   * @param {number} x Screen cursor X position in pixels.
+   * @param {number} y Screen cursor Y position in pixels.
+   */
   function moveTooltip(x, y) {
     if (!tooltipEl) return;
     tooltipEl.style.left = `${x}px`;
     tooltipEl.style.top = `${y}px`;
   }
 
+  /**
+   * Hides hover tooltip overlay.
+   */
   function hideTooltip() {
     if (tooltipEl) tooltipEl.classList.add('hidden');
   }
 
+  /**
+   * Selects target node, opens right inspector drawer, and centers camera.
+   *
+   * @param {Object} node Target node data object.
+   */
   function selectNode(node) {
     state.selectedNode = node;
     hideSettings();
@@ -1530,6 +1620,11 @@
     panToNode(node);
   }
 
+  /**
+   * Populates and displays inspector drawer for selected star node.
+   *
+   * @param {Object} node Target node data object.
+   */
   function showInspector(node) {
     if (!inspectorDrawer) return;
 
@@ -1625,12 +1720,21 @@
     inspectorDrawer.classList.add('open');
   }
 
+  /**
+   * Closes the right inspector drawer.
+   */
   function hideInspector() {
     if (!inspectorDrawer) return;
     inspectorDrawer.classList.add('hidden');
     inspectorDrawer.classList.remove('open');
   }
 
+  /**
+   * Renders dependency star items inside the inspector list container.
+   *
+   * @param {string} elementId DOM element ID of target list.
+   * @param {Array<{ id: string, label: string, type: string }>} items Dependency list items.
+   */
   function renderDepList(elementId, items) {
     const el = document.getElementById(elementId);
     if (!el) return;
@@ -1658,6 +1762,12 @@
   }
 
   let searchIndex = [];
+
+  /**
+   * Builds searchable index from array of graph node metadata objects.
+   *
+   * @param {Array<Object>} nodes Node metadata array.
+   */
   function buildSearchIndex(nodes) {
     searchIndex = nodes.map(n => ({
       id: n.id,
@@ -1671,6 +1781,11 @@
     }));
   }
 
+  /**
+   * Executes substring search against indexed node attributes and updates dropdown results.
+   *
+   * @param {string} query Search input query string.
+   */
   function handleSearch(query) {
     state.searchQuery = query;
     if (!searchResultsEl) return;
@@ -1717,12 +1832,21 @@
     searchResultsEl.classList.remove('hidden');
   }
 
+  /**
+   * Clears search input and hides dropdown results.
+   */
   function clearSearch() {
     if (searchInput) searchInput.value = '';
     if (searchResultsEl) searchResultsEl.classList.add('hidden');
     if (searchClearBtn) searchClearBtn.classList.add('hidden');
   }
 
+  /**
+   * Escapes HTML special characters for safe template insertion.
+   *
+   * @param {string} str Input raw string.
+   * @returns {string} Sanitized string.
+   */
   function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -1734,7 +1858,11 @@
   }
 
   /**
-   * F05: Smoothly pan and zoom camera to center on a target 3D node with depth compensation.
+   * Smoothly pans and zooms camera to center on target 3D node with depth compensation.
+   *
+   * @param {Object} node Target node data object.
+   * @param {number} [targetZoom=1.6] Target zoom level.
+   * @param {number} [duration=750] Animation transition duration in ms.
    */
   function panToNode(node, targetZoom = 1.6, duration = 750) {
     if (!node || node.x === undefined || node.y === undefined) return;
@@ -1754,7 +1882,10 @@
   }
 
   /**
-   * F05: Frame a cluster or constellation within the viewport in 3D perspective.
+   * Frames a cluster or constellation within the viewport in 3D perspective.
+   *
+   * @param {Array<Object>} nodes Array of node objects to frame.
+   * @param {number} [duration=800] Animation transition duration in ms.
    */
   function focusCluster(nodes, duration = 800) {
     if (!nodes || nodes.length === 0) return;
@@ -1804,6 +1935,11 @@
     }
   }
 
+  /**
+   * Auto-fits visible nodes within viewport bounds.
+   *
+   * @param {number} [duration=650] Animation transition duration in ms.
+   */
   function fitToViewport(duration = 650) {
     const visibleNodes = currentGraph.nodes.filter(n => n.x !== undefined && n.y !== undefined && !isNaN(n.x) && !isNaN(n.y));
     if (visibleNodes.length === 0) {
@@ -1816,10 +1952,17 @@
     focusCluster(visibleNodes, duration);
   }
 
+  /**
+   * Centers camera on all visible nodes with smooth transition.
+   */
   function centerCamera() {
+    state.userHasPannedOrZoomed = false;
     fitToViewport(650);
   }
 
+  /**
+   * Updates zoom indicator percentage display in UI.
+   */
   function updateZoomIndicator() {
     const indicator = document.getElementById('zoom-indicator');
     if (indicator) {
@@ -1828,6 +1971,11 @@
     }
   }
 
+  /**
+   * Updates HUD statistics counters and pass verification badges.
+   *
+   * @param {Object} stats Branch statistics payload.
+   */
   function updateHUDStats(stats) {
     const statNodes = document.getElementById('stat-nodes');
     if (statNodes) statNodes.textContent = stats.totalFiles;
@@ -1843,6 +1991,11 @@
     if (hudBranchTag) hudBranchTag.textContent = `${state.currentBranch.toUpperCase()} BRANCH`;
   }
 
+  /**
+   * Rebuilds sector filter chips for active branch clusters.
+   *
+   * @param {Array<Object>} clusters Cluster metadata array.
+   */
   function updateCategoryChips(clusters) {
     if (!categoryChipsContainer) return;
     categoryChipsContainer.innerHTML = '';
@@ -1870,6 +2023,11 @@
     });
   }
 
+  /**
+   * Updates active state and ARIA attributes on branch navigation tabs.
+   *
+   * @param {string} branchName Active branch name.
+   */
   function updateBranchUI(branchName) {
     document.querySelectorAll('.branch-tab').forEach(t => {
       t.classList.remove('active');
@@ -1883,6 +2041,9 @@
     }
   }
 
+  /**
+   * Initializes architectural shift comparison modal tables and component cards.
+   */
   function setupComparisonModal() {
     const comp = graphData.comparison;
     if (!comp) return;
@@ -1923,14 +2084,27 @@
     if (closeCompareBtn) closeCompareBtn.addEventListener('click', hideComparisonModal);
   }
 
+  /**
+   * Opens architectural shift comparison modal.
+   */
   function showComparisonModal() {
     if (compareModal) compareModal.classList.remove('hidden');
   }
 
+  /**
+   * Closes architectural shift comparison modal.
+   */
   function hideComparisonModal() {
     if (compareModal) compareModal.classList.add('hidden');
   }
 
+  /**
+   * Converts 3-digit or 6-digit hexadecimal color string into rgba notation.
+   *
+   * @param {string} hex Hex color string.
+   * @param {number} alpha Opacity value in range [0.0, 1.0].
+   * @returns {string} Computed CSS rgba string.
+   */
   function hexToRgba(hex, alpha) {
     if (!hex || hex[0] !== '#') return `rgba(0, 240, 255, ${alpha})`;
     let r = 0, g = 0, b = 0;
@@ -1946,11 +2120,21 @@
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
+  /**
+   * Extracts filename basename from file path string safely.
+   *
+   * @param {string|null|undefined} path File path string.
+   * @returns {string} Basename filename component.
+   */
   function getBasename(path) {
-    const parts = path.split('/');
+    const safePath = String(path || '');
+    const parts = safePath.split('/');
     return parts[parts.length - 1];
   }
 
+  /**
+   * Exposes internal engine state and methods on window object for testing.
+   */
   function syncWindowExports() {
     window.state = state;
     window.currentGraph = currentGraph;

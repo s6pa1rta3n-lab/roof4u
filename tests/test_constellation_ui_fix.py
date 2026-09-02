@@ -5,13 +5,25 @@ import time
 from playwright.sync_api import sync_playwright
 
 class EphemeralServer:
+    """Ephemeral HTTP test server for local document testing."""
+
     def __init__(self, directory):
+        """Initializes ephemeral HTTP server bound to a local directory.
+
+        Args:
+            directory: Directory path to serve over HTTP.
+        """
         self.directory = directory
         self.httpd = None
         self.thread = None
         self.port = None
 
     def start(self):
+        """Starts HTTP server on random free local port.
+
+        Returns:
+            Root URL string of running ephemeral server.
+        """
         handler = lambda *args, **kwargs: http.server.SimpleHTTPRequestHandler(*args, directory=self.directory, **kwargs)
         self.httpd = socketserver.TCPServer(("127.0.0.1", 0), handler)
         self.port = self.httpd.server_address[1]
@@ -20,11 +32,13 @@ class EphemeralServer:
         return f"http://127.0.0.1:{self.port}/"
 
     def stop(self):
+        """Shuts down and releases the HTTP server socket."""
         if self.httpd:
             self.httpd.shutdown()
             self.httpd.server_close()
 
 def run_tests():
+    """Executes automated end-to-end Playwright tests against constellation visualizer."""
     server = EphemeralServer("docs")
     url = server.start()
     print(f"Testing at {url}", flush=True)
@@ -40,7 +54,6 @@ def run_tests():
         page.goto(url)
         page.wait_for_load_state("networkidle")
 
-        # Test 1: Chrome Simplification on Initial Load (R2)
         print("[*] Test 1: Chrome Simplification on Initial Load...", flush=True)
         tab_main = page.locator("#tab-main")
         tab_v2 = page.locator("#tab-v2")
@@ -60,14 +73,12 @@ def run_tests():
         assert canvas.is_visible(), "Canvas must be visible"
         assert tagline.count() == 0, "Multi-line tagline must be removed"
 
-        # Check that settings and inspector drawers are hidden on load
         settings_classes = settings_drawer.get_attribute("class") or ""
         assert "hidden" in settings_classes, f"Settings drawer should be hidden initially: {settings_classes}"
         inspector_classes = inspector_drawer.get_attribute("class") or ""
         assert "hidden" in inspector_classes, f"Inspector drawer should be hidden initially: {inspector_classes}"
         print("    [PASS] Default chrome is minimal.", flush=True)
 
-        # Test 2: Node Distribution and Auto-fit within 2s (R1)
         print("[*] Test 2: Node Distribution and Auto-fit...", flush=True)
         time.sleep(2.0)
         bounds = page.evaluate("""() => {
@@ -99,14 +110,12 @@ def run_tests():
         assert bounds["k"] > 0.2 and bounds["k"] < 2.0, f"Camera zoom is out of expected range: k={bounds['k']}"
         print(f"    [PASS] 279 nodes on main spread across canvas (span: {bounds['spanX']:.1f}x{bounds['spanY']:.1f}, zoom: {bounds['k']:.2f}).", flush=True)
 
-        # Test 3: Settings Drawer Interactions (R2)
         print("[*] Test 3: Settings Drawer Opening, Content, and Click-away...", flush=True)
         settings_toggle.click()
         time.sleep(0.3)
         settings_classes = settings_drawer.get_attribute("class") or ""
         assert "hidden" not in settings_classes, "Settings drawer must open on toggle click"
 
-        # Search bar, Layout select, Filters, Stats HUD inside drawer
         search_input = page.locator("#node-search")
         layout_select = page.locator("#layout-mode")
         hud_stats = page.locator("#hud-branch-tag")
@@ -114,14 +123,12 @@ def run_tests():
         assert layout_select.is_visible(), "Layout selector must be visible inside settings drawer"
         assert hud_stats.is_visible(), "Stats HUD must be visible inside settings drawer"
 
-        # Click outside (click-away on canvas)
         page.mouse.click(200, 300)
         time.sleep(0.3)
         settings_classes = settings_drawer.get_attribute("class") or ""
         assert "hidden" in settings_classes, "Settings drawer must close on click-away"
         print("    [PASS] Settings drawer toggles and closes on click-away.", flush=True)
 
-        # Test 4: Node Selection & Inspector Drawer (R2)
         print("[*] Test 4: Node Selection & Inspector Drawer...", flush=True)
         page.evaluate("""() => {
             const firstNode = window.currentGraph.nodes[0];
@@ -133,14 +140,12 @@ def run_tests():
         insp_name = page.locator("#insp-name").inner_text()
         assert len(insp_name) > 0, "Inspector must display node name"
 
-        # Press Escape to close inspector
         page.keyboard.press("Escape")
         time.sleep(0.3)
         inspector_classes = inspector_drawer.get_attribute("class") or ""
         assert "hidden" in inspector_classes, "Inspector drawer must close on Escape"
         print("    [PASS] Node selection opens inspector and Escape closes it.", flush=True)
 
-        # Test 5: Search Selection Closes Settings Drawer
         print("[*] Test 5: Search Selection...", flush=True)
         settings_toggle.click()
         time.sleep(0.3)
@@ -157,7 +162,6 @@ def run_tests():
         assert "hidden" not in inspector_classes, "Inspector drawer must open for search selection"
         print("    [PASS] Search selection properly routes to inspector and closes settings.", flush=True)
 
-        # Test 6: Branch switching (v2 -> main)
         print("[*] Test 6: Branch Switching...", flush=True)
         tab_v2.click()
         time.sleep(1.0)
@@ -169,7 +173,6 @@ def run_tests():
         assert main_node_count == 279, f"Expected 279 nodes on main, got {main_node_count}"
         print("    [PASS] Branch switching succeeds with full node graph.", flush=True)
 
-        # Test 7: Physics Reset and Sliders
         print("[*] Test 7: Physics Reset and Sliders...", flush=True)
         settings_toggle.click()
         time.sleep(0.3)
@@ -183,7 +186,6 @@ def run_tests():
         assert charge_val == -480, f"Expected reset charge -480, got {charge_val}"
         print("    [PASS] Physics reset successfully restored default parameters.", flush=True)
 
-        # Test 8: Responsive Viewport Form Factors (Desktop, Tablet, Mobile)
         print("[*] Test 8: Responsive Viewports (375px Mobile, 768px Tablet, 1280px Laptop)...", flush=True)
         for vp in [{"width": 1280, "height": 800}, {"width": 768, "height": 1024}, {"width": 375, "height": 667}]:
             page.set_viewport_size(vp)
@@ -195,16 +197,13 @@ def run_tests():
             assert page.locator("#zoom-indicator").is_visible(), f"Zoom indicator hidden at viewport {vp['width']}"
         print("    [PASS] Responsive viewports render drawer controls with full visibility and width.", flush=True)
 
-        # Test 9: Category Chips Filter & Swarm Toggle within Settings Drawer
         print("[*] Test 9: Category Filter Chips & Swarm Toggle Interaction...", flush=True)
         page.set_viewport_size({"width": 1440, "height": 900})
         time.sleep(0.2)
-        # Ensure drawer is open
         if "hidden" in (settings_drawer.get_attribute("class") or ""):
             settings_toggle.click()
             time.sleep(0.3)
-        
-        # Test category chip selection
+
         page.locator(".category-chip").first.click()
         time.sleep(0.5)
         filtered_count = page.evaluate("() => window.currentGraph.nodes.length")
@@ -213,7 +212,6 @@ def run_tests():
         assert active_chips == 1, f"Expected exactly 1 active chip, got {active_chips}"
         assert "hidden" not in (settings_drawer.get_attribute("class") or ""), "Settings drawer should stay open when clicking category chips"
 
-        # Toggle chip back off
         page.locator(".category-chip").first.click()
         time.sleep(0.5)
         assert page.evaluate("() => window.currentGraph.nodes.length") == 279
@@ -222,15 +220,36 @@ def run_tests():
         assert active_chips == all_chips, "All chips should be marked active when no filter is active"
         print("    [PASS] Category filter chips toggle and maintain drawer state correctly.", flush=True)
 
-        # Test 10: Zero Console Errors
-        print("[*] Test 10: Console Errors...", flush=True)
+        print("[*] Test 10: Cross-Branch Category Filter Reset...", flush=True)
+        page.locator(".category-chip").first.click()
+        time.sleep(0.3)
+        filtered_count = page.evaluate("() => window.currentGraph.nodes.length")
+        assert filtered_count < 279, "Filter should be active on main"
+        tab_v2.click()
+        time.sleep(1.0)
+        v2_count = page.evaluate("() => window.currentGraph.nodes.length")
+        assert v2_count == 431, f"Switching branch must clear stale category filters, got {v2_count} nodes"
+        v2_filter_size = page.evaluate("() => window.state.activeCategoryFilters.size")
+        assert v2_filter_size == 0, f"Active filter set must be empty after branch switch, got {v2_filter_size}"
+        print("    [PASS] Branch switch safely purges stale cluster filters.", flush=True)
+
+        print("[*] Test 11: User Pan & Zoom Camera Preservation...", flush=True)
+        tab_main.click()
+        time.sleep(0.2)
+        page.evaluate("() => { window.state.zoomTransform.k = 3.5; window.state.userHasPannedOrZoomed = true; }")
+        time.sleep(1.5)
+        preserved_k = page.evaluate("() => window.state.zoomTransform.k")
+        assert preserved_k == 3.5, f"Auto-fit settle timer must not override explicit user zoom, got {preserved_k}"
+        print("    [PASS] User manual pan/zoom transform is strictly preserved.", flush=True)
+
+        print("[*] Test 12: Console Errors Verification...", flush=True)
         assert len(console_errors) == 0, f"Encountered console errors: {console_errors}"
-        print("    [PASS] Zero console errors during interaction lifecycle.", flush=True)
+        print("    [PASS] Zero console errors during entire test run.", flush=True)
 
         browser.close()
 
     server.stop()
-    print("\nALL VERIFICATION TESTS PASSED SUCCESSFULLY!", flush=True)
+    print("\nALL 12 VERIFICATION TESTS PASSED SUCCESSFULLY!", flush=True)
 
 if __name__ == "__main__":
     run_tests()
