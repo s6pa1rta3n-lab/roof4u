@@ -102,7 +102,6 @@ let verify_lead
       timestamp
   in
 
-  (* Genuine SHA-256 computation via pure OCaml Crypto module *)
   let sha256_proof = Crypto.sha256_string canonical_payload in
   let proof_id = "PROOF-OCAML-" ^ (String.sub sha256_proof 0 16 |> String.uppercase_ascii) in
 

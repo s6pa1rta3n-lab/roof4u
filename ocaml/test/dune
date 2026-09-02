@@ -53,6 +53,11 @@
  (libraries roof_engine unix)
  (modules test_tier5_adversarial))
 
+(test
+ (name test_public_records_microservices)
+ (libraries roof_engine unix)
+ (modules test_public_records_microservices))
+
 (executable
  (name diff_sha256_gen)
  (libraries roof_engine unix)
@@ -62,4 +67,5 @@
  (name diff_json_fuzz)
  (libraries roof_engine unix)
  (modules diff_json_fuzz))
+
 

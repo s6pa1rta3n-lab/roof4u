@@ -2,4 +2,4 @@
  (name roof_engine)
  (public_name roof_engine)
  (libraries unix str threads)
- (modules types crypto json invariants scorer embeddings lesson_store vector_store db http_client datasf municipal llm_client telemetry csv_exporter pipeline))
+ (modules types crypto json invariants scorer embeddings lesson_store vector_store db http_client datasf municipal homeowner_names homeowner_addresses gis_roofs roof_permits property_tax_records public_records_orchestrator llm_client telemetry csv_exporter pipeline))

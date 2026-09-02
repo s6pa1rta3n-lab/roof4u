@@ -360,3 +360,215 @@ let parse_json_lead (json_str : string) : (raw_lead, string) result =
   match Json.parse json_str with
   | Ok ast -> Ok (raw_lead_of_json ast)
   | Error msg -> Error msg
+
+(** Domain-Specific Public Record Types *)
+
+type ownership_type =
+  | Individual
+  | Trust
+  | CorporateLLC
+  | Estate
+  | PublicEntity
+  | UnknownOwnership
+
+let string_of_ownership_type = function
+  | Individual -> "Individual"
+  | Trust -> "Trust"
+  | CorporateLLC -> "Corporate / LLC"
+  | Estate -> "Estate"
+  | PublicEntity -> "Public Entity"
+  | UnknownOwnership -> "Unknown"
+
+let parse_ownership_type (name : string) : ownership_type =
+  let s = String.lowercase_ascii (String.trim name) in
+  let contains_sub sub =
+    let sl = String.length sub in
+    let dl = String.length s in
+    let rec check i =
+      if i + sl > dl then false
+      else if String.sub s i sl = sub then true
+      else check (i + 1)
+    in
+    check 0
+  in
+  if contains_sub "trust" || contains_sub "trs" || contains_sub "family trust" || contains_sub "living trust" then Trust
+  else if contains_sub "llc" || contains_sub "corp" || contains_sub "inc" || contains_sub "holdings" || contains_sub "properties" || contains_sub "lp" || contains_sub "ltd" || contains_sub "investment" then CorporateLLC
+  else if contains_sub "estate" || contains_sub "est of" || contains_sub "conservatorship" then Estate
+  else if contains_sub "city" || contains_sub "county" || contains_sub "state of" || contains_sub "housing authority" then PublicEntity
+  else if s = "" || s = "unknown" then UnknownOwnership
+  else Individual
+
+type homeowner_name_record = {
+  parcel_number : string;
+  property_location : string;
+  owner_name : string;
+  ownership_type : ownership_type;
+  has_homeowner_exemption : bool;
+  exemption_value : float;
+  assessor_neighborhood : string option;
+  closed_roll_year : string option;
+}
+
+type homeowner_address_record = {
+  parcel_number : string;
+  property_location : string;
+  street_number : string;
+  street_name : string;
+  unit_number : string option;
+  zip_code : string;
+  neighborhood : string;
+  property_class_code : string option;
+  property_class_definition : string option;
+  is_residential : bool;
+  units_count : int;
+}
+
+type gis_roof_record = {
+  parcel_number : string;
+  property_location : string;
+  roof_size_sqft : float;
+  roof_type_classified : roof_type;
+  ground_elevation_ft : float option;
+  roof_height_ft : float option;
+  coordinates_latitude : float option;
+  coordinates_longitude : float option;
+  polygon_points_count : int;
+  is_green_roof_or_solar : bool;
+}
+
+type roof_permit_record = {
+  permit_number : string;
+  block : string;
+  lot : string;
+  parcel_number : string;
+  street_number : string;
+  street_name : string;
+  zip_code : string;
+  description : string;
+  filed_date : string option;
+  issued_date : string option;
+  completed_date : string option;
+  status : string option;
+  estimated_cost : float option;
+  revised_cost : float option;
+  roof_age_years : float option;
+  is_roof_replacement : bool;
+}
+
+type property_tax_record = {
+  parcel_number : string;
+  property_location : string;
+  closed_roll_year : string;
+  assessed_land_value : float;
+  assessed_improvement_value : float;
+  assessed_fixtures_value : float;
+  assessed_personal_property_value : float;
+  total_assessed_value : float;
+  improvement_to_land_ratio : float;
+  tax_rate_area_code : string option;
+  zoning_code : string option;
+  use_code : string option;
+  use_definition : string option;
+  year_built : int option;
+  number_of_units : int option;
+  number_of_stories : int option;
+  number_of_bedrooms : int option;
+  number_of_bathrooms : int option;
+  number_of_rooms : int option;
+  assessor_neighborhood : string option;
+  supervisor_district : string option;
+  current_sales_date : string option;
+}
+
+let homeowner_name_record_to_json (r : homeowner_name_record) : Json.t =
+  let opt_str k v = match v with Some s -> [(k, Json.String s)] | None -> [(k, Json.Null)] in
+  Json.Object ([
+    ("parcel_number", Json.String r.parcel_number);
+    ("property_location", Json.String r.property_location);
+    ("owner_name", Json.String r.owner_name);
+    ("ownership_type", Json.String (string_of_ownership_type r.ownership_type));
+    ("has_homeowner_exemption", Json.Bool r.has_homeowner_exemption);
+    ("exemption_value", Json.Number r.exemption_value);
+  ] @ (opt_str "assessor_neighborhood" r.assessor_neighborhood)
+    @ (opt_str "closed_roll_year" r.closed_roll_year))
+
+let homeowner_address_record_to_json (r : homeowner_address_record) : Json.t =
+  let opt_str k v = match v with Some s -> [(k, Json.String s)] | None -> [(k, Json.Null)] in
+  Json.Object ([
+    ("parcel_number", Json.String r.parcel_number);
+    ("property_location", Json.String r.property_location);
+    ("street_number", Json.String r.street_number);
+    ("street_name", Json.String r.street_name);
+  ] @ (opt_str "unit_number" r.unit_number) @ [
+    ("zip_code", Json.String r.zip_code);
+    ("neighborhood", Json.String r.neighborhood);
+  ] @ (opt_str "property_class_code" r.property_class_code)
+    @ (opt_str "property_class_definition" r.property_class_definition)
+    @ [
+    ("is_residential", Json.Bool r.is_residential);
+    ("units_count", Json.Number (float_of_int r.units_count));
+  ])
+
+let gis_roof_record_to_json (r : gis_roof_record) : Json.t =
+  let opt_float k v = match v with Some f -> [(k, Json.Number f)] | None -> [(k, Json.Null)] in
+  Json.Object ([
+    ("parcel_number", Json.String r.parcel_number);
+    ("property_location", Json.String r.property_location);
+    ("roof_size_sqft", Json.Number r.roof_size_sqft);
+    ("roof_type_classified", Json.String (string_of_roof_type r.roof_type_classified));
+  ] @ (opt_float "ground_elevation_ft" r.ground_elevation_ft)
+    @ (opt_float "roof_height_ft" r.roof_height_ft)
+    @ (opt_float "coordinates_latitude" r.coordinates_latitude)
+    @ (opt_float "coordinates_longitude" r.coordinates_longitude)
+    @ [
+    ("polygon_points_count", Json.Number (float_of_int r.polygon_points_count));
+    ("is_green_roof_or_solar", Json.Bool r.is_green_roof_or_solar);
+  ])
+
+let roof_permit_record_to_json (r : roof_permit_record) : Json.t =
+  let opt_str k v = match v with Some s -> [(k, Json.String s)] | None -> [(k, Json.Null)] in
+  let opt_float k v = match v with Some f -> [(k, Json.Number f)] | None -> [(k, Json.Null)] in
+  Json.Object ([
+    ("permit_number", Json.String r.permit_number);
+    ("block", Json.String r.block);
+    ("lot", Json.String r.lot);
+    ("parcel_number", Json.String r.parcel_number);
+    ("street_number", Json.String r.street_number);
+    ("street_name", Json.String r.street_name);
+    ("zip_code", Json.String r.zip_code);
+    ("description", Json.String r.description);
+  ] @ (opt_str "filed_date" r.filed_date)
+    @ (opt_str "issued_date" r.issued_date)
+    @ (opt_str "completed_date" r.completed_date)
+    @ (opt_str "status" r.status)
+    @ (opt_float "estimated_cost" r.estimated_cost)
+    @ (opt_float "revised_cost" r.revised_cost)
+    @ (opt_float "roof_age_years" r.roof_age_years)
+    @ [ ("is_roof_replacement", Json.Bool r.is_roof_replacement) ])
+
+let property_tax_record_to_json (r : property_tax_record) : Json.t =
+  let opt_str k v = match v with Some s -> [(k, Json.String s)] | None -> [(k, Json.Null)] in
+  let opt_int k v = match v with Some i -> [(k, Json.Number (float_of_int i))] | None -> [(k, Json.Null)] in
+  Json.Object ([
+    ("parcel_number", Json.String r.parcel_number);
+    ("property_location", Json.String r.property_location);
+    ("closed_roll_year", Json.String r.closed_roll_year);
+    ("assessed_land_value", Json.Number r.assessed_land_value);
+    ("assessed_improvement_value", Json.Number r.assessed_improvement_value);
+    ("assessed_fixtures_value", Json.Number r.assessed_fixtures_value);
+    ("assessed_personal_property_value", Json.Number r.assessed_personal_property_value);
+    ("total_assessed_value", Json.Number r.total_assessed_value);
+    ("improvement_to_land_ratio", Json.Number r.improvement_to_land_ratio);
+  ] @ (opt_str "tax_rate_area_code" r.tax_rate_area_code)
+    @ (opt_str "zoning_code" r.zoning_code)
+    @ (opt_str "use_code" r.use_code)
+    @ (opt_str "use_definition" r.use_definition)
+    @ (opt_int "year_built" r.year_built)
+    @ (opt_int "number_of_units" r.number_of_units)
+    @ (opt_int "number_of_stories" r.number_of_stories)
+    @ (opt_int "number_of_bedrooms" r.number_of_bedrooms)
+    @ (opt_int "number_of_bathrooms" r.number_of_bathrooms)
+    @ (opt_int "number_of_rooms" r.number_of_rooms)
+    @ (opt_str "assessor_neighborhood" r.assessor_neighborhood)
+    @ (opt_str "supervisor_district" r.supervisor_district)
+    @ (opt_str "current_sales_date" r.current_sales_date))
