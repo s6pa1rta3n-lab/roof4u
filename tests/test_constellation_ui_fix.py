@@ -27,9 +27,7 @@ class EphemeralServer:
 def run_tests():
     server = EphemeralServer("docs")
     url = server.start()
-    print(f"Testing at {url}")
-
-    errors = []
+    print(f"Testing at {url}", flush=True)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -43,7 +41,7 @@ def run_tests():
         page.wait_for_load_state("networkidle")
 
         # Test 1: Chrome Simplification on Initial Load (R2)
-        print("[*] Test 1: Chrome Simplification on Initial Load...")
+        print("[*] Test 1: Chrome Simplification on Initial Load...", flush=True)
         tab_main = page.locator("#tab-main")
         tab_v2 = page.locator("#tab-v2")
         tab_compare = page.locator("#tab-compare")
@@ -67,10 +65,10 @@ def run_tests():
         assert "hidden" in settings_classes, f"Settings drawer should be hidden initially: {settings_classes}"
         inspector_classes = inspector_drawer.get_attribute("class") or ""
         assert "hidden" in inspector_classes, f"Inspector drawer should be hidden initially: {inspector_classes}"
-        print("    [PASS] Default chrome is minimal.")
+        print("    [PASS] Default chrome is minimal.", flush=True)
 
         # Test 2: Node Distribution and Auto-fit within 2s (R1)
-        print("[*] Test 2: Node Distribution and Auto-fit...")
+        print("[*] Test 2: Node Distribution and Auto-fit...", flush=True)
         time.sleep(2.0)
         bounds = page.evaluate("""() => {
             const nodes = window.currentGraph.nodes;
@@ -99,10 +97,10 @@ def run_tests():
         assert bounds["spanX"] > 600, f"Nodes did not spread horizontally: spanX={bounds['spanX']}"
         assert bounds["spanY"] > 400, f"Nodes did not spread vertically: spanY={bounds['spanY']}"
         assert bounds["k"] > 0.2 and bounds["k"] < 2.0, f"Camera zoom is out of expected range: k={bounds['k']}"
-        print(f"    [PASS] 279 nodes on main spread across canvas (span: {bounds['spanX']:.1f}x{bounds['spanY']:.1f}, zoom: {bounds['k']:.2f}).")
+        print(f"    [PASS] 279 nodes on main spread across canvas (span: {bounds['spanX']:.1f}x{bounds['spanY']:.1f}, zoom: {bounds['k']:.2f}).", flush=True)
 
         # Test 3: Settings Drawer Interactions (R2)
-        print("[*] Test 3: Settings Drawer Opening, Content, and Click-away...")
+        print("[*] Test 3: Settings Drawer Opening, Content, and Click-away...", flush=True)
         settings_toggle.click()
         time.sleep(0.3)
         settings_classes = settings_drawer.get_attribute("class") or ""
@@ -121,10 +119,10 @@ def run_tests():
         time.sleep(0.3)
         settings_classes = settings_drawer.get_attribute("class") or ""
         assert "hidden" in settings_classes, "Settings drawer must close on click-away"
-        print("    [PASS] Settings drawer toggles and closes on click-away.")
+        print("    [PASS] Settings drawer toggles and closes on click-away.", flush=True)
 
         # Test 4: Node Selection & Inspector Drawer (R2)
-        print("[*] Test 4: Node Selection & Inspector Drawer...")
+        print("[*] Test 4: Node Selection & Inspector Drawer...", flush=True)
         page.evaluate("""() => {
             const firstNode = window.currentGraph.nodes[0];
             window.selectNode(firstNode);
@@ -140,10 +138,10 @@ def run_tests():
         time.sleep(0.3)
         inspector_classes = inspector_drawer.get_attribute("class") or ""
         assert "hidden" in inspector_classes, "Inspector drawer must close on Escape"
-        print("    [PASS] Node selection opens inspector and Escape closes it.")
+        print("    [PASS] Node selection opens inspector and Escape closes it.", flush=True)
 
         # Test 5: Search Selection Closes Settings Drawer
-        print("[*] Test 5: Search Selection...")
+        print("[*] Test 5: Search Selection...", flush=True)
         settings_toggle.click()
         time.sleep(0.3)
         search_input.fill("audit")
@@ -157,10 +155,10 @@ def run_tests():
         assert "hidden" in settings_classes, "Settings drawer must close upon selecting search item"
         inspector_classes = inspector_drawer.get_attribute("class") or ""
         assert "hidden" not in inspector_classes, "Inspector drawer must open for search selection"
-        print("    [PASS] Search selection properly routes to inspector and closes settings.")
+        print("    [PASS] Search selection properly routes to inspector and closes settings.", flush=True)
 
         # Test 6: Branch switching (v2 -> main)
-        print("[*] Test 6: Branch Switching...")
+        print("[*] Test 6: Branch Switching...", flush=True)
         tab_v2.click()
         time.sleep(1.0)
         v2_node_count = page.evaluate("() => window.currentGraph.nodes.length")
@@ -169,10 +167,10 @@ def run_tests():
         time.sleep(1.0)
         main_node_count = page.evaluate("() => window.currentGraph.nodes.length")
         assert main_node_count == 279, f"Expected 279 nodes on main, got {main_node_count}"
-        print("    [PASS] Branch switching succeeds with full node graph.")
+        print("    [PASS] Branch switching succeeds with full node graph.", flush=True)
 
         # Test 7: Physics Reset and Sliders
-        print("[*] Test 7: Physics Reset and Sliders...")
+        print("[*] Test 7: Physics Reset and Sliders...", flush=True)
         settings_toggle.click()
         time.sleep(0.3)
         page.evaluate("""() => {
@@ -183,10 +181,10 @@ def run_tests():
         time.sleep(0.3)
         charge_val = page.evaluate("() => window.state.physics.charge")
         assert charge_val == -480, f"Expected reset charge -480, got {charge_val}"
-        print("    [PASS] Physics reset successfully restored default parameters.")
+        print("    [PASS] Physics reset successfully restored default parameters.", flush=True)
 
         # Test 8: Responsive Viewport Form Factors (Desktop, Tablet, Mobile)
-        print("[*] Test 8: Responsive Viewports (375px Mobile, 768px Tablet, 1280px Laptop)...")
+        print("[*] Test 8: Responsive Viewports (375px Mobile, 768px Tablet, 1280px Laptop)...", flush=True)
         for vp in [{"width": 1280, "height": 800}, {"width": 768, "height": 1024}, {"width": 375, "height": 667}]:
             page.set_viewport_size(vp)
             time.sleep(0.2)
@@ -195,17 +193,44 @@ def run_tests():
             assert s_box["width"] > 200, f"Search input squished at viewport {vp['width']}x{vp['height']}: width={s_box['width']}"
             assert page.locator("#layout-mode").is_visible(), f"Layout selector hidden at viewport {vp['width']}"
             assert page.locator("#zoom-indicator").is_visible(), f"Zoom indicator hidden at viewport {vp['width']}"
-        print("    [PASS] Responsive viewports render drawer controls with full visibility and width.")
+        print("    [PASS] Responsive viewports render drawer controls with full visibility and width.", flush=True)
 
-        # Test 9: Zero Console Errors
-        print("[*] Test 9: Console Errors...")
+        # Test 9: Category Chips Filter & Swarm Toggle within Settings Drawer
+        print("[*] Test 9: Category Filter Chips & Swarm Toggle Interaction...", flush=True)
+        page.set_viewport_size({"width": 1440, "height": 900})
+        time.sleep(0.2)
+        # Ensure drawer is open
+        if "hidden" in (settings_drawer.get_attribute("class") or ""):
+            settings_toggle.click()
+            time.sleep(0.3)
+        
+        # Test category chip selection
+        page.locator(".category-chip").first.click()
+        time.sleep(0.5)
+        filtered_count = page.evaluate("() => window.currentGraph.nodes.length")
+        assert filtered_count < 279, f"Category filter should reduce nodes, got {filtered_count}"
+        active_chips = page.evaluate("() => document.querySelectorAll('.category-chip.active').length")
+        assert active_chips == 1, f"Expected exactly 1 active chip, got {active_chips}"
+        assert "hidden" not in (settings_drawer.get_attribute("class") or ""), "Settings drawer should stay open when clicking category chips"
+
+        # Toggle chip back off
+        page.locator(".category-chip").first.click()
+        time.sleep(0.5)
+        assert page.evaluate("() => window.currentGraph.nodes.length") == 279
+        all_chips = page.evaluate("() => document.querySelectorAll('.category-chip').length")
+        active_chips = page.evaluate("() => document.querySelectorAll('.category-chip.active').length")
+        assert active_chips == all_chips, "All chips should be marked active when no filter is active"
+        print("    [PASS] Category filter chips toggle and maintain drawer state correctly.", flush=True)
+
+        # Test 10: Zero Console Errors
+        print("[*] Test 10: Console Errors...", flush=True)
         assert len(console_errors) == 0, f"Encountered console errors: {console_errors}"
-        print("    [PASS] Zero console errors during interaction lifecycle.")
+        print("    [PASS] Zero console errors during interaction lifecycle.", flush=True)
 
         browser.close()
 
     server.stop()
-    print("\nALL VERIFICATION TESTS PASSED SUCCESSFULLY!")
+    print("\nALL VERIFICATION TESTS PASSED SUCCESSFULLY!", flush=True)
 
 if __name__ == "__main__":
     run_tests()

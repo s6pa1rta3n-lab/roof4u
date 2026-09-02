@@ -577,7 +577,7 @@ html, body {
   z-index: 95;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
 }
 
@@ -759,7 +759,11 @@ html, body {
 }
 
 .toggle-label input {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 .toggle-custom {
@@ -987,13 +991,22 @@ html, body {
   font-weight: 600;
 }
 
-.inspector-body, .drawer-body {
+.inspector-body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .insp-tab-content {

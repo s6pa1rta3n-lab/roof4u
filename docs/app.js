@@ -95,7 +95,7 @@
   const closeInspectorBtn = document.getElementById('close-inspector-btn');
   const focusConstellationBtn = document.getElementById('focus-constellation-btn');
   const clearFocusBtn = document.getElementById('clear-focus-btn');
-  const copyShaBtn = document.getElementById('copy-sha-btn');
+  const copyShaBtn = document.getElementById('insp-sha-copy') || document.getElementById('copy-sha-btn');
 
   const settingsDrawer = document.getElementById('settings-drawer') || document.getElementById('physics-panel');
   const toggleSettingsBtn = document.getElementById('toggle-settings-btn') || document.getElementById('toggle-controls-btn');
@@ -1281,6 +1281,10 @@
 
     document.addEventListener('click', (e) => {
       if (!settingsDrawer || settingsDrawer.classList.contains('hidden')) return;
+      const path = e.composedPath ? e.composedPath() : [];
+      if (path.includes(settingsDrawer) || (toggleSettingsBtn && path.includes(toggleSettingsBtn))) {
+        return;
+      }
       if (settingsDrawer.contains(e.target) || (toggleSettingsBtn && toggleSettingsBtn.contains(e.target))) {
         return;
       }
@@ -1844,7 +1848,8 @@
     categoryChipsContainer.innerHTML = '';
     clusters.forEach(c => {
       const chip = document.createElement('div');
-      chip.className = 'category-chip active';
+      const isActive = state.activeCategoryFilters.size === 0 || state.activeCategoryFilters.has(c.id);
+      chip.className = `category-chip ${isActive ? 'active' : ''}`;
       chip.style.setProperty('--chip-color', c.color);
       chip.innerHTML = `
         <span class="chip-dot"></span>
@@ -1855,10 +1860,8 @@
       chip.addEventListener('click', () => {
         if (state.activeCategoryFilters.has(c.id)) {
           state.activeCategoryFilters.delete(c.id);
-          chip.classList.remove('active');
         } else {
           state.activeCategoryFilters.add(c.id);
-          chip.classList.add('active');
         }
         loadBranch(state.currentBranch);
       });
