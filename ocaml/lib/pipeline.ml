@@ -763,7 +763,7 @@ let run_pipeline ?(config = default_config) () : pipeline_summary =
 
   Printf.printf "\n[+] Total Discovered Candidate Leads Persisted: %d\n" !discovered_count;
 
-    (* PHASE 2: ENRICHMENT & PROPERTY DETAILS *)
+      (* PHASE 2: ENRICHMENT & PROPERTY DETAILS *)
   Printf.printf "
 --- PHASE 2: ENRICHMENT & PROPERTY DETAILS ---
 ";
@@ -771,11 +771,11 @@ let run_pipeline ?(config = default_config) () : pipeline_summary =
   let enriched_count = ref 0 in
   List.iter (fun row ->
     let raw = Db.raw_lead_of_row row in
-    (* Append real phone number using Skip Tracing API module *)
-    let raw = match Skip_tracer.append_phone_number raw with
+    (* Append real phone number using zero-cost OSINT scraper module *)
+    let raw = match Osint_scraper.extract_phone_number raw with
       | Ok raw_with_phone -> raw_with_phone
       | Error msg -> 
-          Printf.eprintf "[!] Skip tracing failed for %s: %s
+          Printf.eprintf "[!] OSINT scraping failed for %s: %s
 " raw.address msg;
           raw
     in
