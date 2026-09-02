@@ -444,7 +444,7 @@ html, body {
   border-radius: 8px;
   padding: 0 8px;
   height: 34px;
-  flex-shrink: 1;
+  flex: 1;
   min-width: 0;
 }
 
@@ -466,7 +466,7 @@ html, body {
   font-size: 12px;
   cursor: pointer;
   outline: none;
-  max-width: 140px;
+  width: 100%;
   text-overflow: ellipsis;
 }
 
@@ -1424,29 +1424,14 @@ html, body {
   .header-right {
     gap: 6px;
   }
-  .brand-tagline {
-    display: none;
-  }
-  .layout-selector .layout-label {
-    display: none;
-  }
   .theme-selector-wrapper .theme-label {
     display: none;
   }
   .tab-badge {
     display: none;
   }
-  .search-container {
-    width: 160px;
-  }
-  #node-search:focus {
-    width: 180px;
-  }
   .theme-select {
     max-width: 135px;
-  }
-  #layout-mode {
-    max-width: 115px;
   }
 }
 
@@ -1461,32 +1446,11 @@ html, body {
   .header-right {
     gap: 6px;
   }
-  .brand-tagline {
-    display: none;
-  }
   .brand-subtitle {
     display: none;
   }
-  .layout-selector .layout-label {
-    display: none;
-  }
-  .theme-selector-wrapper .theme-label {
-    display: none;
-  }
-  .tab-badge {
-    display: none;
-  }
-  .search-container {
-    width: 130px;
-  }
-  #node-search:focus {
-    width: 150px;
-  }
   .theme-select {
     max-width: 120px;
-  }
-  #layout-mode {
-    max-width: 105px;
   }
 }
 
@@ -1501,9 +1465,6 @@ html, body {
   .header-right {
     gap: 6px;
   }
-  .brand-subtitle {
-    display: none;
-  }
   .brand-title {
     font-size: 13px;
   }
@@ -1511,28 +1472,11 @@ html, body {
     padding: 5px 8px;
     font-size: 11px;
   }
-  .search-container {
-    width: 110px;
-  }
-  #node-search:focus {
-    width: 130px;
-  }
   .theme-select {
     max-width: 105px;
     font-size: 11px;
   }
-  #layout-mode {
-    max-width: 90px;
-    font-size: 11px;
-  }
-  .hud-filters {
-    display: none;
-  }
-  .hud-stats {
-    width: 200px;
-    padding: 10px;
-  }
-  .inspector-drawer, .physics-drawer {
+  .inspector-drawer, .settings-drawer {
     width: 320px;
   }
   .mappings-grid {
@@ -1554,12 +1498,6 @@ html, body {
   .tab-compare {
     display: none;
   }
-  .layout-selector .layout-label {
-    display: none;
-  }
-  .theme-selector-wrapper .theme-label {
-    display: none;
-  }
   .brand {
     display: none;
   }
@@ -1567,33 +1505,17 @@ html, body {
     padding: 4px 8px;
     font-size: 11px;
   }
-  .search-container {
-    width: 95px;
-  }
-  #node-search {
-    padding-left: 22px;
-    padding-right: 16px;
-    font-size: 11px;
-  }
-  #node-search:focus {
-    width: 110px;
-  }
   .theme-select {
     max-width: 90px;
-    font-size: 10px;
-  }
-  #layout-mode {
-    max-width: 80px;
-    font-size: 10px;
-  }
-  .zoom-badge {
-    padding: 0 6px;
-    height: 30px;
     font-size: 10px;
   }
   .icon-btn {
     width: 30px;
     height: 30px;
+  }
+  .inspector-drawer, .settings-drawer {
+    width: calc(100vw - 32px);
+    right: 16px;
   }
 }
 
@@ -1608,9 +1530,6 @@ html, body {
   .header-right {
     gap: 4px;
   }
-  .brand {
-    display: none;
-  }
   .branch-tab {
     padding: 4px 6px;
     font-size: 10px;
@@ -1619,46 +1538,24 @@ html, body {
     width: 6px;
     height: 6px;
   }
-  .search-container {
-    width: 70px;
-  }
-  #node-search {
-    padding-left: 18px;
-    padding-right: 14px;
-    font-size: 10px;
-    height: 30px;
-  }
-  #node-search:focus {
-    width: 85px;
-  }
   .theme-selector-wrapper {
     padding: 0 4px;
     height: 30px;
   }
   .theme-select {
-    max-width: 70px;
+    max-width: 75px;
     font-size: 9px;
-  }
-  .layout-selector {
-    padding: 0 4px;
-    height: 30px;
-  }
-  #layout-mode {
-    max-width: 65px;
-    font-size: 9px;
-  }
-  .zoom-badge {
-    display: none;
   }
   .icon-btn {
     width: 28px;
     height: 28px;
   }
-  .inspector-drawer, .physics-drawer {
+  .inspector-drawer, .settings-drawer {
     width: calc(100vw - 24px);
     right: 12px;
     top: 12px;
     bottom: 12px;
+    border-radius: 12px;
   }
 }
 
@@ -1673,24 +1570,9 @@ html, body {
   .header-right {
     gap: 4px;
   }
-  .brand {
-    display: none;
-  }
   .branch-tab {
     padding: 3px 6px;
     font-size: 10px;
-  }
-  .search-container {
-    width: 65px;
-  }
-  #node-search {
-    padding-left: 16px;
-    padding-right: 12px;
-    font-size: 9px;
-    height: 28px;
-  }
-  #node-search:focus {
-    width: 75px;
   }
   .theme-selector-wrapper {
     padding: 0 4px;
@@ -1699,12 +1581,6 @@ html, body {
   .theme-select {
     max-width: 65px;
     font-size: 9px;
-  }
-  .layout-selector {
-    display: none;
-  }
-  .zoom-badge {
-    display: none;
   }
   .icon-btn {
     width: 28px;
@@ -1723,9 +1599,6 @@ html, body {
   .header-right {
     gap: 2px;
   }
-  .brand {
-    display: none;
-  }
   .branch-tabs {
     padding: 1px;
     gap: 2px;
@@ -1739,31 +1612,19 @@ html, body {
     width: 5px;
     height: 5px;
   }
-  .search-container {
-    display: none;
-  }
-  .layout-selector {
-    display: none;
-  }
-  .zoom-badge {
-    display: none;
-  }
   .theme-selector-wrapper {
     padding: 0 4px;
     height: 28px;
   }
   .theme-select {
     font-size: 9px;
-    max-width: 65px;
+    max-width: 60px;
   }
   .icon-btn {
     width: 26px;
     height: 28px;
   }
-  .hud-stats {
-    display: none;
-  }
-  .inspector-drawer, .physics-drawer {
+  .inspector-drawer, .settings-drawer {
     width: calc(100vw - 16px);
     right: 8px;
     top: 8px;

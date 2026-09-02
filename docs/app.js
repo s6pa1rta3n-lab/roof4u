@@ -337,6 +337,19 @@
     const ctx = graphCanvas.getContext('2d');
     ctx.resetTransform();
     ctx.scale(dpr, dpr);
+
+    if (simulation) {
+      const cx = width / 2;
+      const cy = height / 2;
+      const centerForce = simulation.force('center');
+      if (centerForce) centerForce.x(cx).y(cy);
+      if (state.activeLayout === 'cosmic') {
+        const xForce = simulation.force('x');
+        const yForce = simulation.force('y');
+        if (xForce) xForce.x(cx);
+        if (yForce) yForce.y(cy);
+      }
+    }
   }
 
   function loadBranch(branchName) {

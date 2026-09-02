@@ -171,8 +171,34 @@ def run_tests():
         assert main_node_count == 279, f"Expected 279 nodes on main, got {main_node_count}"
         print("    [PASS] Branch switching succeeds with full node graph.")
 
-        # Test 7: Zero Console Errors
-        print("[*] Test 7: Console Errors...")
+        # Test 7: Physics Reset and Sliders
+        print("[*] Test 7: Physics Reset and Sliders...")
+        settings_toggle.click()
+        time.sleep(0.3)
+        page.evaluate("""() => {
+            document.getElementById('slider-charge').value = -1000;
+            document.getElementById('slider-charge').dispatchEvent(new Event('input'));
+            document.getElementById('reset-physics-btn').click();
+        }""")
+        time.sleep(0.3)
+        charge_val = page.evaluate("() => window.state.physics.charge")
+        assert charge_val == -480, f"Expected reset charge -480, got {charge_val}"
+        print("    [PASS] Physics reset successfully restored default parameters.")
+
+        # Test 8: Responsive Viewport Form Factors (Desktop, Tablet, Mobile)
+        print("[*] Test 8: Responsive Viewports (375px Mobile, 768px Tablet, 1280px Laptop)...")
+        for vp in [{"width": 1280, "height": 800}, {"width": 768, "height": 1024}, {"width": 375, "height": 667}]:
+            page.set_viewport_size(vp)
+            time.sleep(0.2)
+            s_box = page.locator("#node-search").bounding_box()
+            assert s_box is not None, f"Search input missing at viewport {vp['width']}x{vp['height']}"
+            assert s_box["width"] > 200, f"Search input squished at viewport {vp['width']}x{vp['height']}: width={s_box['width']}"
+            assert page.locator("#layout-mode").is_visible(), f"Layout selector hidden at viewport {vp['width']}"
+            assert page.locator("#zoom-indicator").is_visible(), f"Zoom indicator hidden at viewport {vp['width']}"
+        print("    [PASS] Responsive viewports render drawer controls with full visibility and width.")
+
+        # Test 9: Zero Console Errors
+        print("[*] Test 9: Console Errors...")
         assert len(console_errors) == 0, f"Encountered console errors: {console_errors}"
         print("    [PASS] Zero console errors during interaction lifecycle.")
 
