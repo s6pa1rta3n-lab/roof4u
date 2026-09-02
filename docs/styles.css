@@ -42,7 +42,7 @@
   --font-display: 'Orbitron', sans-serif;
   --font-theme: 'JetBrains Mono', monospace;
   
-  --header-height: 64px;
+  --header-height: 48px;
   --drawer-width: 380px;
   --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -280,15 +280,14 @@ html, body {
 /* Search Bar */
 .search-container {
   position: relative;
-  width: 240px;
-  flex-shrink: 1;
-  min-width: 0;
+  width: 100%;
 }
 
 .search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .search-icon {
@@ -316,7 +315,7 @@ html, body {
   border-color: var(--color-primary);
   background: rgba(0, 0, 0, 0.95);
   box-shadow: 0 0 12px var(--color-glow);
-  width: 280px;
+  width: 100%;
 }
 
 .search-clear {
@@ -560,35 +559,70 @@ html, body {
 }
 
 /* ==========================================================================
-   HUD PANELS
+   SETTINGS DRAWER & HUD COMPONENTS
    ========================================================================== */
 
-.hud-panel {
+.settings-drawer {
   position: absolute;
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glass);
-  border-radius: 12px;
-  padding: 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  z-index: 50;
-  user-select: none;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: var(--drawer-width);
+  max-width: 90vw;
+  background: rgba(0, 0, 0, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid var(--border-glass-bright);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.7);
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
 }
 
-/* Stats HUD */
-.hud-stats {
-  top: 20px;
-  left: 20px;
-  width: 260px;
+.settings-drawer.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-drawer.open, .settings-drawer:not(.hidden) {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings-section {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-glass);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-section-title {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .hud-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--border-glass);
 }
 
@@ -621,8 +655,8 @@ html, body {
 .hud-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .hud-stat-item {
@@ -633,7 +667,7 @@ html, body {
 
 .hud-stat-val {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--color-cyan);
 }
@@ -659,34 +693,19 @@ html, body {
   flex-shrink: 0;
 }
 
-/* Category Filters HUD */
-.hud-filters {
-  bottom: 20px;
-  left: 20px;
-  max-width: 480px;
-}
-
+/* Category Filters in Drawer */
 .filter-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
-  gap: 16px;
-}
-
-.filter-title {
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--text-dim);
+  gap: 12px;
 }
 
 .category-chips-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-height: 120px;
+  max-height: 140px;
   overflow-y: auto;
 }
 

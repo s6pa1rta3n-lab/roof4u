@@ -27,7 +27,6 @@
         </div>
         <div class="brand-text">
           <h1 class="brand-title">ROO4U <span class="brand-subtitle">CONSTELLATION</span></h1>
-          <p class="brand-tagline">Repository Architecture &amp; Force-Directed Network Map</p>
         </div>
       </div>
 
@@ -50,23 +49,10 @@
       </nav>
     </div>
 
-    <!-- Header Actions / Search & Quick Filters -->
+    <!-- Header Actions / Theme Selector & Settings Menu Button -->
     <div class="header-right">
-      <!-- Search Input with Autocomplete -->
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input type="text" id="node-search" placeholder="Search files, symbols, modules..." autocomplete="off" spellcheck="false">
-          <button id="search-clear" class="search-clear hidden" title="Clear search">✕</button>
-        </div>
-        <div id="search-results" class="search-dropdown hidden"></div>
-      </div>
-
       <!-- Theme Selector Dropdown (M3) -->
-      <div class="theme-selector-wrapper">
+      <div class="theme-selector-wrapper" id="theme-selector-wrapper">
         <label for="theme-selector" class="theme-label" title="Cosmic Theme">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
@@ -88,30 +74,8 @@
         </select>
       </div>
 
-      <!-- Layout Selector Dropdown -->
-      <div class="layout-selector">
-        <label for="layout-mode" class="layout-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-          Layout
-        </label>
-        <select id="layout-mode">
-          <option value="cosmic">Cosmic Orbit (Force)</option>
-          <option value="concentric">Concentric Rings</option>
-          <option value="layered">Layered Hierarchy</option>
-          <option value="clusters">Galactic Sectors</option>
-        </select>
-      </div>
-
-      <!-- Zoom Indicator Badge (Relocated from Minimap) -->
-      <div class="zoom-badge" title="Camera Zoom Level">
-        <span id="zoom-indicator" class="zoom-indicator">100%</span>
-      </div>
-
-      <!-- Controls Toggle Button -->
-      <button id="toggle-controls-btn" class="icon-btn" title="Toggle Simulation &amp; Physics Controls">
+      <!-- Settings / Menu Drawer Toggle Button -->
+      <button id="toggle-settings-btn" class="icon-btn" title="Controls &amp; Settings" aria-label="Toggle Controls &amp; Settings">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="4" y1="21" x2="4" y2="14"></line>
           <line x1="4" y1="10" x2="4" y2="3"></line>
@@ -122,13 +86,6 @@
           <line x1="1" y1="14" x2="7" y2="14"></line>
           <line x1="9" y1="8" x2="15" y2="8"></line>
           <line x1="17" y1="16" x2="23" y2="16"></line>
-        </svg>
-      </button>
-
-      <!-- Reset Camera Button -->
-      <button id="reset-cam-btn" class="icon-btn" title="Fit to Constellation">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
         </svg>
       </button>
     </div>
@@ -156,98 +113,149 @@
       </div>
     </div>
 
-    <!-- Stats & Certification Status HUD Overlay (Top-Left) -->
-    <div class="hud-panel hud-stats">
-      <div class="hud-header">
-        <span class="hud-tag" id="hud-branch-tag">MAIN BRANCH</span>
-        <span class="hud-status-indicator pulse-green"></span>
-      </div>
-      <div class="hud-grid">
-        <div class="hud-stat-item">
-          <div class="hud-stat-val" id="stat-nodes">0</div>
-          <div class="hud-stat-label">Files / Stars</div>
-        </div>
-        <div class="hud-stat-item">
-          <div class="hud-stat-val" id="stat-links">0</div>
-          <div class="hud-stat-label">Filaments</div>
-        </div>
-        <div class="hud-stat-item">
-          <div class="hud-stat-val" id="stat-loc">0</div>
-          <div class="hud-stat-label">Total LOC</div>
-        </div>
-        <div class="hud-stat-item">
-          <div class="hud-stat-val" id="stat-clusters">0</div>
-          <div class="hud-stat-label">Constellations</div>
-        </div>
-      </div>
-      <div class="hud-cert" id="hud-cert-box">
-        <svg class="cert-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          <path d="m9 12 2 2 4-4"></path>
-        </svg>
-        <span id="hud-cert-text">AST Certified Pass (SHA-256)</span>
-      </div>
-    </div>
-
-    <!-- Cluster / Category Filter Bar (Bottom-Left) -->
-    <div class="hud-panel hud-filters">
-      <div class="filter-header">
-        <span class="filter-title">CONSTELLATION SECTORS</span>
-        <div class="swarm-toggle-wrapper">
-          <label class="toggle-label" for="toggle-swarm">
-            <input type="checkbox" id="toggle-swarm" checked>
-            <span class="toggle-custom"></span>
-            <span class="toggle-text">Include Swarm Logs</span>
-          </label>
-        </div>
-      </div>
-      <div id="category-chips" class="category-chips-grid"></div>
-    </div>
-
-
-
-    <!-- Physics & Simulation Control Drawer (Collapsible) -->
-    <aside id="physics-panel" class="physics-drawer hidden">
+    <!-- Collapsible Settings & Controls Drawer -->
+    <aside id="settings-drawer" class="settings-drawer hidden" aria-label="Constellation Controls and Settings">
       <div class="drawer-header">
-        <h3>Cosmic Simulation Physics</h3>
-        <button id="close-physics-btn" class="drawer-close" title="Close Physics Drawer">✕</button>
+        <div class="drawer-title-row">
+          <h3 class="drawer-title">Controls &amp; Settings</h3>
+          <button id="close-settings-btn" class="drawer-close" title="Close Settings">✕</button>
+        </div>
       </div>
+
       <div class="drawer-body">
-        <div class="control-group">
-          <label for="slider-charge">Node Repulsion / Charge: <span id="val-charge">-350</span></label>
-          <input type="range" id="slider-charge" min="-1200" max="-50" step="25" value="-350">
+        <!-- 1. Search Bar with Autocomplete -->
+        <div class="settings-section">
+          <h4 class="settings-section-title">Search Constellation</h4>
+          <div class="search-container">
+            <div class="search-input-wrapper">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="node-search" placeholder="Search files, symbols, modules..." autocomplete="off" spellcheck="false">
+              <button id="search-clear" class="search-clear hidden" title="Clear search">✕</button>
+            </div>
+            <div id="search-results" class="search-dropdown hidden"></div>
+          </div>
         </div>
-        <div class="control-group">
-          <label for="slider-link-dist">Filament Distance: <span id="val-link-dist">90</span></label>
-          <input type="range" id="slider-link-dist" min="30" max="250" step="5" value="90">
+
+        <!-- 2. Layout & Camera Controls -->
+        <div class="settings-section">
+          <h4 class="settings-section-title">Layout &amp; View</h4>
+          <div class="control-row">
+            <div class="layout-selector">
+              <label for="layout-mode" class="layout-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Layout
+              </label>
+              <select id="layout-mode">
+                <option value="cosmic">Cosmic Orbit (Force)</option>
+                <option value="concentric">Concentric Rings</option>
+                <option value="layered">Layered Hierarchy</option>
+                <option value="clusters">Galactic Sectors</option>
+              </select>
+            </div>
+            <div class="zoom-badge" title="Camera Zoom Level">
+              <span id="zoom-indicator" class="zoom-indicator">100%</span>
+            </div>
+            <button id="reset-cam-btn" class="icon-btn" title="Fit to Constellation">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+              </svg>
+            </button>
+          </div>
         </div>
-        <div class="control-group">
-          <label for="slider-collision">Stellar Collision Radius: <span id="val-collision">18</span></label>
-          <input type="range" id="slider-collision" min="5" max="50" step="1" value="18">
+
+        <!-- 3. Constellation Sectors & Filter -->
+        <div class="settings-section">
+          <div class="filter-header">
+            <h4 class="settings-section-title">Constellation Sectors</h4>
+            <div class="swarm-toggle-wrapper">
+              <label class="toggle-label" for="toggle-swarm">
+                <input type="checkbox" id="toggle-swarm" checked>
+                <span class="toggle-custom"></span>
+                <span class="toggle-text">Swarm Logs</span>
+              </label>
+            </div>
+          </div>
+          <div id="category-chips" class="category-chips-grid"></div>
         </div>
-        <div class="control-group">
-          <label for="slider-gravity">Galactic Gravity: <span id="val-gravity">0.08</span></label>
-          <input type="range" id="slider-gravity" min="0.01" max="0.3" step="0.01" value="0.08">
+
+        <!-- 4. Architecture Statistics & Certification HUD -->
+        <div class="settings-section">
+          <div class="hud-header">
+            <span class="hud-tag" id="hud-branch-tag">MAIN BRANCH</span>
+            <span class="hud-status-indicator pulse-green"></span>
+          </div>
+          <div class="hud-grid">
+            <div class="hud-stat-item">
+              <div class="hud-stat-val" id="stat-nodes">0</div>
+              <div class="hud-stat-label">Files / Stars</div>
+            </div>
+            <div class="hud-stat-item">
+              <div class="hud-stat-val" id="stat-links">0</div>
+              <div class="hud-stat-label">Filaments</div>
+            </div>
+            <div class="hud-stat-item">
+              <div class="hud-stat-val" id="stat-loc">0</div>
+              <div class="hud-stat-label">Total LOC</div>
+            </div>
+            <div class="hud-stat-item">
+              <div class="hud-stat-val" id="stat-clusters">0</div>
+              <div class="hud-stat-label">Constellations</div>
+            </div>
+          </div>
+          <div class="hud-cert" id="hud-cert-box">
+            <svg class="cert-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+            <span id="hud-cert-text">AST Certified Pass (SHA-256)</span>
+          </div>
         </div>
-        <div class="control-group">
-          <label for="slider-photon-speed">Photon Pulse Speed: <span id="val-photon-speed">1.0x</span></label>
-          <input type="range" id="slider-photon-speed" min="0" max="3" step="0.2" value="1">
-        </div>
-        <div class="control-group toggles-row">
-          <label class="toggle-label" for="toggle-photons">
-            <input type="checkbox" id="toggle-photons" checked>
-            <span class="toggle-custom"></span>
-            <span class="toggle-text">Flowing Photons</span>
-          </label>
-          <label class="toggle-label" for="toggle-nebulas">
-            <input type="checkbox" id="toggle-nebulas" checked>
-            <span class="toggle-custom"></span>
-            <span class="toggle-text">Nebula Glows</span>
-          </label>
-        </div>
-        <div class="drawer-actions">
-          <button id="reset-physics-btn" class="btn btn-secondary">Reset Physics</button>
-          <button id="reheat-sim-btn" class="btn btn-primary">Reheat Simulation</button>
+
+        <!-- 5. Simulation Physics -->
+        <div class="settings-section">
+          <h4 class="settings-section-title">Cosmic Physics Simulation</h4>
+          <div class="control-group">
+            <label for="slider-charge">Node Repulsion / Charge: <span id="val-charge">-480</span></label>
+            <input type="range" id="slider-charge" min="-1500" max="-100" step="25" value="-480">
+          </div>
+          <div class="control-group">
+            <label for="slider-link-dist">Filament Distance: <span id="val-link-dist">85</span></label>
+            <input type="range" id="slider-link-dist" min="30" max="300" step="5" value="85">
+          </div>
+          <div class="control-group">
+            <label for="slider-collision">Stellar Collision Radius: <span id="val-collision">16</span></label>
+            <input type="range" id="slider-collision" min="5" max="60" step="1" value="16">
+          </div>
+          <div class="control-group">
+            <label for="slider-gravity">Galactic Gravity: <span id="val-gravity">0.055</span></label>
+            <input type="range" id="slider-gravity" min="0.005" max="0.2" step="0.005" value="0.055">
+          </div>
+          <div class="control-group">
+            <label for="slider-photon-speed">Photon Pulse Speed: <span id="val-photon-speed">1.0x</span></label>
+            <input type="range" id="slider-photon-speed" min="0" max="3" step="0.2" value="1">
+          </div>
+          <div class="control-group toggles-row">
+            <label class="toggle-label" for="toggle-photons">
+              <input type="checkbox" id="toggle-photons" checked>
+              <span class="toggle-custom"></span>
+              <span class="toggle-text">Flowing Photons</span>
+            </label>
+            <label class="toggle-label" for="toggle-nebulas">
+              <input type="checkbox" id="toggle-nebulas" checked>
+              <span class="toggle-custom"></span>
+              <span class="toggle-text">Nebula Glows</span>
+            </label>
+          </div>
+          <div class="drawer-actions">
+            <button id="reset-physics-btn" class="btn btn-secondary">Reset Physics</button>
+            <button id="reheat-sim-btn" class="btn btn-primary">Reheat Simulation</button>
+          </div>
         </div>
       </div>
     </aside>
@@ -298,9 +306,9 @@
           <div class="insp-actions">
             <button id="focus-constellation-btn" class="btn btn-primary btn-block">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                <circle cx="12" cy="10" r="8"></circle>
+                <line x1="12" y1="6" x2="12" y2="10"></line>
+                <line x1="12" y1="14" x2="12.01" y2="14"></line>
               </svg>
               Isolate Connected Constellation
             </button>

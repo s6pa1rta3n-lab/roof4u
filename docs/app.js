@@ -49,7 +49,6 @@
     }
   };
 
-  // --- Configuration & State ---
   const state = {
     currentBranch: 'main',
     activeBranch: 'main',
@@ -64,10 +63,10 @@
     zoomTransform: d3.zoomIdentity,
     nodes: [],
     physics: {
-      charge: -350,
-      linkDistance: 90,
-      collision: 18,
-      gravity: 0.08,
+      charge: -480,
+      linkDistance: 85,
+      collision: 16,
+      gravity: 0.055,
       photonSpeed: 1.0,
       showPhotons: true,
       showNebulas: true
@@ -80,7 +79,6 @@
   let simulation = null;
   let animFrameId = null;
 
-  // DOM Elements
   const graphCanvas = document.getElementById('graph-canvas');
   const graphCtx = graphCanvas.getContext('2d');
 
@@ -93,19 +91,16 @@
   const categoryChipsContainer = document.getElementById('category-chips');
   const themeSelector = document.getElementById('theme-selector');
 
-  // Inspector Elements
   const inspectorDrawer = document.getElementById('inspector-drawer');
   const closeInspectorBtn = document.getElementById('close-inspector-btn');
   const focusConstellationBtn = document.getElementById('focus-constellation-btn');
   const clearFocusBtn = document.getElementById('clear-focus-btn');
   const copyShaBtn = document.getElementById('copy-sha-btn');
 
-  // Physics Drawer
-  const physicsPanel = document.getElementById('physics-panel');
-  const toggleControlsBtn = document.getElementById('toggle-controls-btn');
-  const closePhysicsBtn = document.getElementById('close-physics-btn');
+  const settingsDrawer = document.getElementById('settings-drawer') || document.getElementById('physics-panel');
+  const toggleSettingsBtn = document.getElementById('toggle-settings-btn') || document.getElementById('toggle-controls-btn');
+  const closeSettingsBtn = document.getElementById('close-settings-btn') || document.getElementById('close-physics-btn');
 
-  // Comparison Modal
   const compareModal = document.getElementById('compare-modal');
   const closeCompareBtn = document.getElementById('close-compare-btn');
 
@@ -244,9 +239,14 @@
    * @param {number|null} [maxDistance=null] - Proximity search fallback threshold
    * @returns {Object|null} Top-most hit node or null
    */
+  function getHeaderHeight() {
+    const el = document.querySelector('.app-header');
+    return el ? el.offsetHeight : 48;
+  }
+
   function findNodeAt(screenX, screenY, maxDistance = null) {
     const width = window.innerWidth;
-    const height = window.innerHeight - 64;
+    const height = window.innerHeight - getHeaderHeight();
     const k = state.zoomTransform.k;
     const tx = state.zoomTransform.x;
     const ty = state.zoomTransform.y;
@@ -275,10 +275,8 @@
       });
     }
 
-    // Depth-Priority Sorting: Foreground first (smallest z, largest sz)
     candidates.sort((a, b) => a.z - b.z);
 
-    // 1. Direct Hit Check
     for (let i = 0; i < candidates.length; i++) {
       const c = candidates[i];
       if (c.dist <= c.screenRadius) {
@@ -286,7 +284,6 @@
       }
     }
 
-    // 2. Fuzzy Proximity Fallback
     if (maxDistance !== null && maxDistance > 0) {
       let closestNode = null;
       let minDist = maxDistance;
@@ -311,13 +308,8 @@
     return findNodeAt(screenX, screenY, 35);
   }
 
-  // =========================================================================
-  // INITIALIZATION & LIFECYCLE
-  // =========================================================================
-
   function init() {
     if (!window.ROO4U_GRAPH_DATA) {
-      console.error('ROO4U_GRAPH_DATA not found.');
       return;
     }
     graphData = window.ROO4U_GRAPH_DATA;
@@ -335,7 +327,7 @@
 
   function resizeCanvases() {
     const width = window.innerWidth;
-    const height = window.innerHeight - 64; // header offset
+    const height = window.innerHeight - getHeaderHeight();
     const dpr = window.devicePixelRatio || 1;
 
     graphCanvas.width = width * dpr;
@@ -347,17 +339,14 @@
     ctx.scale(dpr, dpr);
   }
 
-  // --- Branch & Graph Data Loading ---
   function loadBranch(branchName) {
     state.currentBranch = branchName;
     state.activeBranch = branchName;
     const rawBranch = graphData.branches[branchName];
     if (!rawBranch) return;
 
-    // Filter nodes by swarm setting
     let filteredNodes = rawBranch.nodes.filter(n => state.includeSwarm || !n.isSwarm);
 
-    // Filter nodes by active categories if any are selected
     if (state.activeCategoryFilters.size > 0) {
       filteredNodes = filteredNodes.filter(n => state.activeCategoryFilters.has(n.category));
     }
@@ -369,7 +358,6 @@
       return nodeIds.has(srcId) && nodeIds.has(tgtId);
     });
 
-    // F01: Clone data and compute deterministic 3D Z-coordinate for every node
     const nodes = filteredNodes.map(n => {
       const nodeClone = { ...n };
       nodeClone.z = computeNodeZ(nodeClone);
@@ -395,7 +383,6 @@
     buildSearchIndex(rawBranch.nodes);
     updateBranchUI(branchName);
 
-    // Reset selection / isolation
     state.selectedNode = null;
     state.hoveredNode = null;
     state.isolatedNodeId = null;
@@ -403,11 +390,9 @@
     hideTooltip();
 
     initSimulation();
-    centerCamera();
     syncWindowExports();
   }
 
-  // --- Particle Photons (Animated Stardust along Links in 3D) ---
   function initPhotons(links) {
     state.photons = [];
     links.forEach((l, index) => {
@@ -423,33 +408,57 @@
     });
   }
 
-  // --- D3-Force Physics Simulation ---
   function initSimulation() {
     if (simulation) simulation.stop();
 
     const width = window.innerWidth;
-    const height = window.innerHeight - 64;
+    const height = window.innerHeight - getHeaderHeight();
+    const cx = width / 2;
+    const cy = height / 2;
+
+    const nodeCount = currentGraph.nodes.length;
+    currentGraph.nodes.forEach((n, idx) => {
+      if (n.x === undefined || n.y === undefined || isNaN(n.x) || isNaN(n.y)) {
+        const angle = (idx / nodeCount) * Math.PI * 2 * 3;
+        const dist = 60 + (idx % 10) * 45;
+        n.x = cx + Math.cos(angle) * dist;
+        n.y = cy + Math.sin(angle) * dist;
+      }
+    });
 
     simulation = d3.forceSimulation(currentGraph.nodes)
-      .force('link', d3.forceLink(currentGraph.links).id(d => d.id).distance(state.physics.linkDistance).strength(0.6))
+      .force('link', d3.forceLink(currentGraph.links).id(d => d.id).distance(state.physics.linkDistance).strength(0.5))
       .force('charge', d3.forceManyBody().strength(state.physics.charge))
       .force('collide', d3.forceCollide().radius(d => (d.importance * 3) + state.physics.collision).iterations(2))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('x', d3.forceX(width / 2).strength(state.physics.gravity))
-      .force('y', d3.forceY(height / 2).strength(state.physics.gravity))
-      .alphaDecay(0.025)
-      .on('tick', () => {
-        // Animation loop handles rendering
-      });
+      .force('center', d3.forceCenter(cx, cy))
+      .force('x', d3.forceX(cx).strength(state.physics.gravity))
+      .force('y', d3.forceY(cy).strength(state.physics.gravity))
+      .alphaDecay(0.02)
+      .velocityDecay(0.35)
+      .on('tick', () => {});
 
     applyLayoutPositions(state.activeLayout);
+
+    const warmupTicks = 120;
+    for (let i = 0; i < warmupTicks; i++) {
+      simulation.tick();
+    }
+
+    fitToViewport(0);
+
+    setTimeout(() => {
+      if (state.selectedNode === null && state.isolatedNodeId === null) {
+        fitToViewport(600);
+      }
+    }, 1200);
+
     syncWindowExports();
   }
 
   function applyLayoutPositions(layout) {
     state.activeLayout = layout;
     const width = window.innerWidth;
-    const height = window.innerHeight - 64;
+    const height = window.innerHeight - getHeaderHeight();
     const cx = width / 2;
     const cy = height / 2;
 
@@ -460,7 +469,6 @@
       simulation.force('y', d3.forceY(cy).strength(state.physics.gravity));
       simulation.force('charge').strength(state.physics.charge);
     } else if (layout === 'concentric') {
-      // Concentric orbital rings by layer (Layer 1 in center -> Layer 6 outer)
       simulation.force('x', d3.forceX(d => {
         const radius = (d.layer - 1) * 120 + 80;
         const angle = (currentGraph.nodes.indexOf(d) / currentGraph.nodes.length) * Math.PI * 2;
@@ -471,16 +479,14 @@
         const angle = (currentGraph.nodes.indexOf(d) / currentGraph.nodes.length) * Math.PI * 2;
         return cy + Math.sin(angle) * radius;
       }).strength(0.3));
-      simulation.force('charge').strength(-200);
+      simulation.force('charge').strength(-300);
     } else if (layout === 'layered') {
-      // Hierarchical layered architecture Left to Right
       simulation.force('x', d3.forceX(d => {
         return (d.layer - 3.5) * 220 + cx;
       }).strength(0.4));
       simulation.force('y', d3.forceY(cy).strength(0.05));
-      simulation.force('charge').strength(-180);
+      simulation.force('charge').strength(-250);
     } else if (layout === 'clusters') {
-      // Sector cluster islands
       const clusterNames = Array.from(new Set(currentGraph.nodes.map(n => n.category)));
       const clusterAngles = {};
       clusterNames.forEach((c, idx) => {
@@ -495,15 +501,11 @@
         const a = clusterAngles[d.category] || 0;
         return cy + Math.sin(a) * 260;
       }).strength(0.35));
-      simulation.force('charge').strength(-150);
+      simulation.force('charge').strength(-200);
     }
 
     simulation.alpha(0.6).restart();
   }
-
-  // =========================================================================
-  // 3D RENDERING PIPELINE & PAINTER'S DEPTH SORTING (F03, F04, F06)
-  // =========================================================================
 
   function startRenderLoop() {
     function frame() {
@@ -513,13 +515,9 @@
     animFrameId = requestAnimationFrame(frame);
   }
 
-  /**
-   * F03: Main 3D Graph Render Pipeline with Painter's Algorithm.
-   * Deepest background elements are drawn first; nearest foreground elements are drawn on top.
-   */
   function renderGraph() {
     const width = window.innerWidth;
-    const height = window.innerHeight - 64;
+    const height = window.innerHeight - getHeaderHeight();
     graphCtx.clearRect(0, 0, width, height);
 
     const panX = state.zoomTransform.x;
@@ -1099,7 +1097,6 @@
   // =========================================================================
 
   function setupEventListeners() {
-    // 1. Branch Switcher Tabs
     const tabMain = document.getElementById('tab-main');
     if (tabMain) tabMain.addEventListener('click', () => loadBranch('main'));
 
@@ -1109,7 +1106,6 @@
     const tabCompare = document.getElementById('tab-compare');
     if (tabCompare) tabCompare.addEventListener('click', showComparisonModal);
 
-    // 2. Swarm Filter Checkbox
     if (toggleSwarmCheckbox) {
       toggleSwarmCheckbox.addEventListener('change', (e) => {
         state.includeSwarm = e.target.checked;
@@ -1117,21 +1113,18 @@
       });
     }
 
-    // 3. Layout Mode Selector
     if (layoutSelect) {
       layoutSelect.addEventListener('change', (e) => {
         applyLayoutPositions(e.target.value);
       });
     }
 
-    // 4. Live Theme Selector
     if (themeSelector) {
       themeSelector.addEventListener('change', (e) => {
         setTheme(e.target.value);
       });
     }
 
-    // 5. Canvas Mouse Move (Hover & Tooltip with Depth Priority)
     graphCanvas.addEventListener('mousemove', (e) => {
       const rect = graphCanvas.getBoundingClientRect();
       const screenX = e.clientX - rect.left;
@@ -1150,7 +1143,6 @@
       }
     });
 
-    // 6. Canvas Click (Select Node with Depth Priority)
     graphCanvas.addEventListener('click', (e) => {
       const rect = graphCanvas.getBoundingClientRect();
       const screenX = e.clientX - rect.left;
@@ -1165,12 +1157,10 @@
       }
     });
 
-    // 7. Node Dragging via D3 using analytical unproject3D
     d3.select(graphCanvas).call(
       d3.drag()
         .container(graphCanvas)
         .subject(event => {
-          // event.x and event.y are container-relative pixel coordinates
           return findNodeAt(event.x, event.y, 25);
         })
         .on('start', (event) => {
@@ -1182,7 +1172,7 @@
         .on('drag', (event) => {
           if (!event.subject) return;
           const width = window.innerWidth;
-          const height = window.innerHeight - 64;
+          const height = window.innerHeight - getHeaderHeight();
           const unproj = unproject3D(
             event.x,
             event.y,
@@ -1204,7 +1194,6 @@
         })
     );
 
-    // 8. Search Input Handlers
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         handleSearch(e.target.value.trim());
@@ -1222,7 +1211,6 @@
 
     if (searchClearBtn) searchClearBtn.addEventListener('click', clearSearch);
 
-    // 9. Drawer Controls
     if (closeInspectorBtn) closeInspectorBtn.addEventListener('click', hideInspector);
     if (focusConstellationBtn) {
       focusConstellationBtn.addEventListener('click', () => {
@@ -1254,7 +1242,6 @@
       });
     }
 
-    // Inspector Tabs
     document.querySelectorAll('.insp-tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.insp-tab-btn').forEach(b => b.classList.remove('active'));
@@ -1265,20 +1252,27 @@
       });
     });
 
-    // 10. Physics Drawer Controls
-    if (toggleControlsBtn) {
-      toggleControlsBtn.addEventListener('click', () => {
-        if (physicsPanel) physicsPanel.classList.toggle('hidden');
-        toggleControlsBtn.classList.toggle('active');
+    if (toggleSettingsBtn) {
+      toggleSettingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleSettings();
       });
     }
 
-    if (closePhysicsBtn) {
-      closePhysicsBtn.addEventListener('click', () => {
-        if (physicsPanel) physicsPanel.classList.add('hidden');
-        if (toggleControlsBtn) toggleControlsBtn.classList.remove('active');
+    if (closeSettingsBtn) {
+      closeSettingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideSettings();
       });
     }
+
+    document.addEventListener('click', (e) => {
+      if (!settingsDrawer || settingsDrawer.classList.contains('hidden')) return;
+      if (settingsDrawer.contains(e.target) || (toggleSettingsBtn && toggleSettingsBtn.contains(e.target))) {
+        return;
+      }
+      hideSettings();
+    });
 
     const sliderCharge = document.getElementById('slider-charge');
     if (sliderCharge) {
@@ -1366,18 +1360,41 @@
       });
     }
 
-    // 11. Reset Camera Button
     const resetCamBtn = document.getElementById('reset-cam-btn');
     if (resetCamBtn) resetCamBtn.addEventListener('click', centerCamera);
 
-    // 12. Close Modals on ESC
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         hideComparisonModal();
         hideInspector();
+        hideSettings();
         clearSearch();
       }
     });
+  }
+
+  function openSettings() {
+    if (!settingsDrawer) return;
+    settingsDrawer.classList.remove('hidden');
+    settingsDrawer.classList.add('open');
+    if (toggleSettingsBtn) toggleSettingsBtn.classList.add('active');
+    hideInspector();
+  }
+
+  function hideSettings() {
+    if (!settingsDrawer) return;
+    settingsDrawer.classList.add('hidden');
+    settingsDrawer.classList.remove('open');
+    if (toggleSettingsBtn) toggleSettingsBtn.classList.remove('active');
+  }
+
+  function toggleSettings() {
+    if (!settingsDrawer) return;
+    if (settingsDrawer.classList.contains('hidden')) {
+      openSettings();
+    } else {
+      hideSettings();
+    }
   }
 
   function initTheme() {
@@ -1400,40 +1417,38 @@
     }
     try {
       localStorage.setItem('roo4u_theme', themeKey);
-    } catch (e) {
-      // Ignore storage errors
-    }
+    } catch (e) {}
   }
 
   function resetPhysics() {
     state.physics = {
-      charge: -350,
-      linkDistance: 90,
-      collision: 18,
-      gravity: 0.08,
+      charge: -480,
+      linkDistance: 85,
+      collision: 16,
+      gravity: 0.055,
       photonSpeed: 1.0,
       showPhotons: true,
       showNebulas: true
     };
     const sliderCharge = document.getElementById('slider-charge');
-    if (sliderCharge) sliderCharge.value = -350;
+    if (sliderCharge) sliderCharge.value = -480;
     const valCharge = document.getElementById('val-charge');
-    if (valCharge) valCharge.textContent = -350;
+    if (valCharge) valCharge.textContent = -480;
 
     const sliderLinkDist = document.getElementById('slider-link-dist');
-    if (sliderLinkDist) sliderLinkDist.value = 90;
+    if (sliderLinkDist) sliderLinkDist.value = 85;
     const valLinkDist = document.getElementById('val-link-dist');
-    if (valLinkDist) valLinkDist.textContent = 90;
+    if (valLinkDist) valLinkDist.textContent = 85;
 
     const sliderCollision = document.getElementById('slider-collision');
-    if (sliderCollision) sliderCollision.value = 18;
+    if (sliderCollision) sliderCollision.value = 16;
     const valCollision = document.getElementById('val-collision');
-    if (valCollision) valCollision.textContent = 18;
+    if (valCollision) valCollision.textContent = 16;
 
     const sliderGravity = document.getElementById('slider-gravity');
-    if (sliderGravity) sliderGravity.value = 0.08;
+    if (sliderGravity) sliderGravity.value = 0.055;
     const valGravity = document.getElementById('val-gravity');
-    if (valGravity) valGravity.textContent = 0.08;
+    if (valGravity) valGravity.textContent = 0.055;
 
     const sliderPhotonSpeed = document.getElementById('slider-photon-speed');
     if (sliderPhotonSpeed) sliderPhotonSpeed.value = 1;
@@ -1493,6 +1508,7 @@
 
   function selectNode(node) {
     state.selectedNode = node;
+    hideSettings();
     showInspector(node);
     panToNode(node);
   }
@@ -1536,7 +1552,6 @@
       }
     }
 
-    // Inbound & Outbound Dependencies
     const inbound = [];
     const outbound = [];
 
@@ -1557,7 +1572,6 @@
     renderDepList('insp-inbound-list', inbound);
     renderDepList('insp-outbound-list', outbound);
 
-    // Symbols list
     const symbolsListEl = document.getElementById('insp-symbols-list');
     if (symbolsListEl) {
       symbolsListEl.innerHTML = '';
@@ -1575,13 +1589,11 @@
       }
     }
 
-    // Code Preview
     const codeFilename = document.getElementById('code-preview-filename');
     if (codeFilename) codeFilename.textContent = node.label;
     const codeContent = document.getElementById('insp-code-content');
     if (codeContent) codeContent.textContent = node.preview || '[Empty Content]';
 
-    // Focus state button
     if (focusConstellationBtn && clearFocusBtn) {
       if (state.isolatedNodeId === node.id) {
         focusConstellationBtn.classList.add('hidden');
@@ -1628,7 +1640,6 @@
     });
   }
 
-  // --- Search & Autocomplete ---
   let searchIndex = [];
   function buildSearchIndex(nodes) {
     searchIndex = nodes.map(n => ({
@@ -1682,6 +1693,7 @@
       div.addEventListener('click', () => {
         selectNode(m.node);
         clearSearch();
+        hideSettings();
       });
       searchResultsEl.appendChild(div);
     });
@@ -1704,17 +1716,13 @@
       .replace(/'/g, '&#039;');
   }
 
-  // =========================================================================
-  // CAMERA OPERATIONS & TRANSITIONS (F05)
-  // =========================================================================
-
   /**
    * F05: Smoothly pan and zoom camera to center on a target 3D node with depth compensation.
    */
   function panToNode(node, targetZoom = 1.6, duration = 750) {
     if (!node || node.x === undefined || node.y === undefined) return;
     const width = window.innerWidth;
-    const height = window.innerHeight - 64;
+    const height = window.innerHeight - getHeaderHeight();
     const k = targetZoom;
     const z = node.z !== undefined ? node.z : 0;
 
@@ -1734,61 +1742,66 @@
   function focusCluster(nodes, duration = 800) {
     if (!nodes || nodes.length === 0) return;
     const width = window.innerWidth;
-    const height = window.innerHeight - 64;
+    const height = window.innerHeight - getHeaderHeight();
 
     let minX = Infinity, maxX = -Infinity;
     let minY = Infinity, maxY = -Infinity;
-    let sumX = 0, sumY = 0, sumZ = 0;
+    let sumZ = 0;
     let count = 0;
 
     nodes.forEach(n => {
-      if (n.x === undefined || n.y === undefined) return;
+      if (n.x === undefined || n.y === undefined || isNaN(n.x) || isNaN(n.y)) return;
       if (n.x < minX) minX = n.x;
       if (n.x > maxX) maxX = n.x;
       if (n.y < minY) minY = n.y;
       if (n.y > maxY) maxY = n.y;
-      sumX += n.x;
-      sumY += n.y;
       sumZ += (n.z !== undefined ? n.z : 0);
       count++;
     });
 
-    if (count === 0) return;
+    if (count === 0 || !isFinite(minX) || !isFinite(maxX)) return;
 
-    const avgX = sumX / count;
-    const avgY = sumY / count;
+    const bboxCenterX = (minX + maxX) / 2;
+    const bboxCenterY = (minY + maxY) / 2;
     const avgZ = sumZ / count;
 
-    const spanX = Math.max(maxX - minX + 80, 150);
-    const spanY = Math.max(maxY - minY + 80, 150);
+    const spanX = Math.max(maxX - minX + 120, 200);
+    const spanY = Math.max(maxY - minY + 120, 200);
 
-    const fitK = Math.min((width * 0.75) / spanX, (height * 0.75) / spanY);
-    const k = Math.max(0.3, Math.min(2.2, fitK));
+    const fitK = Math.min((width * 0.85) / spanX, (height * 0.85) / spanY);
+    const k = Math.max(0.15, Math.min(2.5, fitK));
 
-    const { tx, ty } = getPanToCenter(avgX, avgY, avgZ, width, height, k);
+    const { tx, ty } = getPanToCenter(bboxCenterX, bboxCenterY, avgZ, width, height, k);
     const targetTransform = d3.zoomIdentity.translate(tx, ty).scale(k);
 
-    d3.select(graphCanvas)
-      .transition()
-      .duration(duration)
-      .ease(d3.easeCubicOut)
-      .call(zoomBehavior.transform, targetTransform);
+    if (duration > 0) {
+      d3.select(graphCanvas)
+        .transition()
+        .duration(duration)
+        .ease(d3.easeCubicOut)
+        .call(zoomBehavior.transform, targetTransform);
+    } else {
+      d3.select(graphCanvas).call(zoomBehavior.transform, targetTransform);
+      state.zoomTransform = targetTransform;
+      updateZoomIndicator();
+    }
   }
 
-  /**
-   * F05: Centers camera on the entire graph's center of mass in 3D.
-   */
-  function centerCamera() {
-    const visibleNodes = currentGraph.nodes.filter(n => n.x !== undefined && n.y !== undefined);
+  function fitToViewport(duration = 650) {
+    const visibleNodes = currentGraph.nodes.filter(n => n.x !== undefined && n.y !== undefined && !isNaN(n.x) && !isNaN(n.y));
     if (visibleNodes.length === 0) {
       const t = d3.zoomIdentity.translate(0, 0).scale(1.0);
-      d3.select(graphCanvas).transition().duration(600).ease(d3.easeCubicOut).call(zoomBehavior.transform, t);
+      d3.select(graphCanvas).call(zoomBehavior.transform, t);
+      state.zoomTransform = t;
+      updateZoomIndicator();
       return;
     }
-    focusCluster(visibleNodes, 650);
+    focusCluster(visibleNodes, duration);
   }
 
-
+  function centerCamera() {
+    fitToViewport(650);
+  }
 
   function updateZoomIndicator() {
     const indicator = document.getElementById('zoom-indicator');
@@ -1798,7 +1811,6 @@
     }
   }
 
-  // --- HUD Updates ---
   function updateHUDStats(stats) {
     const statNodes = document.getElementById('stat-nodes');
     if (statNodes) statNodes.textContent = stats.totalFiles;
@@ -1855,7 +1867,6 @@
     }
   }
 
-  // --- Comparison Modal Setup ---
   function setupComparisonModal() {
     const comp = graphData.comparison;
     if (!comp) return;
@@ -1904,7 +1915,6 @@
     if (compareModal) compareModal.classList.add('hidden');
   }
 
-  // --- Utilities ---
   function hexToRgba(hex, alpha) {
     if (!hex || hex[0] !== '#') return `rgba(0, 240, 255, ${alpha})`;
     let r = 0, g = 0, b = 0;
@@ -1925,7 +1935,6 @@
     return parts[parts.length - 1];
   }
 
-  // --- Synchronization with Global Scope ---
   function syncWindowExports() {
     window.state = state;
     window.currentGraph = currentGraph;
@@ -1942,15 +1951,18 @@
     window.panToNode = panToNode;
     window.centerCamera = centerCamera;
     window.focusCluster = focusCluster;
+    window.fitToViewport = fitToViewport;
     window.loadBranch = loadBranch;
     window.selectNode = selectNode;
+    window.openSettings = openSettings;
+    window.hideSettings = hideSettings;
+    window.toggleSettings = toggleSettings;
     window.THEMES = THEMES;
     window.setTheme = setTheme;
     window.showComparisonModal = showComparisonModal;
     window.hideComparisonModal = hideComparisonModal;
   }
 
-  // Bootstrap when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
