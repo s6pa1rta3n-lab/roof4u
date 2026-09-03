@@ -49,7 +49,6 @@ let tokenize (text : string) : (string * float) list =
     let cleaned = String.lowercase_ascii trimmed in
     let len = String.length cleaned in
 
-    (* 1. Extract status codes (4xx and 5xx) *)
     let status_tokens = ref [] in
     for i = 0 to len - 3 do
       let c0 = cleaned.[i] in
@@ -67,7 +66,6 @@ let tokenize (text : string) : (string * float) list =
     done;
     let status_tokens = List.rev !status_tokens in
 
-    (* 2. Extract lexical words and domain components *)
     let words = ref [] in
     let i = ref 0 in
     while !i < len do
@@ -85,7 +83,6 @@ let tokenize (text : string) : (string * float) list =
     let word_list = List.rev !words in
     let word_tokens = List.map (fun w -> ("w:" ^ w, 1.5)) word_list in
 
-    (* 3. Extract word bigrams *)
     let bigram_tokens = ref [] in
     let rec make_bigrams = function
       | w1 :: (w2 :: _ as rest) ->
@@ -96,7 +93,6 @@ let tokenize (text : string) : (string * float) list =
     make_bigrams word_list;
     let bigram_tokens = List.rev !bigram_tokens in
 
-    (* 4. Extract character 3-grams and 4-grams *)
     let ngram_tokens = ref [] in
     List.iter (fun w ->
       let w_len = String.length w in

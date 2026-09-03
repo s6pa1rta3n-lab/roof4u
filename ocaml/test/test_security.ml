@@ -93,7 +93,6 @@ let () =
   Printf.printf "=== [TIER 1, 2 & 3] Adversarial Security & Vulnerability Tests ===\n";
   Printf.printf "=================================================================\n\n";
 
-  (* 1. CSV Formula Injection Attacks (CWE-1236) *)
   let payload1 = "=cmd|' /C calc'!A0" in
   let sanitized1 = Security_Remediation.escape_rfc4180_csv payload1 in
   assert_equal_str "T1.F16.1: Neutralize leading '=' formula payload" "'=cmd|' /C calc'!A0" sanitized1;
@@ -115,7 +114,6 @@ let () =
   assert_true "T1.F16.5: RFC 4180 escaping with internal comma"
     (String.starts_with ~prefix:"\"" escaped_csv && String.ends_with ~suffix:"\"" escaped_csv);
 
-  (* 2. Path Traversal Attacks (CWE-22) *)
   assert_true "T1.F16.6: Reject relative path traversal ../../etc/passwd"
     (not (Security_Remediation.is_safe_filename "../../etc/passwd"));
 
@@ -128,7 +126,6 @@ let () =
   assert_true "T1.F16.9: Accept legitimate safe lesson store filename"
     (Security_Remediation.is_safe_filename "lessons_learned.json");
 
-  (* 3. SoQL Injection Attacks (CWE-89) *)
   let soql_attack1 = "94115' OR '1'='1" in
   assert_true "T1.F16.10: Block SQL OR injection payload"
     (match Security_Remediation.validate_soql_param soql_attack1 with Error _ -> true | _ -> false);
@@ -145,7 +142,6 @@ let () =
   assert_true "T1.F16.13: Allow valid SF postal code"
     (match Security_Remediation.validate_soql_param soql_valid with Ok _ -> true | _ -> false);
 
-  (* 4. Anti-Mock Cryptographic Integrity Checks *)
   assert_true "T1.F16.14: Reject all-zero dummy proof digest"
     (not (Security_Remediation.verify_cryptographic_proof "0000000000000000000000000000000000000000000000000000000000000000" "data"));
 

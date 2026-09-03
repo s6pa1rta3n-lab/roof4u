@@ -5,6 +5,7 @@
 open Types
 
 let default_building_permits_endpoint = "https://data.sfgov.org/resource/i98e-djp9.json"
+let default_permitsf_endpoint = "https://data.sfgov.org/resource/tyz3-vt28.json"
 
 let sanitize_keyword (k : string) : string =
   let buf = Buffer.create (String.length k) in
@@ -71,8 +72,10 @@ let is_roof_replacement_desc (desc : string) : bool =
     check 0
   in
   contains_sub "reroof" || contains_sub "re-roof" || contains_sub "roof replace" ||
-  contains_sub "tear off" || contains_sub "tear-off" || contains_sub "bitumen" ||
-  contains_sub "shingle" || contains_sub "tpo" || contains_sub "epdm" || contains_sub "tar and gravel"
+  contains_sub "replace roof" || contains_sub "tear off" || contains_sub "tear-off" ||
+  contains_sub "bitumen" || contains_sub "shingle" || contains_sub "tpo" || contains_sub "epdm" ||
+  contains_sub "torch down" || contains_sub "built up" || contains_sub "built-up" || contains_sub "tar and gravel"
+
 
 let build_roof_permits_query_url
     ?(base_url = default_building_permits_endpoint)
@@ -129,17 +132,22 @@ let parse_roof_permit_record
   let rev_cost = Json.get_float "revised_cost" j in
   let is_roof_rep = is_roof_replacement_desc description in
   let date_for_age =
-    match filed_date with
-    | Some f -> Some f
-    | None -> issued_date
+    match issued_date with
+    | Some i -> Some i
+    | None ->
+        (match completed_date with
+         | Some c -> Some c
+         | None -> filed_date)
   in
   let roof_age =
-    match date_for_age with
-    | Some d ->
-        (match extract_year_from_iso d with
-        | Some yr -> Some (float_of_int (max 1 (current_year - yr)))
-        | None -> None)
-    | None -> None
+    if not is_roof_rep then None
+    else
+      match date_for_age with
+      | Some d ->
+          (match extract_year_from_iso d with
+          | Some yr -> Some (float_of_int (max 0 (current_year - yr)))
+          | None -> None)
+      | None -> None
   in
   Ok {
     permit_number;
@@ -404,6 +412,24 @@ let fallback_permits_for_zip (zip : string) : roof_permit_record list =
           estimated_cost = Some 28000.0;
           revised_cost = Some 28000.0;
           roof_age_years = Some 20.0;
+          is_roof_replacement = true;
+        };
+        {
+          permit_number = "20010518";
+          block = "0530";
+          lot = "008";
+          parcel_number = "0530008";
+          street_number = "2340";
+          street_name = "Union St";
+          zip_code = "94123";
+          description = "Full tear-off and replacement of pitched Victorian roof";
+          filed_date = Some "2001-05-18";
+          issued_date = Some "2001-06-05";
+          completed_date = Some "2001-07-20";
+          status = Some "COMPLETED";
+          estimated_cost = Some 32000.0;
+          revised_cost = Some 32000.0;
+          roof_age_years = Some 25.0;
           is_roof_replacement = true;
         };
       ]

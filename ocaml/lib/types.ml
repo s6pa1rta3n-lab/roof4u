@@ -70,11 +70,12 @@ type invariant_status =
   | Satisfied of string
   | Violated of invariant_violation
 
+(** Scoring components breakdown: age (0.0 to 40.0), value (0.0 to 35.0), type (10.0 to 25.0), total (0.0 to 100.0). *)
 type scoring_components = {
-  age_score : float;     (** 0.0 to 40.0 *)
-  value_score : float;   (** 0.0 to 35.0 *)
-  type_score : float;    (** 10.0 to 25.0 *)
-  total_score : float;   (** 0.0 to 100.0 *)
+  age_score : float;
+  value_score : float;
+  type_score : float;
+  total_score : float;
 }
 
 type qualification_verdict =

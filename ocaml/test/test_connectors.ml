@@ -56,12 +56,8 @@ let () =
   Printf.printf "=== [MILESTONE 3] Municipal Connectors, LLM & Telemetry Tests ===\n";
   Printf.printf "=================================================================\n\n";
 
-  (* ========================================================================= *)
-  (* 1. HTTP 1.1 CLIENT TESTS                                                  *)
-  (* ========================================================================= *)
   Printf.printf "--- 1. HTTP 1.1 Client: URL Parsing, Headers & Chunked Transfer ---\n";
 
-  (* 1.1 URL Parsing *)
   let u1 = parse_url "http://localhost:8000/v1/chat/completions" in
   assert_true "HTTP.1: Parse localhost URL with port and path"
     (match u1 with Ok (h, p, path) -> h = "localhost" && p = 8000 && path = "/v1/chat/completions" | _ -> false);
@@ -77,14 +73,12 @@ let () =
   let u_bad = parse_url "" in
   assert_true "HTTP.4: Reject empty URL" (match u_bad with Error _ -> true | _ -> false);
 
-  (* 1.2 Header Lookup Case-Insensitivity *)
   let hdrs = [("Content-Type", "application/json"); ("X-Custom-Token", "Secret123"); ("Transfer-Encoding", "chunked")] in
   assert_equal_str "HTTP.5: Case-insensitive header lookup (lowercase)" "application/json" (Option.get (get_header "content-type" hdrs));
   assert_equal_str "HTTP.6: Case-insensitive header lookup (uppercase)" "application/json" (Option.get (get_header "CONTENT-TYPE" hdrs));
   assert_equal_str "HTTP.7: Case-insensitive header lookup (mixed)" "Secret123" (Option.get (get_header "x-custom-token" hdrs));
   assert_true "HTTP.8: Missing header returns None" (get_header "authorization" hdrs = None);
 
-  (* 1.3 Response String Parsing *)
   let raw_resp_1 = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 15\r\n\r\n{\"status\":\"ok\"}" in
   let parsed_resp_1 = parse_response_string raw_resp_1 in
   assert_true "HTTP.9: Parse raw HTTP response status & headers"
@@ -92,7 +86,6 @@ let () =
      | Ok r -> r.status_code = 200 && r.status_message = "OK" && r.body = "{\"status\":\"ok\"}"
      | Error _ -> false);
 
-  (* 1.4 Chunked Transfer Decoding *)
   let chunked_raw = "4\r\nWiki\r\n6\r\npedia \r\nE\r\nin \r\n\r\nchunks.\r\n0\r\n\r\n" in
   let decoded_chunk = decode_chunked chunked_raw in
   assert_equal_str "HTTP.10: Decode multi-chunk transfer body" "Wikipedia in \r\n\r\nchunks." (match decoded_chunk with Ok s -> s | Error e -> failwith e);
@@ -104,12 +97,8 @@ let () =
      | Ok r -> r.status_code = 200 && r.body = "chunk 1chunk 2"
      | Error _ -> false);
 
-  (* ========================================================================= *)
-  (* 2. DATASF SODA API CONNECTOR & SOQL INJECTION PROTECTION                  *)
-  (* ========================================================================= *)
   Printf.printf "\n--- 2. DataSF SODA Connectors & SoQL Query Builder ---\n";
 
-  (* 2.1 Zip Code Validation *)
   assert_true "DataSF.1: Validate 5-digit zip code 94115" (is_valid_sf_zip "94115");
   assert_true "DataSF.2: Validate 5-digit zip code 94123" (is_valid_sf_zip "94123");
   assert_true "DataSF.3: Validate 5-digit zip code 94109" (is_valid_sf_zip "94109");
@@ -118,20 +107,17 @@ let () =
   assert_true "DataSF.6: Reject long zip code" (not (is_valid_sf_zip "941155"));
   assert_true "DataSF.7: Reject SoQL injection attempt in zip code" (not (is_valid_sf_zip "94115' OR 1=1 --"));
 
-  (* 2.2 Building Permits URL Generation *)
   let bp_url_res = build_building_permits_url ~limit:25 ~keyword:"roof" "94115" in
   assert_true "DataSF.8: Build valid building permits query URL" (match bp_url_res with Ok _ -> true | Error _ -> false);
   let bp_url = match bp_url_res with Ok u -> u | Error _ -> "" in
   assert_true "DataSF.9: Query URL targets dataset i98e-djp9.json" (String.starts_with ~prefix:default_building_permits_base bp_url);
   assert_true "DataSF.10: Query URL contains zipcode filter" (String.contains bp_url '5');
 
-  (* 2.3 PermitSF URL Generation *)
   let psf_url_res = build_permitsf_url ~limit:30 ["94115"; "94123"; "94118"] in
   assert_true "DataSF.11: Build valid PermitSF query URL" (match psf_url_res with Ok _ -> true | Error _ -> false);
   let psf_url = match psf_url_res with Ok u -> u | Error _ -> "" in
   assert_true "DataSF.12: Query URL targets dataset tyz3-vt28.json" (String.starts_with ~prefix:default_permitsf_base psf_url);
 
-  (* 2.4 SoQL Injection Sanitization *)
   let bp_inj = build_building_permits_url ~keyword:"roof'; DROP TABLE permits; --" "94115" in
   assert_true "DataSF.13: Keyword with injection characters sanitized safely"
     (match bp_inj with
@@ -141,7 +127,6 @@ let () =
   let bp_bad_zip = build_building_permits_url "94115' OR '1'='1" in
   assert_true "DataSF.14: Malicious zip code rejected by builder" (match bp_bad_zip with Error _ -> true | _ -> false);
 
-  (* 2.5 Candidate Lead Synthesis from JSON Payloads *)
   let sample_bp_json = {|
   [
     {
@@ -184,12 +169,8 @@ let () =
   assert_true "DataSF.19: Synthesized roof age is 18.0 years (2026 - 2008)" (Option.get l1.roof_age_years = 18.0);
   assert_true "DataSF.20: Synthesized valuation >= $2.5M" (Option.get l1.estimated_value >= 2500000.0);
 
-  (* ========================================================================= *)
-  (* 3. MUNICIPAL PORTAL SCRAPERS & DATE NORMALIZERS                           *)
-  (* ========================================================================= *)
   Printf.printf "\n--- 3. Municipal Date Normalizers, Classifiers & DOM Cleaners ---\n";
 
-  (* 3.1 Date Normalization *)
   assert_equal_str "Muni.1: Normalize ISO 8601 Timestamp" "2023-05-18" (Option.get (normalize_date "2023-05-18T14:30:00.000Z"));
   assert_equal_str "Muni.2: Normalize US Date MM/DD/YYYY" "2005-08-24" (Option.get (normalize_date "08/24/2005"));
   assert_equal_str "Muni.3: Normalize US Date MM/DD/YY" "2005-08-24" (Option.get (normalize_date "08/24/05"));
@@ -203,11 +184,9 @@ let () =
   assert_true "Muni.11: Null/invalid date returns None" (normalize_date "N/A" = None);
   assert_true "Muni.12: Unknown date returns None" (normalize_date "no_permit_on_file" = None);
 
-  (* 3.2 Year Extraction *)
   assert_equal_int "Muni.13: Extract year from normalized date" 2005 (Option.get (parse_date_year "08/24/2005"));
   assert_equal_int "Muni.14: Extract year from ISO timestamp" 2023 (Option.get (parse_date_year "2023-05-18T00:00:00.000"));
 
-  (* 3.3 Roofing Permit Classification Heuristics *)
   assert_true "Muni.15: Classify 'Complete tear-off and reroof' as roof replacement" (is_roof_replacement "Complete tear-off and reroof");
   assert_true "Muni.16: Classify 'RE-ROOF FLAT TAR AND GRAVEL' as roof replacement" (is_roof_replacement "RE-ROOF FLAT TAR AND GRAVEL");
   assert_true "Muni.17: Classify 'Replace asphalt shingles with new roof' as roof replacement" (is_roof_replacement "Replace asphalt shingles with new roof");
@@ -215,7 +194,6 @@ let () =
   assert_true "Muni.19: Classify 'Kitchen remodel and bathroom plumbing' as non-roof" (not (is_roof_replacement "Kitchen remodel and bathroom plumbing"));
   assert_true "Muni.20: Confirm non-roof alteration detector" (is_non_roof_alteration "Install 200A solar inverter and PV panels");
 
-  (* 3.4 DOM Cleaning *)
   let raw_html = "<html><head><script>alert('xss');</script><style>.body{color:red;}</style></head><body><div class='property-summary'><h1>2223 Pacific Ave</h1><p>APN: 0582-014</p><p>Assessed Value: $3,450,000</p></div><!-- Comment --></body></html>" in
   let cleaned_text = clean_dom_text raw_html in
   assert_true "Muni.21: Strip scripts from HTML" (not (String.contains cleaned_text 'x') || not (String.starts_with ~prefix:"alert" cleaned_text));
@@ -224,12 +202,8 @@ let () =
     (let (_, apn, val_opt, _, _) = extract_pim_details raw_html in
      apn <> None && Option.get val_opt >= 3400000.0);
 
-  (* ========================================================================= *)
-  (* 4. LOCAL LLM INFERENCE CLIENT & BALANCED BRACE CLEANER                    *)
-  (* ========================================================================= *)
   Printf.printf "\n--- 4. Local LLM Client, Chat Payloads & Balanced JSON Cleaner ---\n";
 
-  (* 4.1 Chat Payload Formatting *)
   let payload_str = format_chat_payload ~system_prompt:"System prompt" ~user_content:"User text" () in
   assert_true "LLM.1: Formatted payload parses as valid JSON" (match Json.parse payload_str with Ok _ -> true | Error _ -> false);
   assert_true "LLM.2: Payload specifies model nvidia/llama-3.1-nemotron-70b-instruct"
@@ -237,18 +211,15 @@ let () =
      | Ok ast -> Json.get_string "model" ast = Some "nvidia/llama-3.1-nemotron-70b-instruct"
      | Error _ -> false);
 
-  (* 4.2 Response Cleansing: Thinking Tag Removal *)
   let think_wrapped = "<think>\nThinking about the property roof type...\nIt has flat bitumen.\n</think>\n{\"address\": \"2223 Pacific Ave\", \"zip_code\": \"94115\", \"roof_type\": \"Flat\"}" in
   let cleaned_think = clean_json_response think_wrapped in
   assert_true "LLM.3: Strip <think> reasoning tags" (not (String.starts_with ~prefix:"<think>" cleaned_think) && String.starts_with ~prefix:"{" cleaned_think);
 
-  (* 4.3 Response Cleansing: Markdown Codeblock Fences *)
   let fenced = "Here is the extracted property details:\n```json\n{\n  \"address\": \"2223 Pacific Ave\",\n  \"zip_code\": \"94115\",\n  \"property_type\": \"Single-Family\",\n  \"roof_type\": \"Victorian\"\n}\n```\nHope this helps!" in
   let cleaned_fence = clean_json_response fenced in
   assert_true "LLM.4: Strip markdown codeblock fences and isolate JSON object"
     (String.starts_with ~prefix:"{" cleaned_fence && String.ends_with ~suffix:"}" cleaned_fence);
 
-  (* 4.4 Balanced Brace Scanner on Preamble Curly Braces *)
   let tricky_preamble = "Analysis of {neighborhood} and {tax_bracket} yields:\n{\n  \"address\": \"2223 Pacific Ave\",\n  \"zip_code\": \"94115\",\n  \"property_type\": \"Single-Family\",\n  \"roof_type\": \"Victorian\",\n  \"is_hoa\": false,\n  \"is_rental\": false\n}\nExtra notes." in
   let cleaned_balanced = clean_json_response tricky_preamble in
   assert_true "LLM.5: Balanced brace scanner skips preamble brackets and finds true JSON object"
@@ -256,7 +227,6 @@ let () =
      | Ok ast -> Json.get_string "address" ast = Some "2223 Pacific Ave"
      | Error _ -> false);
 
-  (* 4.5 Property Extraction Parsing *)
   let prop_json = {|
   {
     "address": "2223 Pacific Ave",
@@ -277,7 +247,6 @@ let () =
   assert_equal_str "LLM.8: Extracted property address" "2223 Pacific Ave" p_ext.address;
   assert_true "LLM.9: Extracted estimated value" (p_ext.estimated_value = Some 3500000.0);
 
-  (* 4.6 County Permit Extraction Parsing *)
   let county_json = {|
   {
     "address": "2223 Pacific Ave",
@@ -304,9 +273,6 @@ let () =
   assert_equal_str "LLM.11: Extracted APN" "0582-014" (Option.get c_ext.apn);
   assert_true "LLM.12: Extracted permit history count" (List.length c_ext.permit_history = 1);
 
-  (* ========================================================================= *)
-  (* 5. TELEMETRY, SHA-256 FINGERPRINTS & ISSUE DEDUPLICATION                  *)
-  (* ========================================================================= *)
   Printf.printf "\n--- 5. Telemetry Logging, SHA-256 Fingerprinting & Deduplication ---\n";
 
   let test_event : scraping_failure_event = {
@@ -326,7 +292,6 @@ let () =
     timestamp = "2026-09-01T10:00:00Z";
   } in
 
-  (* 5.1 Deterministic SHA-256 Error Fingerprint *)
   let fp1 = generate_error_fingerprint test_event in
   let fp2 = generate_error_fingerprint test_event in
   assert_true "Telemetry.1: Deterministic 16-character SHA-256 fingerprint" (String.length fp1 = 16 && fp1 = fp2);
@@ -335,7 +300,6 @@ let () =
   let fp_diff = generate_error_fingerprint diff_event in
   assert_true "Telemetry.2: Different selector generates different fingerprint" (fp1 <> fp_diff);
 
-  (* 5.2 Formatting Issue Title & Body with Embedded Telemetry Block *)
   let title = format_issue_title test_event in
   assert_true "Telemetry.3: Issue title contains domain and failure type"
     (String.starts_with ~prefix:"[Scraping Failure] sfplanninggis.org - DOM_SELECTOR_DRIFT" title);
@@ -344,14 +308,12 @@ let () =
   assert_true "Telemetry.4: Issue body contains metadata block start/end markers"
     (String.contains body 'R' && String.contains body 'O' && String.contains body 'F');
 
-  (* 5.3 Parsing Telemetry Metadata Block *)
   let meta_pairs_opt = parse_telemetry_metadata_block body in
   assert_true "Telemetry.5: Parse telemetry metadata block" (meta_pairs_opt <> None);
   let meta_pairs = Option.get meta_pairs_opt in
   assert_equal_str "Telemetry.6: Metadata block contains domain" "sfplanninggis.org" (List.assoc "domain" meta_pairs);
   assert_equal_str "Telemetry.7: Metadata block contains fingerprint" fp1 (List.assoc "fingerprint" meta_pairs);
 
-  (* 5.4 Issue Deduplication Engine *)
   let open_issue_1 = Json.Object [
     ("number", Json.Number 42.0);
     ("title", Json.String title);
@@ -362,7 +324,6 @@ let () =
   assert_true "Telemetry.8: Duplicate detector finds existing issue by fingerprint" (dup_match <> None);
   assert_true "Telemetry.9: Different event does not match duplicate" (find_duplicate_issue diff_event [open_issue_1] = None);
 
-  (* 5.5 60-Second Anti-Spam Recurrence Throttling *)
   reset_throttle_cache ();
   let mcp_call_count = ref 0 in
   let mock_mcp action (_args : Json.t) =
@@ -382,7 +343,6 @@ let () =
   let res2 = log_scraping_failure ~mcp_caller:mock_mcp test_event in
   assert_true "Telemetry.11: Immediate second recurrence is throttled within 60s window" (res2.action = Throttled);
 
-  (* 5.6 Offline Queueing & Flushing *)
   let test_queue_file = "/tmp/test_github_queue.json" in
   (try Sys.remove test_queue_file with _ -> ());
   let cfg_offline = { default_config with offline_queue_path = test_queue_file } in

@@ -105,7 +105,6 @@ let test_valuation_boundaries () =
   ] in
 
   List.iter (fun (dist_name, addr, zip) ->
-    (* Under boundary: $999,999.00 -> MUST DISQUALIFY *)
     let lead_sub_mil = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some 999999.0) () in
     let verif_sub = Scorer.verify_lead lead_sub_mil in
     assert_true (Printf.sprintf "VAL.BOUND.%s.1: $999,999.00 is DISQUALIFIED under INV-3" dist_name)
@@ -114,7 +113,6 @@ let test_valuation_boundaries () =
            List.exists (fun v -> v.code = INV3_Economic) failed_invariants
        | Qualified _ -> false);
 
-    (* Under boundary by 1 cent: $999,999.99 -> MUST DISQUALIFY *)
     let lead_sub_cent = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some 999999.99) () in
     let verif_cent = Scorer.verify_lead lead_sub_cent in
     assert_true (Printf.sprintf "VAL.BOUND.%s.2: $999,999.99 is DISQUALIFIED under INV-3" dist_name)
@@ -123,19 +121,16 @@ let test_valuation_boundaries () =
            List.exists (fun v -> v.code = INV3_Economic) failed_invariants
        | Qualified _ -> false);
 
-    (* Exact boundary: $1,000,000.00 -> MUST QUALIFY *)
     let lead_exact_mil = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some 1000000.0) () in
     let verif_exact = Scorer.verify_lead lead_exact_mil in
     assert_true (Printf.sprintf "VAL.BOUND.%s.3: $1,000,000.00 QUALIFIES under INV-3" dist_name)
       (match verif_exact.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* Above boundary by 1 cent: $1,000,000.01 -> MUST QUALIFY *)
     let lead_above_cent = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some 1000000.01) () in
     let verif_above = Scorer.verify_lead lead_above_cent in
     assert_true (Printf.sprintf "VAL.BOUND.%s.4: $1,000,000.01 QUALIFIES under INV-3" dist_name)
       (match verif_above.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* Missing valuation: None -> MUST DISQUALIFY *)
     let lead_no_val = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:None () in
     let verif_no_val = Scorer.verify_lead lead_no_val in
     assert_true (Printf.sprintf "VAL.BOUND.%s.5: Missing valuation is DISQUALIFIED under INV-3" dist_name)
@@ -144,7 +139,6 @@ let test_valuation_boundaries () =
            List.exists (fun v -> v.code = INV3_Economic) failed_invariants
        | Qualified _ -> false);
 
-    (* Zero valuation: $0.00 -> MUST DISQUALIFY *)
     let lead_zero_val = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some 0.0) () in
     let verif_zero_val = Scorer.verify_lead lead_zero_val in
     assert_true (Printf.sprintf "VAL.BOUND.%s.6: $0.00 valuation is DISQUALIFIED under INV-3" dist_name)
@@ -153,7 +147,6 @@ let test_valuation_boundaries () =
            List.exists (fun v -> v.code = INV3_Economic) failed_invariants
        | Qualified _ -> false);
 
-    (* Negative valuation: -$500,000.00 -> MUST DISQUALIFY *)
     let lead_neg_val = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some (-500000.0)) () in
     let verif_neg_val = Scorer.verify_lead lead_neg_val in
     assert_true (Printf.sprintf "VAL.BOUND.%s.7: Negative valuation is DISQUALIFIED under INV-3" dist_name)
@@ -162,7 +155,6 @@ let test_valuation_boundaries () =
            List.exists (fun v -> v.code = INV3_Economic) failed_invariants
        | Qualified _ -> false);
 
-    (* High valuation ($5M) but HOA managed -> MUST DISQUALIFY *)
     let lead_hoa = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some 5000000.0) ~is_hoa:true () in
     let verif_hoa = Scorer.verify_lead lead_hoa in
     assert_true (Printf.sprintf "VAL.BOUND.%s.8: HOA managed property is DISQUALIFIED under INV-3" dist_name)
@@ -171,7 +163,6 @@ let test_valuation_boundaries () =
            List.exists (fun v -> v.code = INV3_Economic) failed_invariants
        | Qualified _ -> false);
 
-    (* High valuation ($5M) but Rental property -> MUST DISQUALIFY *)
     let lead_rental = make_test_lead ~address:addr ~zip_code:zip ~estimated_value:(Some 5000000.0) ~is_rental:true () in
     let verif_rental = Scorer.verify_lead lead_rental in
     assert_true (Printf.sprintf "VAL.BOUND.%s.9: Tenant/rental property is DISQUALIFIED under INV-3" dist_name)
@@ -180,7 +171,6 @@ let test_valuation_boundaries () =
            List.exists (fun v -> v.code = INV3_Economic) failed_invariants
        | Qualified _ -> false);
 
-    (* Scorer Value Component Step & Monotonicity *)
     let val_score_sub = Scorer.compute_value_score (Some 999999.0) in
     let val_score_exact = Scorer.compute_value_score (Some 1000000.0) in
     let val_score_2m = Scorer.compute_value_score (Some 2000000.0) in
@@ -205,7 +195,6 @@ let test_roof_age_boundaries () =
   ] in
 
   List.iter (fun (dist_name, addr, zip) ->
-    (* Under boundary: 14.9 yrs -> MUST DISQUALIFY *)
     let lead_14_9 = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:(Some 14.9) () in
     let verif_14_9 = Scorer.verify_lead lead_14_9 in
     assert_true (Printf.sprintf "AGE.BOUND.%s.1: 14.9 years roof is DISQUALIFIED under INV-2" dist_name)
@@ -214,7 +203,6 @@ let test_roof_age_boundaries () =
            List.exists (fun v -> v.code = INV2_Temporal) failed_invariants
        | Qualified _ -> false);
 
-    (* Under boundary: 14.999 yrs -> MUST DISQUALIFY *)
     let lead_14_999 = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:(Some 14.999) () in
     let verif_14_999 = Scorer.verify_lead lead_14_999 in
     assert_true (Printf.sprintf "AGE.BOUND.%s.2: 14.999 years roof is DISQUALIFIED under INV-2" dist_name)
@@ -223,19 +211,16 @@ let test_roof_age_boundaries () =
            List.exists (fun v -> v.code = INV2_Temporal) failed_invariants
        | Qualified _ -> false);
 
-    (* Exact boundary: 15.0 yrs -> MUST QUALIFY *)
     let lead_15_0 = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:(Some 15.0) () in
     let verif_15_0 = Scorer.verify_lead lead_15_0 in
     assert_true (Printf.sprintf "AGE.BOUND.%s.3: 15.0 years roof QUALIFIES under INV-2" dist_name)
       (match verif_15_0.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* Above boundary: 15.001 yrs -> MUST QUALIFY *)
     let lead_15_001 = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:(Some 15.001) () in
     let verif_15_001 = Scorer.verify_lead lead_15_001 in
     assert_true (Printf.sprintf "AGE.BOUND.%s.4: 15.001 years roof QUALIFIES under INV-2" dist_name)
       (match verif_15_001.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* 0.0 yrs brand new roof -> MUST DISQUALIFY *)
     let lead_0_yrs = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:(Some 0.0) () in
     let verif_0_yrs = Scorer.verify_lead lead_0_yrs in
     assert_true (Printf.sprintf "AGE.BOUND.%s.5: 0.0 years roof is DISQUALIFIED under INV-2" dist_name)
@@ -244,7 +229,6 @@ let test_roof_age_boundaries () =
            List.exists (fun v -> v.code = INV2_Temporal) failed_invariants
        | Qualified _ -> false);
 
-    (* Fallback via year_built: no roof age, built in 1997 (29 yrs old in 2026, < 30) -> MUST DISQUALIFY *)
     let lead_built_1997 = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:None ~year_built:(Some 1997) () in
     let verif_1997 = Scorer.verify_lead ~current_year:2026 lead_built_1997 in
     assert_true (Printf.sprintf "AGE.BOUND.%s.6: Built in 1997 (29 yrs, < 30) is DISQUALIFIED under INV-2" dist_name)
@@ -253,13 +237,11 @@ let test_roof_age_boundaries () =
            List.exists (fun v -> v.code = INV2_Temporal) failed_invariants
        | Qualified _ -> false);
 
-    (* Fallback via year_built: no roof age, built in 1996 (30 yrs old in 2026, >= 30) -> MUST QUALIFY *)
     let lead_built_1996 = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:None ~year_built:(Some 1996) () in
     let verif_1996 = Scorer.verify_lead ~current_year:2026 lead_built_1996 in
     assert_true (Printf.sprintf "AGE.BOUND.%s.7: Built in 1996 (30 yrs, >= 30) QUALIFIES under INV-2" dist_name)
       (match verif_1996.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* No roof age and no year built -> MUST DISQUALIFY *)
     let lead_no_age_data = make_test_lead ~address:addr ~zip_code:zip ~roof_age_years:None ~year_built:None () in
     let verif_no_age = Scorer.verify_lead lead_no_age_data in
     assert_true (Printf.sprintf "AGE.BOUND.%s.8: Neither roof age nor year built is DISQUALIFIED under INV-2" dist_name)
@@ -268,7 +250,6 @@ let test_roof_age_boundaries () =
            List.exists (fun v -> v.code = INV2_Temporal) failed_invariants
        | Qualified _ -> false);
 
-    (* Scorer Age Component Monotonicity *)
     let age_score_0 = Scorer.compute_age_score (Some 0.0) None in
     let age_score_14_9 = Scorer.compute_age_score (Some 14.9) None in
     let age_score_15 = Scorer.compute_age_score (Some 15.0) None in
@@ -293,7 +274,6 @@ let test_permit_conflicts () =
   ] in
 
   List.iter (fun (dist_name, addr, zip) ->
-    (* Conflicting 2020 roof replacement permit (6 yrs ago < 15) -> MUST DISQUALIFY *)
     let permit_2020 : permit_record = {
       permit_number = "20200512";
       permit_type = Some "Building Permit";
@@ -313,7 +293,6 @@ let test_permit_conflicts () =
            List.exists (fun v -> v.code = INV4_Permits) failed_invariants
        | Qualified _ -> false);
 
-    (* Conflicting 2025 brand-new permit (1 yr ago < 15) -> MUST DISQUALIFY *)
     let permit_2025 : permit_record = {
       permit_number = "20250110";
       permit_type = Some "Building Permit";
@@ -333,7 +312,6 @@ let test_permit_conflicts () =
            List.exists (fun v -> v.code = INV4_Permits) failed_invariants
        | Qualified _ -> false);
 
-    (* Boundary permit: 2012 (14 yrs ago in 2026, 2026-2012=14 < 15) -> MUST DISQUALIFY *)
     let permit_2012 : permit_record = {
       permit_number = "20120405";
       permit_type = Some "Building Permit";
@@ -353,7 +331,6 @@ let test_permit_conflicts () =
            List.exists (fun v -> v.code = INV4_Permits) failed_invariants
        | Qualified _ -> false);
 
-    (* Boundary non-conflict permit: 2011 (15 yrs ago in 2026, 2026-2011=15 >= 15) -> MUST QUALIFY *)
     let permit_2011 : permit_record = {
       permit_number = "20110405";
       permit_type = Some "Building Permit";
@@ -370,7 +347,6 @@ let test_permit_conflicts () =
     assert_true (Printf.sprintf "PERMIT.CONF.%s.4: 2011 permit (15 yrs ago) QUALIFIES under INV-4" dist_name)
       (match verif_2011.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* Non-conflicting 2005 roof replacement permit (21 yrs ago >= 15) -> MUST QUALIFY *)
     let permit_2005 : permit_record = {
       permit_number = "20050722";
       permit_type = Some "Building Permit";
@@ -387,7 +363,6 @@ let test_permit_conflicts () =
     assert_true (Printf.sprintf "PERMIT.CONF.%s.5: 2005 permit (21 yrs ago) QUALIFIES under INV-4" dist_name)
       (match verif_2005.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* Mixed permits: 2005 replacement + 2020 replacement -> MUST DISQUALIFY due to 2020 *)
     let lead_mixed_conflict = make_test_lead ~address:addr ~zip_code:zip ~permits:[permit_2005; permit_2020] () in
     let verif_mixed_conflict = Scorer.verify_lead ~current_year:2026 lead_mixed_conflict in
     assert_true (Printf.sprintf "PERMIT.CONF.%s.6: Mixed 2005 + 2020 permits DISQUALIFIES under INV-4" dist_name)
@@ -396,7 +371,6 @@ let test_permit_conflicts () =
            List.exists (fun v -> v.code = INV4_Permits) failed_invariants
        | Qualified _ -> false);
 
-    (* Mixed permits: 2005 replacement + 2024 Electrical Rewiring (non-roof) -> MUST QUALIFY *)
     let permit_electrical_2024 : permit_record = {
       permit_number = "20240901";
       permit_type = Some "Electrical Permit";
@@ -413,7 +387,6 @@ let test_permit_conflicts () =
     assert_true (Printf.sprintf "PERMIT.CONF.%s.7: 2024 electrical permit does NOT conflict with INV-4" dist_name)
       (match verif_elec.verdict with Qualified _ -> true | Disqualified _ -> false);
 
-    (* Description keyword triggers: 'reroof', 're-roof', 'tear off', 'tear-off', 'shingle replace', 'tar and gravel' *)
     let keywords = [
       ("reroof", "Commercial reroof project");
       ("re-roof", "Emergency re-roof repair and overlay");
@@ -432,7 +405,7 @@ let test_permit_conflicts () =
         date_issued = Some "2023-03-15";
         status = Some "COMPLETED";
         year = Some 2023;
-        is_roof_replacement = false; (* Rely on description detector *)
+        is_roof_replacement = false;
         cost = Some 20000.0;
       } in
       let lead_kw = make_test_lead ~address:addr ~zip_code:zip ~permits:[p] () in
@@ -495,7 +468,6 @@ let test_ineligible_types () =
 let test_address_normalization_and_microservices () =
   Printf.printf "\n[Adversarial Section 5] Address Normalization and Microservices Robustness...\n%!";
 
-  (* Test URL Query String Injection & Sanitization in Homeowner_addresses *)
   let evil_neighborhoods = [
     "Sunset'; DROP TABLE leads;--";
     "Richmond\" OR \"1\"=\"1";
@@ -514,7 +486,6 @@ let test_address_normalization_and_microservices () =
         assert_true (Printf.sprintf "ADDR.SAN.%d: Rejected invalid input safely" idx) true
   ) evil_neighborhoods;
 
-  (* Test Neighborhood Resolution across various case and prefix formats *)
   let sunset_canonical = ["Sunset"; "sunset"; "SUNSET"] in
   List.iter (fun n_var ->
     let addrs_res = Homeowner_addresses.fetch_homeowner_addresses ~neighborhood:n_var () in
@@ -559,7 +530,6 @@ let test_address_normalization_and_microservices () =
         assert_true (Printf.sprintf "ADDR.NORM.PacHeights: '%s' failed: %s" n_var err) false
   ) pac_heights_variations;
 
-  (* Empirical finding test: Non-prefix matching sub-neighborhood names fallback to default *)
   let unhandled_sub_neighborhoods = ["Inner Sunset"; "Outer Sunset"; "Parkside"] in
   List.iter (fun sub_n ->
     let addrs_res = Homeowner_addresses.fetch_homeowner_addresses ~neighborhood:sub_n () in
@@ -571,7 +541,6 @@ let test_address_normalization_and_microservices () =
         assert_true (Printf.sprintf "ADDR.NORM.Fallback: '%s' returned error %s" sub_n err) false
   ) unhandled_sub_neighborhoods;
 
-  (* Test Public Records Orchestrator Cross-Referencing by APN across all 4 districts *)
   let target_districts = ["Sunset"; "Richmond"; "Excelsior"; "Pacific Heights"] in
   List.iter (fun dist ->
     let acq_res = Public_records_orchestrator.acquire_neighborhood_public_records ~neighborhood:dist () in
@@ -595,33 +564,28 @@ let test_crypto_and_csv_dde () =
   let lead = make_test_lead ~address:"1420 20th Ave" ~zip_code:"94122" ~estimated_value:(Some 1650000.0) () in
   let verif = Scorer.verify_lead ~timestamp:"2026-09-01T06:00:00Z" lead in
 
-  (* SHA-256 Proof must be exactly 64 hex characters *)
   assert_equal_int "CRYPTO.LEN: Proof is 64 hex characters" 64 (String.length verif.sha256_proof);
   assert_equal_str "CRYPTO.PREFIX: Proof ID has PROOF-OCAML- prefix"
     ("PROOF-OCAML-" ^ (String.sub verif.sha256_proof 0 16 |> String.uppercase_ascii))
     verif.proof_id;
 
-  (* Avalanche Effect / Falsification Resistance *)
   let payload_orig = Printf.sprintf "ROO4U-PROOF-V1|1420 20th Ave|94122|Single-Family|Victorian|QUALIFIED|%.2f|2026-09-01T06:00:00Z"
     (match verif.verdict with Qualified { score; _ } -> score.total_score | _ -> 0.0) in
   let digest_orig = Crypto.sha256_string payload_orig in
   assert_equal_str "CRYPTO.MATCH: Canonical digest matches verified proof" digest_orig verif.sha256_proof;
 
-  (* Falsify address by 1 char -> digest must completely change *)
   let payload_tampered_addr = Printf.sprintf "ROO4U-PROOF-V1|1421 20th Ave|94122|Single-Family|Victorian|QUALIFIED|%.2f|2026-09-01T06:00:00Z"
     (match verif.verdict with Qualified { score; _ } -> score.total_score | _ -> 0.0) in
   let digest_tampered_addr = Crypto.sha256_string payload_tampered_addr in
   assert_true "CRYPTO.TAMPER.ADDR: Single address character modification breaks SHA-256 digest"
     (digest_orig <> digest_tampered_addr);
 
-  (* Falsify score by 0.01 -> digest must completely change *)
   let payload_tampered_score = Printf.sprintf "ROO4U-PROOF-V1|1420 20th Ave|94122|Single-Family|Victorian|QUALIFIED|%.2f|2026-09-01T06:00:00Z"
     ((match verif.verdict with Qualified { score; _ } -> score.total_score | _ -> 0.0) +. 0.01) in
   let digest_tampered_score = Crypto.sha256_string payload_tampered_score in
   assert_true "CRYPTO.TAMPER.SCORE: Score perturbation breaks SHA-256 digest"
     (digest_orig <> digest_tampered_score);
 
-  (* CSV DDE Formula Injection Sanitization *)
   let dde_triggers = ["=1+1"; "+2+3"; "-cmd|' /C calc'!A0"; "@SUM(A1:A10)"; "\tDDE"; "\rMALICIOUS"] in
   List.iteri (fun idx payload ->
     let sanitized = Csv_exporter.sanitize_csv_field payload in
@@ -632,7 +596,6 @@ let test_crypto_and_csv_dde () =
       (String.starts_with ~prefix:"\"'" cell || cell.[0] = '\'')
   ) dde_triggers;
 
-  (* Disqualified Lead is NEVER Exported to CSV *)
   let lead_disq = make_test_lead ~address:"123 Bad Val St" ~estimated_value:(Some 500000.0) () in
   let verif_disq = Scorer.verify_lead lead_disq in
   let temp_csv = Filename.temp_file "disq_check_" ".csv" in

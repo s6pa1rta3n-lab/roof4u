@@ -3,9 +3,10 @@
    Attempts to find homeowner phone numbers by scraping public search engines.
 *)
 
-(** 
-   Performs a web search using the homeowner's name and address.
-   Extracts potential phone numbers from the search results using regex.
-   Returns the most likely phone number, or None if no match is found.
-*)
-val extract_phone_number : Types.raw_lead -> (Types.raw_lead, string) result
+val url_encode : string -> string
+
+val build_search_url : Types.raw_lead -> string
+
+val extract_phones_from_html : string -> string list
+
+val extract_phone_number : ?search_url:string -> Types.raw_lead -> (Types.raw_lead, string) result

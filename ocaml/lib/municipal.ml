@@ -56,7 +56,6 @@ let normalize_date (raw_str : string) : string option =
      s_lower = "n/a - historic" then
     None
   else
-    (* 1. ISO 8601 timestamp: 2023-05-18T... or 2023-05-18 *)
     if String.length s >= 10 && s.[4] = '-' && s.[7] = '-' then
       (try
          let y = int_of_string (String.sub s 0 4) in
@@ -66,7 +65,6 @@ let normalize_date (raw_str : string) : string option =
          else None
        with _ -> None)
 
-    (* 2. YYYY/MM/DD *)
     else if String.length s >= 10 && s.[4] = '/' && s.[7] = '/' then
       (try
          let y = int_of_string (String.sub s 0 4) in
@@ -76,7 +74,6 @@ let normalize_date (raw_str : string) : string option =
          else None
        with _ -> None)
 
-    (* 3. YYYY.MM.DD *)
     else if String.length s >= 10 && s.[4] = '.' && s.[7] = '.' then
       (try
          let y = int_of_string (String.sub s 0 4) in
@@ -86,7 +83,6 @@ let normalize_date (raw_str : string) : string option =
          else None
        with _ -> None)
 
-    (* 4. MM/DD/YYYY or MM/DD/YY *)
     else if String.contains s '/' then
       (match String.split_on_char '/' s with
        | [m_str; d_str; y_str] ->
@@ -99,7 +95,6 @@ let normalize_date (raw_str : string) : string option =
             with _ -> None)
        | _ -> None)
 
-    (* 5. MM-DD-YYYY or MM-DD-YY or DD-Mon-YYYY *)
     else if String.contains s '-' then
       (match String.split_on_char '-' s with
        | [p1; p2; p3] ->
@@ -124,7 +119,6 @@ let normalize_date (raw_str : string) : string option =
                  with _ -> None))
        | _ -> None)
 
-    (* 6. Month DD, YYYY / Month DD YYYY e.g. "Aug 24, 2005" or "24 Aug 2005" *)
     else
       let clean_commas = String.map (function ',' -> ' ' | c -> c) s in
       let tokens = List.filter (fun t -> t <> "") (String.split_on_char ' ' clean_commas) in
@@ -149,7 +143,6 @@ let normalize_date (raw_str : string) : string option =
                      with _ -> None)
                 | None -> None))
       | _ ->
-          (* 7. 4-digit Year fallback e.g. "1998" *)
           let len = String.length s in
           let rec find_year idx =
             if idx + 3 >= len then None

@@ -10,6 +10,9 @@ open Types
 
 val default_building_permits_endpoint : string
 
+val default_permitsf_endpoint : string
+
+
 val sanitize_keyword : string -> string
 (** [sanitize_keyword kw] sanitizes permit search keywords. *)
 

@@ -37,9 +37,6 @@ let () =
   Printf.printf "=== Formal Invariant Qualification & Scoring Engine Tests ===\n";
   Printf.printf "=================================================================\n\n";
 
-  (* --- TIER 1: FEATURE COVERAGE TESTS --- *)
-  
-  (* INV1 Physical Eligibility *)
   assert_true "T1.INV1.1: Victorian SFR Passes"
     (match check_inv1_physical Victorian SingleFamily with Satisfied _ -> true | _ -> false);
 
@@ -67,7 +64,6 @@ let () =
   assert_true "T1.INV1.9: MixedUse Fails"
     (match check_inv1_physical Flat MixedUse with Violated _ -> true | _ -> false);
 
-  (* INV2 Temporal Degradation *)
   assert_true "T1.INV2.1: Roof Age 18.0 yrs Passes"
     (match check_inv2_temporal (Some 18.0) None with Satisfied _ -> true | _ -> false);
 
@@ -83,7 +79,6 @@ let () =
   assert_true "T1.INV2.5: No Age and No YearBuilt Fails"
     (match check_inv2_temporal None None with Violated _ -> true | _ -> false);
 
-  (* INV3 Economic Viability *)
   assert_true "T1.INV3.1: Assessed $2.5M SFR Passes"
     (match check_inv3_economic (Some 2500000.0) false false with Satisfied _ -> true | _ -> false);
 
@@ -99,7 +94,6 @@ let () =
   assert_true "T1.INV3.5: Missing Valuation Fails"
     (match check_inv3_economic None false false with Violated _ -> true | _ -> false);
 
-  (* INV4 Permit Recency Non-Conflict *)
   let p_old = {
     permit_number = "PERMIT-2004-99";
     permit_type = Some "Building Permit";
@@ -142,16 +136,12 @@ let () =
   assert_true "T1.INV4.3: Non-Roof Permit in 2024 Does Not Conflict"
     (match check_inv4_permits [p_electric] with Satisfied _ -> true | _ -> false);
 
-  (* Scorer Tests *)
   let sc_max = compute_actionability_score (Some 30.0) (Some 1900) (Some 5000000.0) Victorian SingleFamily in
   assert_true "T1.Scorer.1: Max Score is exactly 100.0" (sc_max.total_score = 100.0);
   assert_true "T1.Scorer.2: Age Component is 40.0 for 30yr roof" (sc_max.age_score = 40.0);
   assert_true "T1.Scorer.3: Value Component is 35.0 for $5.0M property" (sc_max.value_score = 35.0);
   assert_true "T1.Scorer.4: Type Component is 25.0 for Victorian SFR" (sc_max.type_score = 25.0);
 
-  (* --- TIER 2: BOUNDARY VALUE ANALYSIS & CORNER CASES --- *)
-
-  (* Temporal Degradation Exact Thresholds *)
   assert_true "T2.BVA.1: Roof Age 15.0 yrs EXACT Threshold Passes"
     (match check_inv2_temporal (Some 15.0) None with Satisfied _ -> true | _ -> false);
 
@@ -164,14 +154,12 @@ let () =
   assert_true "T2.BVA.4: Construction Year 1997 (Age 29 in 2026) Fails"
     (match check_inv2_temporal None (Some 1997) with Violated _ -> true | _ -> false);
 
-  (* Economic Viability Exact Thresholds *)
   assert_true "T2.BVA.5: Valuation $1,000,000.00 EXACT Threshold Passes"
     (match check_inv3_economic (Some 1000000.0) false false with Satisfied _ -> true | _ -> false);
 
   assert_true "T2.BVA.6: Valuation $999,999.99 Sub-Threshold Fails"
     (match check_inv3_economic (Some 999999.99) false false with Violated _ -> true | _ -> false);
 
-  (* Scoring Monotonicity & Boundary Verification *)
   let sc_low = compute_actionability_score (Some 0.0) None (Some 1000000.0) Flat MultiUnit2To4 in
   assert_true "T2.Scorer.1: Min Valid Baseline Score >= 33.0" (sc_low.total_score >= 33.0);
 
@@ -180,8 +168,6 @@ let () =
   assert_true "T2.Scorer.2: Monotonic Score Growth (Low < Mid < High)"
     (sc_low.total_score < sc_mid.total_score && sc_mid.total_score < sc_high.total_score);
 
-  (* --- TIER 3: PAIRWISE COMBINATORIAL QUALIFICATION & CRYPTOGRAPHIC PROOFS --- *)
-  
   let lead_prime = {
     address = "2223 Pacific Ave";
     zip_code = "94115";
@@ -206,7 +192,6 @@ let () =
      | Qualified { score; _ } -> score.total_score > 85.0
      | _ -> false);
 
-  (* Verify genuine SHA-256 proof format and non-empty proof_id *)
   assert_true "T3.2: Genuine 64-character hex SHA-256 proof generated"
     (String.length verif_prime.sha256_proof = 64);
   assert_equal_str "T3.3: Proof ID starts with PROOF-OCAML-"
@@ -237,7 +222,6 @@ let () =
      | Disqualified { failed_invariants; _ } -> List.length failed_invariants >= 2
      | _ -> false);
 
-  (* JSON serialization and parsing roundtrip *)
   let json_lead_str = Types.verified_lead_to_json_string ~pretty:true verif_prime in
   assert_true "T3.6: Verified lead serializes to JSON string"
     (String.length json_lead_str > 100);

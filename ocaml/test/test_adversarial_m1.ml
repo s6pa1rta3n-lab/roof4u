@@ -40,12 +40,8 @@ let () =
   Printf.printf "=== EMPIRICAL ADVERSARIAL CHALLENGER SUITE: MILESTONE 1 (ROO4U) ===\n";
   Printf.printf "======================================================================\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* SECTION 1: EXACT BOUNDARY VALUE ANALYSIS (BVA)                            *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Section 1] Boundary Value Analysis on Invariants INV1 - INV4...\n";
 
-  (* 1.1 Economic Viability (INV3) Exact Boundaries *)
   check_named "BVA-INV3.1: Exact $1,000,000.00 passes INV3"
     (match check_inv3_economic (Some 1000000.00) false false with Satisfied _ -> true | _ -> false);
 
@@ -73,7 +69,6 @@ let () =
   check_named "BVA-INV3.9: Rental flag overrides $100,000,000.00 valuation"
     (match check_inv3_economic (Some 100000000.0) false true with Violated v -> v.code = INV3_Economic | _ -> false);
 
-  (* 1.2 Temporal Degradation (INV2) Exact Boundaries *)
   check_named "BVA-INV2.1: Exact roof age 15.0 years passes INV2"
     (match check_inv2_temporal (Some 15.0) None with Satisfied _ -> true | _ -> false);
 
@@ -116,7 +111,6 @@ let () =
   check_named "BVA-INV2.14: Explicit roof age overrides YearBuilt (20yr age + 2020 built -> PASSES INV2)"
     (match check_inv2_temporal (Some 20.0) (Some 2020) with Satisfied _ -> true | _ -> false);
 
-  (* 1.3 Permit Recency Non-Conflict (INV4) Exact Boundaries *)
   let make_permit ?(is_roof = true) ?year ?date_issued ?date_filed desc =
     {
       permit_number = "TEST-PERMIT-1";
@@ -171,7 +165,6 @@ let () =
      match check_inv4_permits ~current_year:2026 [p1; p2] with
      | Violated v -> v.code = INV4_Permits | Satisfied _ -> false);
 
-  (* 1.4 Physical Eligibility (INV1) Exact Permutations *)
   let all_roofs = [Victorian; Flat; Mansard; Gable; Hip; Metal; Unknown; Other "Spanish Tile"] in
   let all_props = [SingleFamily; MultiUnit2To4; MultiUnit5Plus; Commercial; MixedUse; Condo; Unknown; Other "Warehouse"] in
 
@@ -191,12 +184,9 @@ let () =
 
   Printf.printf "  [PASS] Section 1: All Boundary Value Analyses Passed (24/24)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* SECTION 2: 10,000 RANDOMIZED PROPERTY COMBINATIONS & MONOTONICITY PROOFS  *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Section 2] Fuzzing and Stress-Testing 10,000 Randomized Leads...\n";
 
-  Random.init 42; (* Fixed seed for deterministic reproducibility *)
+  Random.init 42;
 
   let rand_roof_type () =
     let r = Random.int 8 in
@@ -221,20 +211,19 @@ let () =
   let val_monotonic_count = ref 0 in
 
   for i = 1 to num_fuzz_iterations do
-    (* Generate random lead parameters *)
     let r_type = rand_roof_type () in
     let p_type = rand_prop_type () in
     let roof_age =
       if Random.bool () then None
-      else Some ((Random.float 120.0) -. 10.0) (* range [-10.0, 110.0] *)
+      else Some ((Random.float 120.0) -. 10.0)
     in
     let year_built =
       if Random.bool () then None
-      else Some (1800 + Random.int 250) (* range [1800, 2050] *)
+      else Some (1800 + Random.int 250)
     in
     let est_val =
       if Random.bool () then None
-      else Some ((Random.float 12000000.0) -. 500000.0) (* range [-500k, 11.5M] *)
+      else Some ((Random.float 12000000.0) -. 500000.0)
     in
     let is_hoa = Random.bool () in
     let is_rental = Random.bool () in
@@ -280,7 +269,6 @@ let () =
     let score = calculate_score ~current_year:2026 lead in
     let verif = verify_lead ~current_year:2026 lead in
 
-    (* Check Property 1: Boundedness *)
     if score.total_score >= 0.0 && score.total_score <= 100.0 &&
        score.age_score >= 0.0 && score.age_score <= 40.0 &&
        score.value_score >= 0.0 && score.value_score <= 35.0 &&
@@ -290,7 +278,6 @@ let () =
       failwith (Printf.sprintf "Iteration %d: Score out of bounds! total=%.2f, age=%.2f, val=%.2f, type=%.2f"
                   i score.total_score score.age_score score.value_score score.type_score);
 
-    (* Check Property 2: Component Sum Consistency *)
     let expected_sum = min 100.0 (max 0.0 (score.age_score +. score.value_score +. score.type_score)) in
     if abs_float (score.total_score -. expected_sum) < 0.0001 then
       incr component_sum_count
@@ -298,7 +285,6 @@ let () =
       failwith (Printf.sprintf "Iteration %d: Score sum mismatch! total=%.4f, expected=%.4f"
                   i score.total_score expected_sum);
 
-    (* Check Property 3: Age Score Monotonicity *)
     let age1 = Random.float 40.0 in
     let age2 = age1 +. (Random.float 20.0) in
     let s_age1 = compute_age_score (Some age1) None in
@@ -307,7 +293,6 @@ let () =
     else failwith (Printf.sprintf "Iteration %d: Age non-monotonicity! age1=%.2f (s=%.2f), age2=%.2f (s=%.2f)"
                      i age1 s_age1 age2 s_age2);
 
-    (* Check Property 4: Valuation Score Monotonicity *)
     let v1 = Random.float 8000000.0 in
     let v2 = v1 +. (Random.float 2000000.0) in
     let s_v1 = compute_value_score (Some v1) in
@@ -316,13 +301,11 @@ let () =
     else failwith (Printf.sprintf "Iteration %d: Value non-monotonicity! v1=%.2f (s=%.2f), v2=%.2f (s=%.2f)"
                      i v1 s_v1 v2 s_v2);
 
-    (* Check Property 5: Cryptographic proof invariant *)
     if String.length verif.sha256_proof <> 64 ||
        String.sub verif.proof_id 0 12 <> "PROOF-OCAML-" then
       failwith (Printf.sprintf "Iteration %d: Invalid proof format: proof=%s, id=%s"
                   i verif.sha256_proof verif.proof_id);
 
-    (* Check Property 6: Invariant failure consistency *)
     match verif.verdict with
     | Qualified _ ->
         if not (match check_inv1_physical lead.roof_type lead.property_type with Satisfied _ -> true | _ -> false) ||
@@ -344,12 +327,8 @@ let () =
 
   Printf.printf "  [PASS] Section 2: 10,000 Random Fuzz Iterations Verified (40,000/40,000 Sub-checks Passed)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* SECTION 3: CONFLICTING PERMITS ADVERSARIAL OVERRIDE VERIFICATION          *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Section 3] Verifying Conflicting Permits Override Dominance...\n";
 
-  (* Test: Conflicting permit MUST disqualify even on astronomical valuation and pristine architecture *)
   let ultra_lead = {
     address = "1 Billionaire Row";
     zip_code = "94115";
@@ -357,13 +336,13 @@ let () =
     roof_type = Victorian;
     property_type_raw = Some "Single-Family";
     roof_type_raw = Some "Victorian";
-    estimated_value = Some 100000000.0; (* $100 Million *)
+    estimated_value = Some 100000000.0;
     owner_name = Some "Tech Titan Billionaire";
     is_hoa = false;
     is_rental = false;
     apn = Some "0001-001";
     last_roof_permit_date = Some "2024-03-01";
-    roof_age_years = Some 50.0; (* Old roof, but permit exists *)
+    roof_age_years = Some 50.0;
     year_built = Some 1890;
     phone_number = Some "415-555-9999";
     permits = [
@@ -374,7 +353,7 @@ let () =
         date_filed = Some "2024-02-01";
         date_issued = Some "2024-03-01";
         status = Some "ISSUED";
-        year = Some 2024; (* 2 years ago at 2026 *)
+        year = Some 2024;
         is_roof_replacement = true;
         cost = Some 250000.0;
       }
@@ -397,7 +376,6 @@ let () =
   check_named "CONFLICT.3: Proof ID starts with PROOF-OCAML- for Disqualified lead"
     (String.sub verif_ultra.proof_id 0 12 = "PROOF-OCAML-");
 
-  (* Test: Permutations of recent permit years 2012..2026 across 50 property profiles *)
   let conflict_override_passed = ref 0 in
   for yr = 2012 to 2026 do
     let base_permit = List.hd ultra_lead.permits in
@@ -422,12 +400,8 @@ let () =
 
   Printf.printf "  [PASS] Section 3: Conflicting Permits Dominance Invariant Verified (4/4)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* SECTION 4: JSON AST & CRYPTOGRAPHIC PROOF ADVERSARIAL STRESS-TESTS        *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Section 4] Cryptographic & JSON Parser Adversarial Hardening...\n";
 
-  (* 4.1 Strict RFC 6234 / FIPS 180-4 Vectors *)
   let hash_abc = Crypto.sha256_string "abc" in
   check_named "CRYPTO.1: RFC 6234 'abc' vector exact match"
     (hash_abc = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
@@ -436,7 +410,6 @@ let () =
   check_named "CRYPTO.2: RFC 6234 empty string vector exact match"
     (hash_empty = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 
-  (* 4.2 Proof Avalanche Effect *)
   let p1 = verif_ultra.sha256_proof in
   let modified_lead = { ultra_lead with address = "2 Billionaire Row" } in
   let verif_mod = verify_lead modified_lead in
@@ -450,7 +423,6 @@ let () =
   check_named "CRYPTO.3: 1-char address modification alters >= 40 hex digest characters"
     (!diff_chars >= 40);
 
-  (* 4.3 JSON AST Serialization Roundtrip *)
   let json_str = Types.verified_lead_to_json_string ~pretty:false verif_ultra in
   let parsed_back = Types.parse_json_lead json_str in
   check_named "JSON.1: Disqualified lead roundtrips through JSON parser"
@@ -460,9 +432,6 @@ let () =
 
   Printf.printf "  [PASS] Section 4: Cryptography & AST Hardening Verified (4/4)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* SUMMARY & VERDICT                                                         *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "======================================================================\n";
   Printf.printf "=== ALL ADVERSARIAL CHALLENGER TESTS PASSED: %d/%d (100.0%%) ===\n" !passed_tests !total_tests;
   Printf.printf "======================================================================\n\n"

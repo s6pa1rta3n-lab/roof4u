@@ -33,7 +33,7 @@ let small_sigma0 (x : int32) : int32 =
 let small_sigma1 (x : int32) : int32 =
   (rotr x 17) ^^^ (rotr x 19) ^^^ (shr x 10)
 
-(* 64 Round Constants K *)
+(** 64 Round Constants K *)
 let k = [|
   0x428a2f98l; 0x71374491l; 0xb5c0fbcfl; 0xe9b5dba5l;
   0x3956c25bl; 0x59f111f1l; 0x923f82a4l; 0xab1c5ed5l;

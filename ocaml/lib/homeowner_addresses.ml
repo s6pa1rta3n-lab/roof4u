@@ -58,6 +58,39 @@ let build_addresses_query_url
     in
     Ok (Printf.sprintf "%s?%s" base_url query_str)
 
+let normalize_street_number (num : string) : string =
+  let len = String.length num in
+  let rec skip_zeros i =
+    if i < len && num.[i] = '0' then skip_zeros (i + 1)
+    else i
+  in
+  let start = skip_zeros 0 in
+  if start = len then "0"
+  else String.sub num start (len - start)
+
+let normalize_street_suffix (tok : string) : string =
+  match String.uppercase_ascii tok with
+  | "STREET" | "STR" -> "ST"
+  | "AVENUE" | "AV" -> "AVE"
+  | "BOULEVARD" -> "BLVD"
+  | "DRIVE" -> "DR"
+  | "ROAD" -> "RD"
+  | "COURT" -> "CT"
+  | "LANE" -> "LN"
+  | "TERRACE" -> "TER"
+  | "WAY" -> "WAY"
+  | "PLACE" -> "PL"
+  | other -> other
+
+let normalize_usps_pub28 (raw : string) : string =
+  let parts = String.split_on_char ' ' (String.trim raw) |> List.filter (fun s -> s <> "" && s <> "0000") in
+  match parts with
+  | num :: rest ->
+      let norm_num = normalize_street_number num in
+      let norm_rest = List.map normalize_street_suffix rest in
+      String.concat " " (norm_num :: norm_rest)
+  | [] -> ""
+
 let parse_homeowner_address_record (j : Json.t) : (homeowner_address_record, string) result =
   let parcel_number = Json.get_string "parcel_number" j |> Option.value ~default:"" |> String.trim in
   let raw_location = Json.get_string "property_location" j |> Option.value ~default:"" |> String.trim in
@@ -67,10 +100,10 @@ let parse_homeowner_address_record (j : Json.t) : (homeowner_address_record, str
     let parts = String.split_on_char ' ' raw_location |> List.filter (fun s -> s <> "" && s <> "0000") in
     let (street_num, street_name_rest) =
       match parts with
-      | num :: rest -> (num, String.concat " " rest)
-      | [] -> ("100", "California St")
+      | num :: rest -> (normalize_street_number num, String.concat " " (List.map normalize_street_suffix rest))
+      | [] -> ("100", "CALIFORNIA ST")
     in
-    let property_location = String.concat " " parts in
+    let property_location = normalize_usps_pub28 raw_location in
     let neighborhood = Json.get_string "assessor_neighborhood" j |> Option.value ~default:"San Francisco" in
     let prop_class_code = Json.get_string "property_class_code" j in
     let prop_class_def = Json.get_string "property_class_code_definition" j in

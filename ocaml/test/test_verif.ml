@@ -24,7 +24,6 @@ let assert_true name cond =
 let () =
   Printf.printf "\n=== Starting OCaml Mathematical Verification Test Suite ===\n\n";
 
-  (* 1. Test Roof Type and Property Type Parsing *)
   assert_true "parse Victorian" (parse_roof_type "Victorian" = Victorian);
   assert_true "parse Queen Anne" (parse_roof_type "Queen Anne Victorian" = Victorian);
   assert_true "parse Flat" (parse_roof_type "Flat" = Flat);
@@ -33,7 +32,6 @@ let () =
   assert_true "parse SingleFamily" (parse_property_type "Single-Family" = SingleFamily);
   assert_true "parse MultiUnit2To4" (parse_property_type "2-unit" = MultiUnit2To4);
 
-  (* 2. Test Invariant 1: Physical Eligibility *)
   let res_inv1_pass = check_inv1_physical Victorian SingleFamily in
   assert_true "INV-1 passes for Victorian SFR" (match res_inv1_pass with Satisfied _ -> true | _ -> false);
 
@@ -46,7 +44,6 @@ let () =
   let res_inv1_fail_comm = check_inv1_physical Victorian Commercial in
   assert_true "INV-1 fails for Commercial property" (match res_inv1_fail_comm with Violated _ -> true | _ -> false);
 
-  (* 3. Test Invariant 2: Temporal Degradation *)
   let res_inv2_pass_15 = check_inv2_temporal (Some 15.0) None in
   assert_true "INV-2 passes for 15.0 years roof age" (match res_inv2_pass_15 with Satisfied _ -> true | _ -> false);
 
@@ -62,7 +59,6 @@ let () =
   let res_inv2_built_2015 = check_inv2_temporal None (Some 2015) in
   assert_true "INV-2 fails for 2015 build year fallback" (match res_inv2_built_2015 with Violated _ -> true | _ -> false);
 
-  (* 4. Test Invariant 3: Economic Viability *)
   let res_inv3_pass = check_inv3_economic (Some 2500000.0) false false in
   assert_true "INV-3 passes for $2.5M SFR non-HOA" (match res_inv3_pass with Satisfied _ -> true | _ -> false);
 
@@ -78,7 +74,6 @@ let () =
   let res_inv3_fail_rental = check_inv3_economic (Some 3000000.0) false true in
   assert_true "INV-3 fails for rental property" (match res_inv3_fail_rental with Violated _ -> true | _ -> false);
 
-  (* 5. Test Invariant 4: Permit Recency Non-Conflict *)
   let permit_old = {
     permit_number = "20050101";
     permit_type = Some "Building Permit";
@@ -107,7 +102,6 @@ let () =
   let res_inv4_fail = check_inv4_permits [permit_recent] in
   assert_true "INV-4 fails for 2022 recent roof permit" (match res_inv4_fail with Violated _ -> true | _ -> false);
 
-  (* 6. Test Scoring Determinism and Bounds *)
   let score_high = compute_actionability_score (Some 25.0) (Some 1900) (Some 4500000.0) Victorian SingleFamily in
   assert_true "Score is bounded <= 100.0" (score_high.total_score <= 100.0);
   assert_true "Score is bounded >= 0.0" (score_high.total_score >= 0.0);
@@ -117,7 +111,6 @@ let () =
   assert_true "Score for baseline Flat 2-4 unit is between 50.0 and 80.0"
     (score_low.total_score >= 50.0 && score_low.total_score <= 80.0);
 
-  (* 7. Test Lead Verification End-to-End *)
   let qualified_lead_raw = {
     address = "2223 Pacific Ave";
     zip_code = "94115";

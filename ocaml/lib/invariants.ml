@@ -71,14 +71,39 @@ let check_inv1_physical (r_type : roof_type) (p_type : property_type) : invarian
 (** Invariant 2: Temporal Degradation *)
 let check_inv2_temporal ?(current_year = current_year_default) (roof_age : float option) (year_built : int option) : invariant_status =
   match roof_age with
-  | Some age when age >= 15.0 ->
-      Satisfied (Printf.sprintf "INV-2: Roof age %.1f years exceeds qualification threshold (>= 15.0 yrs)." age)
   | Some age ->
-      Violated {
-        code = INV2_Temporal;
-        name = "INV-2: Temporal Degradation";
-        message = Printf.sprintf "Roof age %.1f years is under 15.0 years threshold." age;
-      }
+      let is_structural_fallback =
+        match year_built with
+        | Some y -> abs_float (age -. float_of_int (current_year - y)) < 0.001
+        | None -> false
+      in
+      if is_structural_fallback then
+        match year_built with
+        | Some y when (current_year - y) >= 30 ->
+            Satisfied (Printf.sprintf "INV-2: Structure built in %d (age %d yrs) with no roof replacement on record (>= 30 yrs)." y (current_year - y))
+        | Some y ->
+            Violated {
+              code = INV2_Temporal;
+              name = "INV-2: Temporal Degradation";
+              message = Printf.sprintf "Structure built in %d is under 30 years old without documented roof age." y;
+            }
+        | None ->
+            if age >= 15.0 then
+              Satisfied (Printf.sprintf "INV-2: Roof age %.1f years exceeds qualification threshold (>= 15.0 yrs)." age)
+            else
+              Violated {
+                code = INV2_Temporal;
+                name = "INV-2: Temporal Degradation";
+                message = Printf.sprintf "Roof age %.1f years is under 15.0 years threshold." age;
+              }
+      else if age >= 15.0 then
+        Satisfied (Printf.sprintf "INV-2: Roof age %.1f years exceeds qualification threshold (>= 15.0 yrs)." age)
+      else
+        Violated {
+          code = INV2_Temporal;
+          name = "INV-2: Temporal Degradation";
+          message = Printf.sprintf "Roof age %.1f years is under 15.0 years threshold." age;
+        }
   | None ->
       match year_built with
       | Some y when (current_year - y) >= 30 ->
@@ -96,7 +121,6 @@ let check_inv2_temporal ?(current_year = current_year_default) (roof_age : float
             message = "Neither roof age nor construction year is available to confirm temporal degradation.";
           }
 
-(** Invariant 3: Economic Viability *)
 let check_inv3_economic (est_value : float option) (is_hoa : bool) (is_rental : bool) : invariant_status =
   if is_hoa then
     Violated {
@@ -127,7 +151,6 @@ let check_inv3_economic (est_value : float option) (is_hoa : bool) (is_rental : 
           message = "No assessed valuation on record.";
         }
 
-(** Helper: checks if permit relates to roofing replacement *)
 let is_roof_replacement_permit (p : permit_record) : bool =
   if p.is_roof_replacement then true
   else
@@ -137,9 +160,16 @@ let is_roof_replacement_permit (p : permit_record) : bool =
     contains_substring "reroof" combined ||
     contains_substring "re-roof" combined ||
     contains_substring "roof replace" combined ||
+    contains_substring "replace roof" combined ||
     contains_substring "tear off" combined ||
     contains_substring "tear-off" combined ||
-    contains_substring "shingle replace" combined ||
+    contains_substring "bitumen" combined ||
+    contains_substring "shingle" combined ||
+    contains_substring "tpo" combined ||
+    contains_substring "epdm" combined ||
+    contains_substring "torch down" combined ||
+    contains_substring "built up" combined ||
+    contains_substring "built-up" combined ||
     contains_substring "tar and gravel" combined
 
 let get_permit_year (p : permit_record) : int option =

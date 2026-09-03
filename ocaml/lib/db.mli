@@ -8,8 +8,10 @@ type lead_status =
   | Discovered
   | Enriched
   | Validated
-  | Discarded
+  | Qualified
   | Disqualified
+  | Discarded
+  | Exported
   | Custom of string
 
 val string_of_status : lead_status -> string
@@ -65,7 +67,7 @@ val update_status : t -> string -> lead_status -> (unit, string) result
 (** Updates enriched fields for a lead by address. *)
 val update_enriched :
   t ->
-  string -> (* address *)
+  string ->
   ?apn:string ->
   ?owner_name:string ->
   ?estimated_value:float ->
@@ -104,3 +106,6 @@ val delete_lead_by_id : t -> int -> bool
 
 (** Clears all leads from the table. *)
 val clear : t -> unit
+
+(** Executes a raw sqlite3 command on a database file, capturing stdout and stderr. *)
+val run_sqlite_cmd : string -> string -> (string, string) result

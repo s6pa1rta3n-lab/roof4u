@@ -30,9 +30,6 @@ let () =
   Printf.printf "=== [TIER 4] Real-World End-to-End Application Pipeline Tests ===\n";
   Printf.printf "=================================================================\n\n";
 
-  (* -------------------------------------------------------------------------- *)
-  (* SCENARIO 1: Full Pacific Heights (94115) Victorian Acquisition             *)
-  (* -------------------------------------------------------------------------- *)
   Printf.printf "--- Scenario 1: Pacific Heights Victorian Acquisition (94115) ---\n";
   let pac_heights_permit = {
     permit_number = "19980512";
@@ -81,9 +78,6 @@ let () =
   assert_true "T4.S1.6: CSV address matches" (List.hd csv_row_s1 = "2223 Pacific Ave");
   assert_true "T4.S1.7: CSV status is VALIDATED" (List.nth csv_row_s1 9 = "VALIDATED");
 
-  (* -------------------------------------------------------------------------- *)
-  (* SCENARIO 2: Marina & Cow Hollow (94123) Flat Roof Multi-Unit               *)
-  (* -------------------------------------------------------------------------- *)
   Printf.printf "\n--- Scenario 2: Marina & Cow Hollow Flat Multi-Unit (94123) ---\n";
   let marina_permit = {
     permit_number = "20061104";
@@ -129,9 +123,6 @@ let () =
   assert_true "T4.S2.4: Update status to Validated"
     (match Db.update_status db_temp marina_lead.address Db.Validated with Ok () -> true | _ -> false);
 
-  (* -------------------------------------------------------------------------- *)
-  (* SCENARIO 3: Self-Healing Closed Loop with Induced Scraping Drift           *)
-  (* -------------------------------------------------------------------------- *)
   Printf.printf "\n--- Scenario 3: Self-Healing Closed Loop & Telemetry Drift ---\n";
   let temp_lessons = Filename.temp_file "lessons_" ".json" in
   let temp_vec_db = Filename.temp_file "vector_" ".sqlite" in
@@ -182,7 +173,6 @@ let () =
   let results = Vector_store.search ~top_k:1 vector_store (Some "PIM DOM selector drift") in
   assert_true "T4.S3.4: Vector cosine search retrieves relevant lesson" (List.length results = 1);
 
-  (* Self-healing resolution after 5 successes *)
   for _ = 1 to 5 do
     ignore (Lesson_store.increment_success lesson_store saved_lesson.id)
   done;
@@ -193,9 +183,6 @@ let () =
   (try Sys.remove temp_lessons with _ -> ());
   (try Sys.remove temp_vec_db with _ -> ());
 
-  (* -------------------------------------------------------------------------- *)
-  (* SCENARIO 4: Adversarial Fuzzing & Malicious Injection Ingestion            *)
-  (* -------------------------------------------------------------------------- *)
   Printf.printf "\n--- Scenario 4: Adversarial Fuzzing & Malicious Ingestion ---\n";
   let malicious_lead = {
     address = "=cmd|' /C calc'!A0, 100 Main St";
@@ -219,7 +206,6 @@ let () =
   assert_true "T4.S4.1: Malicious injection payloads handled safely without crashing"
     (match verif_s4.verdict with Qualified _ | Disqualified _ -> true);
 
-  (* Test formula injection protection on all dangerous prefixes *)
   assert_true "T4.S4.2: Neutralize '=' formula prefix"
     (sanitize_csv_field "=cmd|' /C calc'!A0" = "'=cmd|' /C calc'!A0");
   assert_true "T4.S4.3: Neutralize '+' formula prefix"
@@ -241,9 +227,6 @@ let () =
     (String.starts_with ~prefix:"\"'+@EVIL" (List.nth sanitized_row 5) ||
      String.starts_with ~prefix:"'+@EVIL" (List.nth sanitized_row 5));
 
-  (* -------------------------------------------------------------------------- *)
-  (* SCENARIO 5: Complete Ingestion to CSV Parity Verification across 4 SF Zips *)
-  (* -------------------------------------------------------------------------- *)
   Printf.printf "\n--- Scenario 5: Complete Ingestion to CSV Parity Verification ---\n";
   let temp_e2e_db = Filename.temp_file "e2e_leads_" ".db" in
   let temp_e2e_csv = Filename.temp_file "e2e_validated_" ".csv" in
@@ -298,9 +281,6 @@ let () =
   (try Sys.remove temp_e2e_lessons with _ -> ());
   (try Sys.remove temp_e2e_vec with _ -> ());
 
-  (* -------------------------------------------------------------------------- *)
-  (* SCENARIO 6: Four Target Neighborhoods Cryptographic Proof Verification    *)
-  (* -------------------------------------------------------------------------- *)
   Printf.printf "\n--- Scenario 6: Four Target Neighborhoods Cryptographic Proofs ---\n";
   let sunset_lead = List.hd (Pipeline.default_seed_leads_for_zip "94122") in
   let richmond_lead = List.hd (Pipeline.default_seed_leads_for_zip "94118") in

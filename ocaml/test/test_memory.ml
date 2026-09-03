@@ -57,9 +57,6 @@ let () =
   Printf.printf "=== MILESTONE 2: Dual Memory, Embeddings, Vector & DB Test Suite ===\n";
   Printf.printf "=================================================================\n\n";
 
-  (* ==================================================================== *)
-  (* SECTION 1: DETERMINISTIC 256-D FEATURE HASHING & EMBEDDINGS (F6)     *)
-  (* ==================================================================== *)
   Printf.printf "--- [Section 1] Feature Hashing & Offline Embeddings ---\n";
 
   let text1 = "HTTP 403 Forbidden Cloudflare Bot Challenge on Zillow" in
@@ -73,7 +70,6 @@ let () =
   let sim_self = Embeddings.cosine_similarity emb1 emb1_repeat in
   assert_equal_float "F6.3: Deterministic embedding produces exact identity similarity 1.0" 1.0 sim_self 0.00001;
 
-  (* Tokenization check *)
   let tokens = Embeddings.tokenize "HTTP 403 Forbidden on server 500" in
   let has_status_403 = List.exists (fun (t, w) -> t = "status:403" && abs_float (w -. 3.0) < 0.001) tokens in
   let has_status_500 = List.exists (fun (t, w) -> t = "status:500" && abs_float (w -. 3.0) < 0.001) tokens in
@@ -86,16 +82,13 @@ let () =
   assert_true "F6.6: Bigrams extracted with weight 2.0" has_bigram;
   assert_true "F6.7: Subword 3-grams and 4-grams extracted with weight 0.5" (has_3gram && has_4gram);
 
-  (* Empty text fallback *)
   let empty_emb = Embeddings.embed_text "" in
   assert_equal_int "F6.8: Empty string embedding length is 256" 256 (Array.length empty_emb);
   assert_equal_float "F6.9: Empty string embedding norm is 1.0" 1.0 (Embeddings.l2_norm empty_emb) 0.0001;
 
-  (* CRC32 checksum correctness *)
   let crc_hello = Embeddings.crc32 "hello" in
   assert_true "F6.10: CRC32 checksum computed correctly" (crc_hello >= 0);
 
-  (* Batch embeddings and similarity *)
   let batch_texts = [
     "Rate limit 429 encountered on DataSF API";
     "DOM selector drift on San Francisco DBI table";
@@ -106,14 +99,10 @@ let () =
   let batch_sims = Embeddings.batch_cosine_similarity emb1 batch_embs in
   assert_equal_int "F6.12: Batch cosine similarity returns scores for all items" 3 (List.length batch_sims);
 
-  (* Long text stress test *)
   let long_text = String.concat " " (List.init 300 (fun i -> "feature_token_" ^ string_of_int i)) in
   let long_emb = Embeddings.embed_text long_text in
   assert_equal_float "F6.13: Long 300-token embedding norm is 1.0" 1.0 (Embeddings.l2_norm long_emb) 0.0001;
 
-  (* ==================================================================== *)
-  (* SECTION 2: POSIX ATOMIC JSON LESSON STORE & LOCKING (F5)             *)
-  (* ==================================================================== *)
   Printf.printf "\n--- [Section 2] Atomic JSON Lesson Store & Recovery ---\n";
 
   let temp_lesson_file = Filename.temp_file "roo4u_test_lessons_" ".json" in
@@ -135,7 +124,6 @@ let () =
   assert_equal_string "F5.2: Upsert returns saved lesson with matching ID" lesson1.id saved1.id;
   assert_equal_int "F5.3: Count is now 1" 1 (Lesson_store.count store);
 
-  (* Verify persistence on disk *)
   assert_true "F5.4: Disk file exists" (Sys.file_exists temp_lesson_file);
   let loaded_lessons = Lesson_store.load_lessons store in
   assert_equal_int "F5.5: Loaded lessons count matches" 1 (List.length loaded_lessons);
@@ -144,7 +132,6 @@ let () =
   assert_equal_string "F5.7: Loaded lesson preserves failure_type" "BOT_CHALLENGE" loaded1.failure_type;
   assert_equal_float "F5.8: Loaded lesson preserves delay" 2.5 loaded1.suggested_delay_seconds 0.001;
 
-  (* Filter by domain & failure type *)
   let lesson2 = Lesson_store.make_lesson
     ~domain:"dbi.sfgov.org"
     ~failure_type:"DOM_DRIFT"
@@ -158,7 +145,6 @@ let () =
   assert_equal_int "F5.11: Domain filter dbi.sfgov.org returns 1" 1 (Lesson_store.count ~domain:"dbi.sfgov.org" store);
   assert_equal_int "F5.12: Failure type filter DOM_DRIFT returns 1" 1 (List.length (Lesson_store.list_lessons ~failure_type:"DOM_DRIFT" store));
 
-  (* Self-healing success counter and transition to RESOLVED *)
   assert_equal_string "F5.13: Initial status is ACTIVE" "ACTIVE" lesson1.status;
   assert_false "F5.14: Initial resolved is false" lesson1.resolved;
 
@@ -174,7 +160,6 @@ let () =
   assert_equal_string "F5.18: Self-healing transitions status to RESOLVED at >= 5" "RESOLVED" after_5.status;
   assert_true "F5.19: Resolved flag is set to true" after_5.resolved;
 
-  (* Concurrent locking multi-thread stress *)
   let threads = List.init 4 (fun thread_id ->
     Thread.create (fun () ->
       for i = 1 to 10 do
@@ -191,12 +176,10 @@ let () =
   List.iter Thread.join threads;
   assert_true "F5.20: Concurrent thread writes completed safely" (Lesson_store.count store >= 42);
 
-  (* Deletion and Clear *)
   let del_res = Lesson_store.delete_lesson store lesson2.id in
   assert_true "F5.21: Delete existing lesson returns true" del_res;
   assert_true "F5.22: Deleted lesson not found" (Lesson_store.get_lesson store lesson2.id = None);
 
-  (* Corruption Recovery *)
   let oc = open_out temp_lesson_file in
   output_string oc "{ corrupted invalid json truncated !!! [";
   close_out oc;
@@ -207,9 +190,6 @@ let () =
   (try Sys.remove temp_lesson_file with _ -> ());
   (try Sys.remove (temp_lesson_file ^ ".lock") with _ -> ());
 
-  (* ==================================================================== *)
-  (* SECTION 3: EMBEDDED VECTOR STORE & COSINE SIMILARITY SEARCH (F7)     *)
-  (* ==================================================================== *)
   Printf.printf "\n--- [Section 3] Vector Store & Cosine Search Engine ---\n";
 
   let vstore = Vector_store.create () in
@@ -236,12 +216,10 @@ let () =
     "HTTP 429 Too Many Requests SODA API rate limit exceeded on building permits dataset");
   assert_equal_int "F7.2: Vector store has 3 items" 3 (Vector_store.count vstore);
 
-  (* Vector retrieval & get *)
   let retrieved = Vector_store.get vstore "VEC-403" |> Option.get in
   assert_equal_string "F7.3: Retrieved record text matches" rec1.text retrieved.text;
   assert_equal_int "F7.4: Retrieved record embedding has length 256" 256 (Array.length retrieved.embedding);
 
-  (* Semantic Search: Query matching 403 bot challenge *)
   let search_403 = Vector_store.search ~top_k:3 vstore (Some "Cloudflare 403 challenge bot blocking") in
   assert_true "F7.5: Search returns top results" (List.length search_403 > 0);
   let top_result = List.hd search_403 in
@@ -249,26 +227,21 @@ let () =
   assert_equal_int "F7.7: Top match has rank 1" 1 top_result.rank;
   assert_true "F7.8: Similarity score is positive (> 0.25)" (top_result.score > 0.25);
 
-  (* Semantic Search: Query matching Rate Limit *)
   let search_rate = Vector_store.search ~top_k:3 vstore (Some "DataSF 429 rate limit backoff") in
   let top_rate = List.hd search_rate in
   assert_equal_string "F7.9: Top match for rate limit query is VEC-429" "VEC-429" top_rate.record.id;
 
-  (* Domain Filter *)
   let filtered_domain = Vector_store.search ~domain:"dbi.sfgov.org" ~top_k:5 vstore (Some "scraping error") in
   assert_equal_int "F7.10: Domain filter dbi.sfgov.org returns exactly 1 match" 1 (List.length filtered_domain);
   assert_equal_string "F7.11: Domain filtered match is VEC-DOM" "VEC-DOM" (List.hd filtered_domain).record.id;
 
-  (* Failure Type Filter *)
   let filtered_type = Vector_store.search ~failure_type:"RATE_LIMIT" ~top_k:5 vstore (Some "error") in
   assert_equal_int "F7.12: Failure type filter RATE_LIMIT returns exactly 1 match" 1 (List.length filtered_type);
   assert_equal_string "F7.13: Failure type filtered match is VEC-429" "VEC-429" (List.hd filtered_type).record.id;
 
-  (* Min similarity threshold *)
   let strict_results = Vector_store.search ~min_similarity:0.999 vstore (Some "Completely unrelated query about baking pies") in
   assert_equal_int "F7.14: Unrelated query with high min_similarity threshold returns 0 results" 0 (List.length strict_results);
 
-  (* Batch upsert *)
   let batch_recs = [
     Vector_store.make_record ~domain:"test.com" ~id:"BATCH-1" ~text:"Test item 1" ();
     Vector_store.make_record ~domain:"test.com" ~id:"BATCH-2" ~text:"Test item 2" ();
@@ -277,7 +250,6 @@ let () =
   assert_equal_int "F7.15: Batch upsert inserted 2 records" 2 batch_count;
   assert_equal_int "F7.16: Total count is now 5" 5 (Vector_store.count vstore);
 
-  (* Sync from Lesson Store *)
   let temp_sync_lesson_file = Filename.temp_file "sync_lessons_" ".json" in
   let sync_lesson_store = Lesson_store.create ~file_path:temp_sync_lesson_file () in
   ignore (Lesson_store.upsert_lesson sync_lesson_store lesson1);
@@ -291,16 +263,12 @@ let () =
   (try Sys.remove temp_sync_lesson_file with _ -> ());
   (try Sys.remove (temp_sync_lesson_file ^ ".lock") with _ -> ());
 
-  (* ==================================================================== *)
-  (* SECTION 4: SQLITE LEADS DATABASE & STATE MACHINE (F8)                *)
-  (* ==================================================================== *)
   Printf.printf "\n--- [Section 4] SQLite Leads Database Layer ---\n";
 
   let temp_db_file = Filename.temp_file "roo4u_test_leads_" ".db" in
   let db = Db.create ~db_path:temp_db_file () in
   assert_equal_int "F8.1: Fresh database starts with 0 leads" 0 (Db.count_leads db);
 
-  (* Raw Lead creation *)
   let lead1 : Types.raw_lead = {
     address = "2223 Pacific Ave";
     zip_code = "94115";
@@ -326,11 +294,9 @@ let () =
   assert_equal_int "F8.3: Lead ID is 1" 1 id1;
   assert_equal_int "F8.4: Total lead count is 1" 1 (Db.count_leads db);
 
-  (* Duplicate address rejection *)
   let dup_res = Db.insert_lead db lead1 in
   assert_true "F8.5: Inserting duplicate address returns Error" (Result.is_error dup_res);
 
-  (* Retrieve by address & id *)
   let by_addr = Db.get_lead_by_address db "2223 Pacific Ave" |> Option.get in
   assert_equal_string "F8.6: Get by address retrieves exact address" "2223 Pacific Ave" by_addr.address;
   assert_equal_string "F8.7: Status is DISCOVERED" "DISCOVERED" by_addr.status;
@@ -339,7 +305,6 @@ let () =
   let by_id = Db.get_lead_by_id db id1 |> Option.get in
   assert_equal_string "F8.9: Get by ID retrieves matching record" "2223 Pacific Ave" by_id.address;
 
-  (* State Machine: DISCOVERED -> ENRICHED *)
   let enrich_res = Db.update_enriched
     db
     "2223 Pacific Ave"
@@ -359,13 +324,11 @@ let () =
   assert_equal_string "F8.13: Owner name updated" "PACIFIC TRUST" (Option.get enriched_lead.owner_name);
   assert_equal_float "F8.14: Estimated value updated" 3800000.0 (Option.get enriched_lead.estimated_value) 0.01;
 
-  (* State Machine: ENRICHED -> VALIDATED *)
   let val_res = Db.update_status db "2223 Pacific Ave" Db.Validated in
   assert_true "F8.15: update_status returns Ok ()" (Result.is_ok val_res);
   let validated_lead = Db.get_lead_by_address db "2223 Pacific Ave" |> Option.get in
   assert_equal_string "F8.16: Status transitioned to VALIDATED" "VALIDATED" validated_lead.status;
 
-  (* Insert a second lead and test filtering *)
   let lead2 : Types.raw_lead = {
     address = "1440 Union St";
     zip_code = "94123";
@@ -390,7 +353,6 @@ let () =
   assert_equal_int "F8.19: Discovered leads count is 1" 1 (Db.count_leads ~status:Db.Discovered db);
   assert_equal_int "F8.20: Zip code 94123 filter returns 1" 1 (List.length (Db.list_leads ~zip_code:"94123" db));
 
-  (* SQL Injection Hardening *)
   let malicious_lead : Types.raw_lead = {
     address = "999 Evil St'; DROP TABLE leads; --";
     zip_code = "94115";
@@ -415,7 +377,6 @@ let () =
   let mal_retrieved = Db.get_lead_by_address db "999 Evil St'; DROP TABLE leads; --" |> Option.get in
   assert_equal_string "F8.23: Malicious owner name preserved verbatim" "Robert'); DROP TABLE leads;--" (Option.get mal_retrieved.owner_name);
 
-  (* Delete lead *)
   let del_lead_res = Db.delete_lead_by_address db "999 Evil St'; DROP TABLE leads; --" in
   assert_true "F8.24: Delete lead by address returns true" del_lead_res;
 

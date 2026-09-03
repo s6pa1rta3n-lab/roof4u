@@ -48,12 +48,8 @@ let () =
   Printf.printf "=== [TIER 5] Comprehensive White-Box Adversarial Challenger Suite ===\n";
   Printf.printf "======================================================================\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* 1. MODULE CRYPTO: MULTI-BLOCK & DEEP AVALANCHE FUZZING                    *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Tier 5.1] Cryptography FIPS 180-4 Multi-Block & Avalanche Stress...\n";
 
-  (* NIST Standard Test Vectors *)
   let h_empty = Crypto.sha256_string "" in
   check_equal_str "T5.CRYPTO.1: NIST empty string digest"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" h_empty;
@@ -66,13 +62,11 @@ let () =
   check_equal_str "T5.CRYPTO.3: NIST 56-byte vector (two-block boundary)"
     "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1" h_56;
 
-  (* Large 100,000 byte deterministic payload *)
   let big_str = String.make 100000 'a' in
   let h_big = Crypto.sha256_string big_str in
   check_assert "T5.CRYPTO.4: Large 100,000-byte buffer hashes deterministically without stack overflow"
     (String.length h_big = 64 && h_big <> "0000000000000000000000000000000000000000000000000000000000000000");
 
-  (* Avalanche effect verification: test 200 random 1-bit / 1-char mutations *)
   let base_msg = "San Francisco Victorian Real Estate Lead Qualification Engine - Roo4u 2026" in
   let base_digest = Crypto.sha256_string base_msg in
   let avalanche_passed = ref 0 in
@@ -93,12 +87,8 @@ let () =
 
   Printf.printf "  [PASS] Section 1: Cryptography Hardening Complete (5/5)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* 2. MODULE JSON: RECURSIVE-DESCENT AST & MALICIOUS PARSING TRAPS           *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Tier 5.2] Recursive-Descent JSON AST Parser Traps & Scale Stress...\n";
 
-  (* Deeply nested JSON array (60 levels) *)
   let rec build_nested_array depth =
     if depth = 0 then "42"
     else "[" ^ (build_nested_array (depth - 1)) ^ "]"
@@ -108,7 +98,6 @@ let () =
   check_assert "T5.JSON.1: Parse 60-level nested JSON array safely"
     (match parsed_nested with Ok _ -> true | Error _ -> false);
 
-  (* Escaped unicode and surrogate pairs *)
   let unicode_json = "{\"city\": \"San Francisco \\uD83C\\uDF09\", \"architect\": \"Willis Polk \\u0026 Co\"}" in
   let parsed_unicode = Json.parse unicode_json in
   check_assert "T5.JSON.2: Parse unicode escapes and surrogate pairs safely"
@@ -118,7 +107,6 @@ let () =
          List.exists (fun (k, _) -> k = "architect") fields
      | _ -> false);
 
-  (* Key Collision & Escaped Quotes Spoofing Resistance *)
   let spoofed_json = "{\"address\": \"100 Main St \\\"is_hoa\\\": false\", \"is_hoa\": true, \"estimated_value\": 4500000.0}" in
   let parsed_spoofed = Types.parse_json_lead spoofed_json in
   check_assert "T5.JSON.3: Strict AST parsing prevents regex delimiter spoofing of is_hoa boolean flag"
@@ -126,7 +114,6 @@ let () =
      | Ok l -> l.is_hoa = true && l.address = "100 Main St \"is_hoa\": false"
      | Error _ -> false);
 
-  (* Extremely large JSON object with 2,000 distinct keys *)
   let big_obj_buf = Buffer.create 65536 in
   Buffer.add_string big_obj_buf "{";
   for i = 1 to 2000 do
@@ -142,12 +129,8 @@ let () =
 
   Printf.printf "  [PASS] Section 2: JSON AST Robustness Complete (4/4)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* 3. MODULE INVARIANTS & SCORER: COMBINATORIAL DOMAIN EXPLORATION           *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Tier 5.3] Combinatorial Invariant Verification & Bounded Monotonicity...\n";
 
-  (* Test all 8 roof types * 8 property types against INV-1 *)
   let roofs = [Victorian; Flat; Mansard; Gable; Hip; Metal; Unknown; Other "SpanishTile"] in
   let props = [SingleFamily; MultiUnit2To4; MultiUnit5Plus; Commercial; MixedUse; Condo; Unknown; Other "Industrial"] in
   let inv1_valid_count = ref 0 in
@@ -161,7 +144,6 @@ let () =
   check_assert "T5.INV.1: Exactly 6 valid pairs (Victorian/Flat/Mansard x SFR/MultiUnit2-4) pass INV-1"
     (!inv1_valid_count = 6);
 
-  (* Monotonicity of valuation scoring from $0 to $10,000,000 in $50,000 steps *)
   let val_steps = 200 in
   let last_val_score = ref 0.0 in
   let val_monotone_ok = ref true in
@@ -173,7 +155,6 @@ let () =
   done;
   check_assert "T5.SCORE.1: Valuation scoring is monotonically non-decreasing over [0, $10M]" !val_monotone_ok;
 
-  (* Monotonicity of age scoring from 0.0 to 50.0 years in 0.5 year steps *)
   let last_age_score = ref 0.0 in
   let age_monotone_ok = ref true in
   for step = 0 to 100 do
@@ -186,9 +167,6 @@ let () =
 
   Printf.printf "  [PASS] Section 3: Invariants & Scoring Verification Complete (3/3)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* 4. MODULE EMBEDDINGS & VECTOR STORE: DIMENSIONALITY & COSINE METRICS      *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Tier 5.4] 256-D Offline Embeddings & Vector Similarity Engine...\n";
 
   let v1 = embed_text "HTTP 403 Forbidden on SF DBI permit search form submission" in
@@ -209,9 +187,6 @@ let () =
 
   Printf.printf "  [PASS] Section 4: Vector Embeddings & Similarity Complete (3/3)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* 5. MODULE LESSON STORE: ATOMIC WRITE & CORRUPTION RECOVERY                *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Tier 5.5] Atomic Lesson Store Unix.lockf & Corruption Self-Healing...\n";
 
   let temp_lesson_file = Filename.temp_file "test_lesson_store" ".json" in
@@ -230,7 +205,6 @@ let () =
   check_assert "T5.LESSON.1: Upsert and reload lesson via POSIX locked store"
     (List.length loaded = 1 && (List.hd loaded).failure_type = "HTTP_429");
 
-  (* Test corruption recovery: overwrite with garbage string *)
   let oc = open_out temp_lesson_file in
   output_string oc "MALFORMED GARBAGE JSON {[[[[";
   close_out oc;
@@ -244,9 +218,6 @@ let () =
 
   Printf.printf "  [PASS] Section 5: Lesson Store Locking & Self-Healing Complete (2/2)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* 6. MODULE CSV EXPORTER: COMPREHENSIVE DDE FORMULA SANITIZATION           *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Tier 5.6] RFC 4180 CSV Lead Exporter & Formula Injection Neutralization...\n";
 
   let malicious_prefixes = ["="; "+"; "-"; "@"; "\t"; "\r"] in
@@ -298,9 +269,6 @@ let () =
 
   Printf.printf "  [PASS] Section 6: CSV Sanitization & RFC 4180 Format Complete (3/3)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* 7. MODULE PIPELINE: MULTI-CORRIDOR E2E LIVE PIPELINE SYNTHESIS           *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "[Tier 5.7] Autonomous Multi-Corridor Live Pipeline Execution...\n";
 
   let temp_db = Filename.temp_file "tier5_leads" ".db" in
@@ -334,9 +302,6 @@ let () =
 
   Printf.printf "  [PASS] Section 7: E2E Pipeline Orchestration Complete (4/4)\n\n";
 
-  (* ------------------------------------------------------------------------- *)
-  (* SUMMARY                                                                   *)
-  (* ------------------------------------------------------------------------- *)
   Printf.printf "======================================================================\n";
   Printf.printf "=== ALL TIER 5 ADVERSARIAL CHALLENGER TESTS PASSED: %d/%d (100.0%%) ===\n" !pass_count !test_count;
   Printf.printf "======================================================================\n\n"

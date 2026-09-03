@@ -204,7 +204,6 @@ let synthesize_candidate_leads
     () : Types.raw_lead list =
   let candidates = Hashtbl.create 64 in
 
-  (* 1. Process Building Permits (i98e-djp9) *)
   let bp_list = match building_permits with Json.Array l -> l | _ -> [] in
   List.iter (fun j ->
     match parse_building_permit_record j with
@@ -272,7 +271,6 @@ let synthesize_candidate_leads
           Hashtbl.replace candidates address updated_lead
   ) bp_list;
 
-  (* 2. Process Recent Permits (tyz3-vt28) *)
   let rp_list = match recent_permits with Json.Array l -> l | _ -> [] in
   List.iter (fun j ->
     let street_no = Json.get_string "streetno" j |> Option.value ~default:"" |> String.trim in

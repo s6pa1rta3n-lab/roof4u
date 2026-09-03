@@ -24,6 +24,27 @@ let get_public_records_answers () : public_records_answers =
 let normalize_str (s : string) : string =
   String.lowercase_ascii (String.trim s)
 
+let strip_hyphens (s : string) : string =
+  String.concat "" (String.split_on_char '-' (String.trim s))
+
+let apn_matches (a : string) (b : string) : bool =
+  let sa = strip_hyphens a in
+  let sb = strip_hyphens b in
+  sa <> "" && sb <> "" && sa = sb
+
+let permit_date_str (p : roof_permit_record) : string =
+  match p.issued_date with
+  | Some d -> d
+  | None ->
+      (match p.completed_date with
+       | Some c -> c
+       | None -> Option.value ~default:"" p.filed_date)
+
+let extract_year_from_iso_opt (s_opt : string option) : int option =
+  match s_opt with
+  | Some s -> Invariants.extract_year_from_string s
+  | None -> None
+
 let acquire_neighborhood_public_records
     ?(limit = 10)
     ?(timeout = 10.0)
@@ -42,19 +63,19 @@ let acquire_neighborhood_public_records
       let raw_leads = List.map (fun (addr : homeowner_address_record) ->
         let matched_name =
           List.find_opt (fun (n : homeowner_name_record) ->
-            n.parcel_number = addr.parcel_number ||
+            apn_matches n.parcel_number addr.parcel_number ||
             normalize_str n.property_location = normalize_str addr.property_location
           ) names
         in
         let matched_gis =
           List.find_opt (fun (g : gis_roof_record) ->
-            g.parcel_number = addr.parcel_number ||
+            apn_matches g.parcel_number addr.parcel_number ||
             normalize_str g.property_location = normalize_str addr.property_location
           ) gis_list
         in
         let matched_tax =
           List.find_opt (fun (t : property_tax_record) ->
-            t.parcel_number = addr.parcel_number ||
+            apn_matches t.parcel_number addr.parcel_number ||
             normalize_str t.property_location = normalize_str addr.property_location
           ) tax_list
         in
@@ -70,7 +91,7 @@ let acquire_neighborhood_public_records
           match permits_res with
           | Ok ps ->
               List.filter (fun (p : roof_permit_record) ->
-                p.parcel_number = addr.parcel_number ||
+                apn_matches p.parcel_number addr.parcel_number ||
                 normalize_str (p.street_number ^ " " ^ p.street_name) = normalize_str addr.property_location
               ) ps
           | Error _ -> []
@@ -95,18 +116,67 @@ let acquire_neighborhood_public_records
           | Some n -> Some n.owner_name
           | None -> Some (addr.property_location ^ " Owner")
         in
-        let last_permit =
-          match permits with
-          | p :: _ -> p.filed_date
-          | [] -> Some "1998-05-12"
+        let replacement_permits =
+          List.filter (fun (p : roof_permit_record) -> p.is_roof_replacement) permits
         in
-        let roof_age =
-          match permits with
-          | p :: _ when p.roof_age_years <> None -> p.roof_age_years
-          | _ -> Some 28.0
+        let sorted_replacement_permits =
+          List.sort (fun p1 p2 ->
+            String.compare (permit_date_str p2) (permit_date_str p1)
+          ) replacement_permits
+        in
+        let current_year = 2026 in
+        let (last_permit, roof_age) =
+          match sorted_replacement_permits with
+          | p :: _ ->
+              let p_date = match p.issued_date with Some d -> Some d | None -> p.filed_date in
+              (p_date, p.roof_age_years)
+          | [] ->
+              let structural_age =
+                match matched_tax with
+                | Some t ->
+                    (match t.year_built with
+                     | Some yb -> Some (float_of_int (max 0 (current_year - yb)))
+                     | None -> None)
+                | None -> None
+              in
+              (None, structural_age)
+        in
+        let is_hoa =
+          Property_tax_records.is_hoa_property
+            ?property_class_code:addr.property_class_code
+            ?property_class_def:addr.property_class_definition
+            ?use_code:(match matched_tax with Some t -> t.use_code | None -> None)
+            ?use_def:(match matched_tax with Some t -> t.use_definition | None -> None)
+            ~parcel_number:addr.parcel_number
+            ~property_type
+            ?owner_name
+            ~address:addr.property_location
+            ()
+        in
+        let is_rental =
+          let has_exemption = match matched_name with Some n -> Some n.has_homeowner_exemption | None -> None in
+          let exemption_val = match matched_name with Some n -> Some n.exemption_value | None -> None in
+          let owner_type = match matched_name with Some n -> Some n.ownership_type | None -> None in
+          Property_tax_records.is_rental_property
+            ~situs_address:addr.property_location
+            ?has_homeowner_exemption:has_exemption
+            ?exemption_value:exemption_val
+            ?owner_name
+            ?ownership_type:owner_type
+            ~units_count:addr.units_count
+            ~property_type
+            ()
         in
         let converted_permits =
           List.map (fun (p : roof_permit_record) ->
+            let yr =
+              match extract_year_from_iso_opt p.issued_date with
+              | Some y -> Some y
+              | None ->
+                  (match extract_year_from_iso_opt p.completed_date with
+                   | Some y -> Some y
+                   | None -> extract_year_from_iso_opt p.filed_date)
+            in
             {
               permit_number = p.permit_number;
               permit_type = Some "Roofing Replacement";
@@ -114,7 +184,7 @@ let acquire_neighborhood_public_records
               date_filed = p.filed_date;
               date_issued = p.issued_date;
               status = p.status;
-              year = (match p.filed_date with Some d -> Roof_permits.parse_roof_permit_record (Json.String d) |> ignore; Some 1998 | None -> Some 1998);
+              year = yr;
               is_roof_replacement = p.is_roof_replacement;
               cost = p.estimated_cost;
             }
@@ -129,12 +199,12 @@ let acquire_neighborhood_public_records
           roof_type_raw = Some (string_of_roof_type roof_type);
           estimated_value = estimated_val;
           owner_name;
-          is_hoa = false;
-          is_rental = false;
+          is_hoa;
+          is_rental;
           apn = Some addr.parcel_number;
           last_roof_permit_date = last_permit;
           roof_age_years = roof_age;
-          year_built = (match matched_tax with Some t -> t.year_built | None -> Some 1908);
+          year_built = (match matched_tax with Some t -> t.year_built | None -> None);
           phone_number = None;
           permits = converted_permits;
         } in
@@ -142,3 +212,4 @@ let acquire_neighborhood_public_records
       ) addrs in
       let verified = List.map Scorer.verify_lead raw_leads in
       Ok verified
+

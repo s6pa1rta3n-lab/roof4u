@@ -67,14 +67,9 @@ let check_is_ok desc (res : ('a, string) result) =
       Printf.printf "  [FAIL] %s (expected Ok, got Error: %s)\n" desc msg;
       failwith ("Challenger expected Ok but got Error: " ^ desc ^ " -> " ^ msg)
 
-(* ========================================================================= *)
-(* SECTION 1: SHA-256 EMPIRICAL STRESS & BOUNDARY HARNESS                     *)
-(* ========================================================================= *)
-
 let test_sha256_boundaries () =
   Printf.printf "\n--- SHA-256 Stress & Boundary Invariance ---\n";
 
-  (* 1. Boundary lengths around 55, 56, 64, 119, 120, 128, etc. *)
   let critical_lengths = [
     0; 1; 2; 54; 55; 56; 57; 63; 64; 65;
     118; 119; 120; 121; 127; 128; 129;
@@ -99,7 +94,6 @@ let test_sha256_boundaries () =
       check_true (Printf.sprintf "SHA-256 len=%d 0x00 != 0xFF" len) (h_zeros <> h_ones)
   ) critical_lengths;
 
-  (* 2. Empty chunk / zero-length update invariance *)
   let ctx = init () in
   update_string ctx "hello";
   update_bytes ctx (Bytes.create 0) 0 0;
@@ -108,7 +102,6 @@ let test_sha256_boundaries () =
   let h_direct = sha256_string "hello world" in
   check_equal_str "SHA-256 zero-length update invariance" h_direct h_with_empty_chunk;
 
-  (* 3. Streaming Chunk Size Invariance on a 4096-byte random pattern *)
   let payload_4k = String.init 4096 (fun i -> Char.chr ((i * 37 + 13) mod 256)) in
   let expected_4k = sha256_string payload_4k in
 
@@ -126,7 +119,6 @@ let test_sha256_boundaries () =
     check_equal_str (Printf.sprintf "SHA-256 4KB payload chunk size %d invariance" chunk_sz) expected_4k stream_hash
   ) chunk_sizes;
 
-  (* 4. Streaming with irregular / jittered chunk sizes *)
   let c_jitter = init () in
   let pos = ref 0 in
   let len = String.length payload_4k in
@@ -135,18 +127,13 @@ let test_sha256_boundaries () =
     let take = min !step (len - !pos) in
     update_string c_jitter (String.sub payload_4k !pos take);
     pos := !pos + take;
-    step := (!step * 7 + 3) mod 67 + 1 (* variable step 1..67 *)
+    step := (!step * 7 + 3) mod 67 + 1
   done;
   check_equal_str "SHA-256 4KB jittered irregular chunks invariance" expected_4k (finalize_hex c_jitter)
-
-(* ========================================================================= *)
-(* SECTION 2: JSON PARSER ADVERSARIAL FUZZING                                *)
-(* ========================================================================= *)
 
 let test_json_nesting_depth () =
   Printf.printf "\n--- JSON Adversarial Fuzzing: Nesting Depth & Limits ---\n";
 
-  (* Test valid nesting within default max_depth (1024) *)
   let depths = [1; 10; 50; 100; 500; 1000; 1023] in
   List.iter (fun d ->
     let open_b = String.make d '[' in
@@ -155,7 +142,6 @@ let test_json_nesting_depth () =
     check_is_ok (Printf.sprintf "JSON nested array depth=%d accepted" d) (parse json_str)
   ) depths;
 
-  (* Test exact threshold 1024 and 1025 *)
   let open_1024 = String.make 1024 '[' in
   let close_1024 = String.make 1024 ']' in
   check_is_ok "JSON nested array depth=1024 accepted (boundary)" (parse (open_1024 ^ "1" ^ close_1024));
@@ -164,13 +150,11 @@ let test_json_nesting_depth () =
   let close_1025 = String.make 1025 ']' in
   check_is_error "JSON nested array depth=1025 rejected (exceeds default max_depth 1024)" (parse (open_1025 ^ "1" ^ close_1025));
 
-  (* Test configurable max_depth *)
   let open_50 = String.make 50 '[' in
   let close_50 = String.make 50 ']' in
   check_is_error "JSON depth=50 rejected when max_depth=30" (parse ~max_depth:30 (open_50 ^ "1" ^ close_50));
   check_is_ok "JSON depth=50 accepted when max_depth=60" (parse ~max_depth:60 (open_50 ^ "1" ^ close_50));
 
-  (* Test deep nested objects *)
   let rec build_obj_depth d inner =
     if d = 0 then inner
     else "{\"k\":" ^ build_obj_depth (d - 1) inner ^ "}"
@@ -182,20 +166,20 @@ let test_json_number_fuzzing () =
   Printf.printf "\n--- JSON Adversarial Fuzzing: Malformed Numbers & Floats ---\n";
 
   let invalid_numbers = [
-    "+1"; "+0"; "+1.5"; "+1e5"; (* RFC 8259 forbids leading plus *)
-    "01"; "00"; "007"; "0123.45"; "-01"; "-00"; (* Leading zeros forbidden *)
-    ".5"; "-.5"; ".123"; "+.5"; (* Bare decimal point forbidden *)
-    "1."; "0."; "-5."; "100."; (* Trailing decimal point without digits forbidden *)
-    "1.e2"; "1.e+2"; "0.E5"; (* Decimal point without fractional digits before exponent *)
-    "1e"; "1e+"; "1e-"; "1E"; "1E+"; "1E-"; "-1e"; (* Exponent without digits *)
-    "1e1.5"; "1e0.5"; (* Non-integer exponent *)
-    "--1"; "-+1"; "+-1"; (* Double signs *)
-    "1.2.3"; "1..2"; (* Multiple decimals *)
-    "0x123"; "0b101"; "0o77"; (* Non-decimal radixes forbidden in JSON *)
-    "Infinity"; "-Infinity"; "+Infinity"; "inf"; "-inf"; (* RFC 8259 forbids infinity literal *)
-    "NaN"; "-NaN"; "nan"; (* RFC 8259 forbids NaN literal *)
-    "1_000"; "1 000"; (* Underscores / spaces in numbers forbidden *)
-    "1a"; "2f"; "3d"; "4L" (* Type suffix forbidden *)
+    "+1"; "+0"; "+1.5"; "+1e5";
+    "01"; "00"; "007"; "0123.45"; "-01"; "-00";
+    ".5"; "-.5"; ".123"; "+.5";
+    "1."; "0."; "-5."; "100.";
+    "1.e2"; "1.e+2"; "0.E5";
+    "1e"; "1e+"; "1e-"; "1E"; "1E+"; "1E-"; "-1e";
+    "1e1.5"; "1e0.5";
+    "--1"; "-+1"; "+-1";
+    "1.2.3"; "1..2";
+    "0x123"; "0b101"; "0o77";
+    "Infinity"; "-Infinity"; "+Infinity"; "inf"; "-inf";
+    "NaN"; "-NaN"; "nan";
+    "1_000"; "1 000";
+    "1a"; "2f"; "3d"; "4L"
   ] in
 
   List.iter (fun num_str ->
@@ -204,7 +188,6 @@ let test_json_number_fuzzing () =
     check_is_error (Printf.sprintf "Reject malformed number in array '[%s]'" num_str) (parse ("[" ^ num_str ^ "]"))
   ) invalid_numbers;
 
-  (* Valid tricky numbers per RFC 8259 *)
   let valid_numbers = [
     ("0", 0.0);
     ("-0", 0.0);
@@ -236,29 +219,24 @@ let test_json_number_fuzzing () =
 let test_json_unicode_and_surrogates () =
   Printf.printf "\n--- JSON Adversarial Fuzzing: Unicode Escapes & UTF-16 Surrogates ---\n";
 
-  (* 1. Invalid \\u escapes *)
   let invalid_escapes = [
-    "\"\\u\""; "\"\\u1\""; "\"\\u12\""; "\"\\u123\""; (* Truncated hex *)
-    "\"\\u123g\""; "\"\\uZZZZ\""; "\"\\u----\""; "\"\\u####\""; "\"\\u 123\""; (* Non-hex chars *)
-    "\"\\u12\\n\""; "\"\\u12\\\"\""; (* Control/quotes inside escape *)
+    "\"\\u\""; "\"\\u1\""; "\"\\u12\""; "\"\\u123\"";
+    "\"\\u123g\""; "\"\\uZZZZ\""; "\"\\u----\""; "\"\\u####\""; "\"\\u 123\"";
+    "\"\\u12\\n\""; "\"\\u12\\\"\"";
   ] in
   List.iter (fun esc_str ->
     check_is_error (Printf.sprintf "Reject invalid unicode escape %s" esc_str) (parse esc_str)
   ) invalid_escapes;
 
-  (* 2. Valid and Edge-case Unicode escapes *)
   let valid_escapes = [
-    ("\"\\u0000\"", "\x00"); (* Null byte escape *)
+    ("\"\\u0000\"", "\x00");
     ("\"\\u0020\"", " ");
     ("\"\\u0041\\u0042\\u0043\"", "ABC");
-    ("\"\\u00E9\"", "\xC3\xA9"); (* Latin small letter e with acute (é) -> UTF-8 2 bytes *)
-    ("\"\\u4E2D\\u6587\"", "\xE4\xB8\xAD\xE6\x96\x87"); (* Chinese characters (中文) -> UTF-8 3 bytes *)
-    ("\"\\uFFFF\"", "\xEF\xBF\xBF"); (* BMP maximum code point *)
-    (* UTF-16 Surrogate Pair: U+1F600 😀 (Grinning Face) = D83D DE00 *)
+    ("\"\\u00E9\"", "\xC3\xA9");
+    ("\"\\u4E2D\\u6587\"", "\xE4\xB8\xAD\xE6\x96\x87");
+    ("\"\\uFFFF\"", "\xEF\xBF\xBF");
     ("\"\\uD83D\\uDE00\"", "\xF0\x9F\x98\x80");
-    (* UTF-16 Surrogate Pair: U+10FFFF (Max Unicode) = DBFF DFFF *)
     ("\"\\uDBFF\\uDFFF\"", "\xF4\x8F\xBF\xBF");
-    (* UTF-16 Surrogate Pair: U+1F3E0 🏠 (House) = D83C DFE0 *)
     ("\"\\uD83C\\uDFE0\"", "\xF0\x9F\x8F\xA0");
   ] in
   List.iter (fun (json_str, expected_utf8) ->
@@ -269,14 +247,13 @@ let test_json_unicode_and_surrogates () =
     | Error msg -> check_true (Printf.sprintf "Unicode escape %s failed to parse: %s" json_str msg) false
   ) valid_escapes;
 
-  (* 3. Lone / Broken Surrogate Pairs (RFC 8259: parser should not crash; replaces or parses safely) *)
   let lone_surrogates = [
-    "\"\\uD800\""; (* Lone high surrogate *)
-    "\"\\uDC00\""; (* Lone low surrogate *)
-    "\"\\uD800\\uD800\""; (* High surrogate followed by high surrogate *)
-    "\"\\uD800\\u0041\""; (* High surrogate followed by regular char escape *)
-    "\"\\uD800abc\""; (* High surrogate followed by ascii characters *)
-    "\"\\uD800\\\\\""; (* High surrogate followed by escaped backslash *)
+    "\"\\uD800\"";
+    "\"\\uDC00\"";
+    "\"\\uD800\\uD800\"";
+    "\"\\uD800\\u0041\"";
+    "\"\\uD800abc\"";
+    "\"\\uD800\\\\\"";
   ] in
   List.iter (fun s ->
     let res = parse s in
@@ -286,14 +263,12 @@ let test_json_unicode_and_surrogates () =
 let test_json_control_chars_and_truncations () =
   Printf.printf "\n--- JSON Adversarial Fuzzing: Control Characters & Truncated Payloads ---\n";
 
-  (* 1. Unescaped control characters 0x00 to 0x1F inside string literals MUST be rejected *)
   for code = 0 to 31 do
     let raw_char = String.make 1 (Char.chr code) in
     let invalid_json = "\"" ^ raw_char ^ "\"" in
     check_is_error (Printf.sprintf "Reject unescaped control char 0x%02X in string literal" code) (parse invalid_json)
   done;
 
-  (* 2. Truncated syntax payloads across all grammar rules *)
   let truncated_payloads = [
     ""; "   "; "\t\n";
     "{"; "}"; "["; "]";
@@ -312,7 +287,6 @@ let test_json_control_chars_and_truncations () =
 let test_json_key_collisions_and_stress () =
   Printf.printf "\n--- JSON Adversarial Fuzzing: Key Collisions & Scale Stress ---\n";
 
-  (* 1. Duplicate Keys in Object: Parser must parse without crash, preserve all keys in AST *)
   let dup_json = "{\"a\": 1, \"b\": 2, \"a\": 3, \"a\": 4}" in
   let res_dup = parse dup_json in
   check_is_ok "JSON duplicate keys parsed safely into AST" res_dup;
@@ -320,18 +294,15 @@ let test_json_key_collisions_and_stress () =
   (match ast_dup with
    | Object kvs ->
        check_true "AST preserves all 4 duplicate key entries" (List.length kvs = 4);
-       (* First occurrence retrieval via List.assoc_opt *)
        check_equal_str "get_int retrieves first occurrence" "1" (string_of_int (Option.get (get_int "a" ast_dup)));
    | _ -> check_true "Expected Object AST" false);
 
-  (* 2. Empty string key *)
   let empty_key_json = "{\"\": \"empty_key_value\"}" in
   let res_empty = parse empty_key_json in
   check_is_ok "JSON empty string key parsed safely" res_empty;
   let ast_empty = Result.get_ok res_empty in
   check_equal_str "Extract value from empty string key" "empty_key_value" (Option.get (get_string "" ast_empty));
 
-  (* 3. Keys containing escaped quotes and slashes *)
   let complex_keys_json = "{\"key\\\"with\\\"quotes\": 10, \"key/with/slash\": 20, \"key\\\\with\\\\backslash\": 30}" in
   let res_complex_keys = parse complex_keys_json in
   check_is_ok "JSON complex escaped keys parsed safely" res_complex_keys;
@@ -340,7 +311,6 @@ let test_json_key_collisions_and_stress () =
   check_true "Extract key with slashes" (get_int "key/with/slash" ast_complex = Some 20);
   check_true "Extract key with backslashes" (get_int "key\\with\\backslash" ast_complex = Some 30);
 
-  (* 4. Scale Stress: 10,000 element array parsing & roundtrip *)
   let count = 10000 in
   let buf = Buffer.create (count * 6) in
   Buffer.add_char buf '[';
@@ -361,17 +331,12 @@ let test_json_key_collisions_and_stress () =
        check_true "10,000th element unwrapped is 9999" (as_int (List.nth items 9999) = Some 9999);
    | _ -> check_true "Expected Array AST" false);
 
-  (* 5. Serializer Float Edge Cases: NaN and Infinity *)
   let serialized_nan = to_string (Number Float.nan) in
   check_equal_str "Serializer converts NaN to 'null'" "null" serialized_nan;
   let serialized_inf = to_string (Number Float.infinity) in
   check_equal_str "Serializer converts Infinity to 'null'" "null" serialized_inf;
   let serialized_neg_inf = to_string (Number Float.neg_infinity) in
   check_equal_str "Serializer converts -Infinity to 'null'" "null" serialized_neg_inf
-
-(* ========================================================================= *)
-(* MAIN ENTRYPOINT                                                           *)
-(* ========================================================================= *)
 
 let () =
   Printf.printf "\n=================================================================\n";

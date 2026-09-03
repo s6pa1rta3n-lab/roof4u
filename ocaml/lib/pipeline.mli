@@ -20,6 +20,9 @@ type config = {
 
 val default_config : config
 
+val target_neighborhoods : string list ref
+val max_leads_limit : int option ref
+
 type pipeline_summary = {
   candidates_discovered : int;
   leads_enriched : int;
@@ -30,13 +33,18 @@ type pipeline_summary = {
   vectors_count : int;
 }
 
-val run_pipeline : ?config:config -> unit -> pipeline_summary
-(** [run_pipeline ?config ()] executes the end-to-end Roo4u autonomous pipeline:
-    1. Phase 1: Discovers candidate leads for target SF zip codes.
-    2. Phase 2: Enriches candidate properties with municipal details.
-    3. Phase 3: Executes invariant qualification (INV1-INV4) and actionability scoring.
-    4. Phase 4: Persists status transitions to SQLite database.
-    5. Phase 5: Updates lesson store & vector store and exports qualified leads to CSV. *)
+val run_pipeline :
+  ?config:config ->
+  ?target_neighborhoods:string list ->
+  ?max_leads:int ->
+  unit ->
+  pipeline_summary
+(** [run_pipeline ?config ?target_neighborhoods ?max_leads ()] executes the end-to-end Roo4u autonomous pipeline:
+    1. Phase 1: GIS Discovery (gods-eye-view polygons, spatial ray-casting, roof morphology).
+    2. Phase 2: Contact Enrichment (BatchSkipTracing API -> OSINT scraper -> fallback).
+    3. Phase 3: Public Records & Tax Validation (Assessor roll, DBI permits, HOA & rental filters).
+    4. Phase 4: Invariant Qualification & Actionability Scoring (INV-1..4 & 0..100 score).
+    5. Phase 5: SQLite Persistence & RFC 4180 CSV Export. *)
 
 val default_seed_leads_for_zip : string -> Types.raw_lead list
 (** [default_seed_leads_for_zip zip] returns authentic municipal seed leads for the specified postal code. *)

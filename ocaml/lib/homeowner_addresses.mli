@@ -43,3 +43,13 @@ val fetch_homeowner_addresses :
 
 val answer_source_description : string
 (** [answer_source_description] returns a direct explanation of where homeowner addresses are located in public records. *)
+
+val normalize_street_number : string -> string
+(** [normalize_street_number num] strips leading administrative zeros from a street number per USPS Pub 28. *)
+
+val normalize_street_suffix : string -> string
+(** [normalize_street_suffix tok] normalizes a street suffix token to standard abbreviation per USPS Pub 28. *)
+
+val normalize_usps_pub28 : string -> string
+(** [normalize_usps_pub28 addr] normalizes a full address string per USPS Pub 28. *)
+

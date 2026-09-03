@@ -35,7 +35,6 @@ let () =
   Printf.printf "=== Pure OCaml JSON AST Parser & Serializer Tests ===\n";
   Printf.printf "======================================================\n\n";
 
-  (* 1. Primitives & AST Extraction *)
   let r_null = parse "null" in
   assert_true "T1.1: Parse Null" (r_null = Ok Null);
 
@@ -60,7 +59,6 @@ let () =
   let r_str = parse "\"San Francisco Municipal Database\"" in
   assert_true "T1.8: Parse String" (r_str = Ok (String "San Francisco Municipal Database"));
 
-  (* 2. Structured Objects and Safe Typed Accessors *)
   let json_obj_str = "{\"address\": \"2223 Pacific Ave\", \"zip\": \"94115\", \"value\": 4350000.0, \"hoa\": false, \"units\": 1}" in
   let r_obj = parse json_obj_str in
   assert_true "T1.9: Parse Structured JSON Object" (match r_obj with Ok (Object _) -> true | _ -> false);
@@ -72,7 +70,6 @@ let () =
   assert_true "T1.13: Extract bool field (hoa)" (Option.get (get_bool "hoa" ast) = false);
   assert_true "T1.14: Extract int field (units)" (Option.get (get_int "units" ast) = 1);
 
-  (* 3. Arrays and Nested Structures *)
   let arr_json = "{\"permits\": [101, 102, 103]}" in
   let r_arr = parse arr_json in
   assert_true "T1.15: Extract array field" (match r_arr with Ok o -> get_array "permits" o <> None | _ -> false);
@@ -81,7 +78,6 @@ let () =
   assert_true "T1.16: Array element count is 3" (List.length permits_list = 3);
   assert_true "T1.17: Array element unwrapping" (as_int (List.hd permits_list) = Some 101);
 
-  (* 4. Unicode Escapes and UTF-8 Surrogate Pairs *)
   let uni_str = "{\"greeting\": \"Hello \\u0057\\u006f\\u0072\\u006c\\u0064!\"}" in
   let r_uni = parse uni_str in
   assert_true "T1.18: Parse \\u00XX Unicode escapes"
@@ -89,14 +85,13 @@ let () =
      | Ok o -> get_string "greeting" o = Some "Hello World!"
      | Error _ -> false);
 
-  let emoji_str = "{\"icon\": \"\\uD83C\\uDFE0\"}" in (* House emoji U+1F3E0 *)
+  let emoji_str = "{\"icon\": \"\\uD83C\\uDFE0\"}" in
   let r_emoji = parse emoji_str in
   assert_true "T1.19: Parse UTF-16 surrogate pair to UTF-8"
     (match r_emoji with
      | Ok o -> get_string "icon" o = Some "\xF0\x9F\x8F\xA0"
      | Error _ -> false);
 
-  (* 5. String Escapes: quotes, backslash, newline, tab, formfeed *)
   let esc_json = "{\"path\": \"C:\\\\Program Files\\\\App\", \"quote\": \"He said \\\"Hello\\\"\", \"lines\": \"A\\nB\\tC\"}" in
   let r_esc = parse esc_json in
   assert_true "T1.20: Parse all standard escape sequences" (match r_esc with Ok (Object _) -> true | _ -> false);
@@ -105,7 +100,6 @@ let () =
   assert_equal_str "T1.22: Escaped quotes" "He said \"Hello\"" (Option.get (get_string "quote" ast_esc));
   assert_equal_str "T1.23: Newline and Tab" "A\nB\tC" (Option.get (get_string "lines" ast_esc));
 
-  (* 6. Direct Value Unwrappers *)
   assert_true "T1.24: as_string on String" (as_string (String "test") = Some "test");
   assert_true "T1.25: as_string on Null" (as_string Null = None);
   assert_true "T1.26: as_float on Number" (as_float (Number 3.14) = Some 3.14);
@@ -114,7 +108,6 @@ let () =
   assert_true "T1.29: as_array on Array" (as_array (Array [Null]) = Some [Null]);
   assert_true "T1.30: as_object on Object" (as_object (Object [("k", Null)]) = Some [("k", Null)]);
 
-  (* 7. Combinators: member, index, path *)
   let complex_json = "{\"data\": {\"leads\": [{\"addr\": \"100 Main\"}, {\"addr\": \"200 Market\"}]}}" in
   let ast_complex = parse_exn complex_json in
   assert_equal_str "T1.31: Path navigation to nested property"
@@ -129,7 +122,6 @@ let () =
   assert_true "T1.32: Member combinator fallback to Null on missing key"
     (member "nonexistent" ast_complex = Null);
 
-  (* 8. AST Constructors *)
   let built_ast = obj [
     ("name", string "Roo4u");
     ("version", int 2);
@@ -140,7 +132,6 @@ let () =
   assert_true "T1.33: Programmatic AST construction"
     (match built_ast with Object kvs -> List.length kvs = 5 | _ -> false);
 
-  (* 9. Serializer: Compact and Pretty *)
   let compact_str = to_string built_ast in
   assert_true "T1.34: Compact serialization contains required keys"
     (String.length compact_str > 20);
@@ -149,7 +140,6 @@ let () =
   assert_true "T1.35: Pretty serialization produces multiline indented string"
     (String.contains pretty_str '\n');
 
-  (* 10. Roundtrip Preservation *)
   let roundtrip_ast = parse_exn compact_str in
   assert_equal_str "T1.36: Roundtrip AST string equivalence"
     "Roo4u"
@@ -157,7 +147,6 @@ let () =
   assert_true "T1.37: Roundtrip AST int equivalence"
     (get_int "version" roundtrip_ast = Some 2);
 
-  (* 11. Negative Tests & Error Traps *)
   assert_true "T2.1: Rejects empty input" (match parse "" with Error _ -> true | _ -> false);
   assert_true "T2.2: Rejects whitespace-only input" (match parse "   \n\t  " with Error _ -> true | _ -> false);
   assert_true "T2.3: Rejects unclosed object" (match parse "{\"key\": \"val\"" with Error _ -> true | _ -> false);

@@ -28,7 +28,15 @@ let sanitize_csv_field (s : string) : string =
     if c0 = '=' || c0 = '+' || c0 = '-' || c0 = '@' || c0 = '\t' || c0 = '\r' then
       "'" ^ s
     else
-      s
+      let trimmed = String.trim s in
+      if String.length trimmed > 0 then
+        let tc0 = trimmed.[0] in
+        if tc0 = '=' || tc0 = '+' || tc0 = '-' || tc0 = '@' || tc0 = '\t' || tc0 = '\r' then
+          "'" ^ s
+        else
+          s
+      else
+        s
 
 (** RFC 4180 CSV value escaping *)
 let escape_csv_field (s : string) : string =
@@ -88,6 +96,13 @@ let row_of_verified_lead (v : verified_lead) : string list =
 let row_of_db_row (row : Db.lead_row) : string list =
   let prop_type = Option.value ~default:"Single-Family" row.property_type in
   let roof_type = Option.value ~default:"Victorian" row.roof_type in
+  let status_display =
+    match String.uppercase_ascii (String.trim row.status) with
+    | "VALIDATED" | "QUALIFIED" | "EXPORTED" | "ENRICHED" -> "VALIDATED"
+    | "DISQUALIFIED" -> "DISQUALIFIED"
+    | "DISCARDED" -> "DISCARDED"
+    | other -> other
+  in
   [
     format_csv_cell row.address;
     format_csv_cell row.zip_code;
@@ -98,15 +113,17 @@ let row_of_db_row (row : Db.lead_row) : string list =
     format_csv_cell (Option.value ~default:"" row.apn);
     format_csv_cell (format_float_opt row.roof_age_years);
     format_csv_cell (Option.value ~default:"" row.phone_number);
-    format_csv_cell row.status;
+    format_csv_cell status_display;
   ]
 
-let write_csv_rows (filepath : string) (rows : string list list) : unit =
+let write_csv_rows ?(crlf = false) (filepath : string) (rows : string list list) : unit =
+  let term = if crlf then "\r\n" else "\n" in
+  let header = String.concat "," headers ^ term in
   let oc = open_out filepath in
   try
-    output_string oc header_string;
+    output_string oc header;
     List.iter (fun row ->
-      let line = String.concat "," row ^ "\n" in
+      let line = String.concat "," row ^ term in
       output_string oc line
     ) rows;
     close_out oc

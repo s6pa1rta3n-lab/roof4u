@@ -424,7 +424,6 @@ let to_string_pretty ?(indent = 2) t =
   in
   pp 0 t
 
-(* Safe Accessors *)
 let get_field key = function
   | Object kvs -> List.assoc_opt key kvs
   | _ -> None
@@ -459,7 +458,6 @@ let get_object key json =
   | Some (Object obj) -> Some obj
   | _ -> None
 
-(* Value Unwrappers *)
 let as_string = function String s -> Some s | _ -> None
 let as_float = function Number f -> Some f | _ -> None
 let as_int = function Number f -> Some (int_of_float f) | _ -> None
@@ -467,7 +465,6 @@ let as_bool = function Bool b -> Some b | _ -> None
 let as_array = function Array arr -> Some arr | _ -> None
 let as_object = function Object obj -> Some obj | _ -> None
 
-(* AST Constructors *)
 let null = Null
 let bool b = Bool b
 let string s = String s
@@ -476,7 +473,6 @@ let int n = Number (float_of_int n)
 let array arr = Array arr
 let obj kvs = Object kvs
 
-(* Combinators & Navigation *)
 let member key json =
   match get_field key json with
   | Some v -> v

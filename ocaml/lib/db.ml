@@ -8,16 +8,20 @@ type lead_status =
   | Discovered
   | Enriched
   | Validated
-  | Discarded
+  | Qualified
   | Disqualified
+  | Discarded
+  | Exported
   | Custom of string
 
 let string_of_status = function
   | Discovered -> "DISCOVERED"
   | Enriched -> "ENRICHED"
   | Validated -> "VALIDATED"
-  | Discarded -> "DISCARDED"
+  | Qualified -> "QUALIFIED"
   | Disqualified -> "DISQUALIFIED"
+  | Discarded -> "DISCARDED"
+  | Exported -> "EXPORTED"
   | Custom s -> String.uppercase_ascii (String.trim s)
 
 let status_of_string s =
@@ -25,8 +29,10 @@ let status_of_string s =
   | "DISCOVERED" -> Discovered
   | "ENRICHED" -> Enriched
   | "VALIDATED" -> Validated
-  | "DISCARDED" -> Discarded
+  | "QUALIFIED" -> Qualified
   | "DISQUALIFIED" -> Disqualified
+  | "DISCARDED" -> Discarded
+  | "EXPORTED" -> Exported
   | other -> Custom other
 
 type lead_row = {
@@ -207,7 +213,7 @@ let run_sqlite_cmd (db_path : string) (sql : string) : (string, string) result =
   if db_path = ":memory:" then Ok ""
   else
     try
-      let cmd = Printf.sprintf "sqlite3 %s %s" (Filename.quote db_path) (Filename.quote sql) in
+      let cmd = Printf.sprintf "sqlite3 %s %s 2>&1" (Filename.quote db_path) (Filename.quote sql) in
       let ic = Unix.open_process_in cmd in
       let buf = Buffer.create 1024 in
       let chunk = Bytes.create 1024 in
@@ -222,8 +228,10 @@ let run_sqlite_cmd (db_path : string) (sql : string) : (string, string) result =
       let status = Unix.close_process_in ic in
       match status with
       | Unix.WEXITED 0 -> Ok (Buffer.contents buf)
-      | Unix.WEXITED code -> Error (Printf.sprintf "sqlite3 exited %d: %s" code (Buffer.contents buf))
-      | _ -> Error "sqlite3 process failed"
+      | Unix.WEXITED code ->
+          let out = String.trim (Buffer.contents buf) in
+          Error (Printf.sprintf "sqlite3 exited %d: %s" code out)
+      | _ -> Error "sqlite3 process terminated abnormally"
     with exn ->
       Error (Printexc.to_string exn)
 
@@ -234,6 +242,7 @@ let init_db (t : t) : unit =
       if not (Sys.file_exists dir) then
         (try Unix.mkdir dir 0o755 with _ -> ());
       let sql =
+        "PRAGMA journal_mode=WAL;" ^
         "CREATE TABLE IF NOT EXISTS leads (" ^
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " ^
         "address TEXT NOT NULL UNIQUE, " ^
@@ -252,9 +261,12 @@ let init_db (t : t) : unit =
         "status TEXT DEFAULT 'DISCOVERED'" ^
         ");" ^
         "CREATE INDEX IF NOT EXISTS idx_leads_zip ON leads(zip_code);" ^
-        "CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);"
+        "CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);" ^
+        "CREATE INDEX IF NOT EXISTS idx_leads_address ON leads(address);"
       in
-      ignore (run_sqlite_cmd t.db_path sql)
+      match run_sqlite_cmd t.db_path sql with
+      | Ok _ -> ()
+      | Error err -> Printf.eprintf "[!] SQLite init error: %s\n" err
   )
 
 let load_existing_rows (t : t) : unit =
@@ -498,9 +510,15 @@ let list_leads
     let rows = Hashtbl.fold (fun _ r acc -> r :: acc) t.leads_by_address [] in
     let filtered =
       List.filter (fun r ->
+        let r_status_upper = String.uppercase_ascii (String.trim r.status) in
         let match_status =
           match status with
-          | Some st -> String.uppercase_ascii r.status = string_of_status st
+          | Some Validated ->
+              r_status_upper = "VALIDATED" || r_status_upper = "EXPORTED" || r_status_upper = "QUALIFIED"
+          | Some Qualified ->
+              r_status_upper = "QUALIFIED" || r_status_upper = "VALIDATED" || r_status_upper = "EXPORTED"
+          | Some st ->
+              r_status_upper = string_of_status st
           | None -> true
         in
         let match_zip =

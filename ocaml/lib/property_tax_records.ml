@@ -191,6 +191,30 @@ let fallback_tax_records_for_neighborhood (n : string) : property_tax_record lis
         supervisor_district = Some "2";
         current_sales_date = Some "2018-04-12";
       };
+      {
+        parcel_number = "0612005";
+        property_location = "1940 WEBSTER ST";
+        closed_roll_year = "2023";
+        assessed_land_value = 2100000.0;
+        assessed_improvement_value = 1700000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 3800000.0;
+        improvement_to_land_ratio = 0.8095;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-3";
+        use_code = Some "MRES";
+        use_definition = Some "Multi-Family 2-4 Units";
+        year_built = Some 1910;
+        number_of_units = Some 3;
+        number_of_stories = Some 3;
+        number_of_bedrooms = Some 6;
+        number_of_bathrooms = Some 4;
+        number_of_rooms = Some 10;
+        assessor_neighborhood = Some "Pacific Heights";
+        supervisor_district = Some "2";
+        current_sales_date = Some "2016-10-18";
+      };
     ]
   else if String.starts_with ~prefix:"rich" clean || String.starts_with ~prefix:"pres" clean then
     [
@@ -443,6 +467,30 @@ let fallback_tax_records_for_neighborhood (n : string) : property_tax_record lis
         supervisor_district = Some "2";
         current_sales_date = Some "2017-09-05";
       };
+      {
+        parcel_number = "0530008";
+        property_location = "2340 UNION ST";
+        closed_roll_year = "2023";
+        assessed_land_value = 2300000.0;
+        assessed_improvement_value = 1800000.0;
+        assessed_fixtures_value = 0.0;
+        assessed_personal_property_value = 0.0;
+        total_assessed_value = 4100000.0;
+        improvement_to_land_ratio = 0.7826;
+        tax_rate_area_code = Some "0001";
+        zoning_code = Some "RH-2";
+        use_code = Some "SRES";
+        use_definition = Some "Single Family Residence";
+        year_built = Some 1912;
+        number_of_units = Some 1;
+        number_of_stories = Some 2;
+        number_of_bedrooms = Some 4;
+        number_of_bathrooms = Some 3;
+        number_of_rooms = Some 9;
+        assessor_neighborhood = Some "Marina";
+        supervisor_district = Some "2";
+        current_sales_date = Some "2017-04-10";
+      };
     ]
   else
     [
@@ -496,3 +544,178 @@ let answer_source_description : string =
   "& Tax Collector portal (sf-treasurer.org). Records provide itemized assessed land value, " ^
   "improvement/structure value, fixtures, personal property value, total assessed roll values, " ^
   "and historical tax assessment roll years."
+
+let contains_ci (needle : string) (haystack : string) : bool =
+  let n = String.lowercase_ascii needle in
+  let h = String.lowercase_ascii haystack in
+  let n_len = String.length n in
+  let h_len = String.length h in
+  if n_len = 0 then true
+  else if n_len > h_len then false
+  else
+    let rec check i =
+      if i + n_len > h_len then false
+      else if String.sub h i n_len = n then true
+      else check (i + 1)
+    in
+    check 0
+
+let is_condo_lot_series (apn_or_lot : string) : bool =
+  let clean = String.trim apn_or_lot in
+  let lot_str =
+    match String.split_on_char '-' clean with
+    | [ _block; lot ] -> lot
+    | _ ->
+        if String.length clean = 7 then String.sub clean 4 3
+        else if String.length clean = 8 then String.sub clean 4 4
+        else clean
+  in
+  match int_of_string_opt (String.trim lot_str) with
+  | Some n -> n >= 500 && n <= 999
+  | None -> false
+
+let is_hoa_property
+    ?property_class_code
+    ?property_class_def
+    ?use_code
+    ?use_def
+    ?parcel_number
+    ?property_type
+    ?owner_name
+    ?address
+    () : bool =
+  let type_condo =
+    match property_type with
+    | Some Condo -> true
+    | _ -> false
+  in
+  let lot_condo =
+    match parcel_number with
+    | Some p -> is_condo_lot_series p
+    | None -> false
+  in
+  let use_code_condo =
+    match use_code with
+    | Some u ->
+        let s = String.uppercase_ascii (String.trim u) in
+        s = "CONDO" || s = "COOP" || s = "TIC"
+    | None -> false
+  in
+  let def_condo =
+    let check_opt = function
+      | Some d ->
+          contains_ci "condominium" d ||
+          contains_ci "cooperative" d ||
+          contains_ci "pud" d ||
+          contains_ci "planned unit development" d ||
+          contains_ci "tenancy in common" d ||
+          contains_ci "tenancy-in-common" d ||
+          contains_ci "tic" d
+      | None -> false
+    in
+    check_opt use_def || check_opt property_class_def
+  in
+  let deed_condo =
+    match owner_name with
+    | Some o ->
+        contains_ci "master hoa deed" o ||
+        contains_ci "homeowners association" o ||
+        contains_ci "condominium association" o ||
+        contains_ci "hoa" o ||
+        contains_ci "coa" o
+    | None -> false
+  in
+  let unit_condo =
+    match address with
+    | Some a ->
+        contains_ci " #" a ||
+        contains_ci "#" a ||
+        contains_ci " unit " a ||
+        contains_ci " apt " a ||
+        contains_ci " suite " a
+    | None -> false
+  in
+  let class_code_condo =
+    match property_class_code with
+    | Some c ->
+        let code = String.uppercase_ascii (String.trim c) in
+        if code = "D" || code = "Z" then
+          match property_class_def with
+          | Some def when contains_ci "single family" def || contains_ci "2-4 unit" def ->
+              type_condo || lot_condo || use_code_condo || def_condo || deed_condo || unit_condo
+          | _ -> true
+        else false
+    | None -> false
+  in
+  type_condo || lot_condo || use_code_condo || def_condo || deed_condo || unit_condo || class_code_condo
+
+let normalize_address_for_comparison (s : string) : string =
+  let buf = Buffer.create (String.length s) in
+  String.iter (function
+    | ',' | '.' | ';' | '#' | '-' | '/' | '\'' | '"' -> Buffer.add_char buf ' '
+    | c -> Buffer.add_char buf (Char.uppercase_ascii c)
+  ) (String.trim s);
+  let parts = String.split_on_char ' ' (Buffer.contents buf) in
+  let non_empty = List.filter (fun p -> p <> "" && p <> "0000") parts in
+  let standardized = List.map (function
+    | "STREET" | "STR" -> "ST"
+    | "AVENUE" | "AV" -> "AVE"
+    | "BOULEVARD" -> "BLVD"
+    | "DRIVE" -> "DR"
+    | "ROAD" -> "RD"
+    | "COURT" -> "CT"
+    | "LANE" -> "LN"
+    | "TERRACE" -> "TER"
+    | "WAY" -> "WAY"
+    | "PLACE" -> "PL"
+    | other -> other
+  ) non_empty in
+  String.concat " " standardized
+
+let is_rental_property
+    ?situs_address
+    ?tax_mailing_address
+    ?has_homeowner_exemption
+    ?exemption_value
+    ?owner_name
+    ?ownership_type
+    ?units_count
+    ?property_type
+    () : bool =
+  let density_rental =
+    match units_count with
+    | Some u when u > 4 -> true
+    | _ ->
+        (match property_type with
+         | Some MultiUnit5Plus | Some Commercial -> true
+         | _ -> false)
+  in
+  let corp_rental =
+    match ownership_type with
+    | Some CorporateLLC -> true
+    | _ ->
+        (match owner_name with
+         | Some o ->
+             let t = Types.parse_ownership_type o in
+             t = CorporateLLC
+         | None -> false)
+  in
+  let exemption_rental =
+    match has_homeowner_exemption with
+    | Some false -> true
+    | Some true -> false
+    | None ->
+        (match exemption_value with
+         | Some v when v <= 0.0 -> true
+         | _ -> false)
+  in
+  let address_mismatch =
+    match (situs_address, tax_mailing_address) with
+    | (Some situs, Some mailing) when String.trim situs <> "" && String.trim mailing <> "" ->
+        let norm_situs = normalize_address_for_comparison situs in
+        let norm_mail = normalize_address_for_comparison mailing in
+        norm_situs <> norm_mail
+    | _ -> false
+  in
+  density_rental || corp_rental || exemption_rental || address_mismatch
+

@@ -1,13 +1,27 @@
 (**
    main.ml - CLI Entrypoint for Roo4u Pure OCaml Engine (roof_pipeline).
    Supports end-to-end live pipeline execution, multi-zip acquisition,
-   single lead verification, and RFC 4180 CSV export.
+   neighborhood filtering, single lead verification, and RFC 4180 CSV export.
 *)
 
 open Roof_engine
 open Types
 open Scorer
 open Pipeline
+
+let is_valid_zip (z : string) : bool =
+  String.length z = 5 &&
+  let rec check i =
+    if i >= 5 then true
+    else if z.[i] >= '0' && z.[i] <= '9' then check (i + 1)
+    else false
+  in
+  check 0
+
+let split_comma (s : string) : string list =
+  String.split_on_char ',' s
+  |> List.map String.trim
+  |> List.filter (fun item -> String.length item > 0)
 
 let read_stdin () : string =
   let buf = Buffer.create 1024 in
@@ -21,12 +35,18 @@ let read_stdin () : string =
   with End_of_file ->
     Buffer.contents buf
 
-let read_file (filename : string) : string =
-  let ic = open_in filename in
-  let len = in_channel_length ic in
-  let buf = really_input_string ic len in
-  close_in ic;
-  buf
+let read_file (filename : string) : (string, string) result =
+  if not (Sys.file_exists filename) then
+    Error ("File not found: " ^ filename)
+  else
+    try
+      let ic = open_in filename in
+      let len = in_channel_length ic in
+      let buf = really_input_string ic len in
+      close_in ic;
+      Ok buf
+    with exn ->
+      Error ("Failed to read file: " ^ Printexc.to_string exn)
 
 let process_json (json_str : string) =
   match parse_json_lead json_str with
@@ -55,11 +75,14 @@ let usage ?(exit_code = 1) () =
   print_endline "";
   print_endline "Pipeline Execution:";
   print_endline "  --run                   Execute the end-to-end live pipeline";
+  print_endline "  --neighborhood <string> Target SF neighborhood(s) (comma-separated, e.g. \"Marina,Pacific Heights\")";
+  print_endline "  --neighborhoods <string> Alias for --neighborhood";
   print_endline "  --zips <string>         Target zip codes (comma-separated, default: \"94122,94118,94112,94115\")";
-  print_endline "  --limit <int>           Record limit per zip code (default: 15)";
+  print_endline "  --max-leads <int>       Maximum total leads to discover/export (> 0)";
+  print_endline "  --limit <int>           Alias for --max-leads / record limit per zip code";
   print_endline "  --csv <path>            Output CSV file path (default: \"validated_leads.csv\")";
   print_endline "  --db <path>             SQLite database file path (default: \"leads.db\")";
-  print_endline "  --min-score <float>     Minimum actionability score for export (default: 60.0)";
+  print_endline "  --min-score <float>     Minimum actionability score for export (0.0 to 100.0, default: 60.0)";
   print_endline "";
   print_endline "Single Lead Verification:";
   print_endline "  --stdin                 Read single JSON lead from standard input";
@@ -69,12 +92,12 @@ let usage ?(exit_code = 1) () =
   print_endline "";
   print_endline "General:";
   print_endline "  --help, -h              Display this usage information";
+  print_endline "";
+  print_endline "Exit Codes:";
+  print_endline "  0  Success / qualified lead / help display";
+  print_endline "  1  Invalid CLI argument, missing argument, validation error, or pipeline failure";
+  print_endline "  2  Single lead disqualified by invariants";
   exit exit_code
-
-let split_comma (s : string) : string list =
-  String.split_on_char ',' s
-  |> List.map String.trim
-  |> List.filter (fun item -> String.length item > 0)
 
 let run_homeowner_names (neighborhood : string) (limit : int) =
   match Homeowner_names.fetch_homeowner_names ~limit ~neighborhood () with
@@ -107,6 +130,10 @@ let run_gis_roofs (neighborhood : string) (limit : int) =
       exit 1
 
 let run_roof_permits (zip_code : string) (limit : int) =
+  if not (is_valid_zip zip_code) then (
+    prerr_endline ("Invalid 5-digit zip code: " ^ zip_code);
+    exit 1
+  );
   match Roof_permits.fetch_roof_permits ~limit ~zip_code () with
   | Ok records ->
       let json_arr = Json.Array (List.map roof_permit_record_to_json records) in
@@ -153,8 +180,10 @@ let main () =
   if args = [] then usage ~exit_code:0 ()
   else
     let run_mode = ref false in
+    let neighborhoods = ref [] in
     let zips = ref ["94122"; "94118"; "94112"; "94115"] in
-    let limit = ref 15 in
+    let max_leads_opt = ref None in
+    let limit_val = ref 15 in
     let csv_path = ref "validated_leads.csv" in
     let db_path = ref "leads.db" in
     let min_score = ref 60.0 in
@@ -177,45 +206,128 @@ let main () =
       | "--homeowner-names" :: n :: rest ->
           names_arg := Some n;
           parse rest
+      | "--homeowner-names" :: [] ->
+          prerr_endline "Error: --homeowner-names requires a neighborhood argument";
+          exit 1
       | "--homeowner-addresses" :: n :: rest | "--addresses" :: n :: rest ->
           addrs_arg := Some n;
           parse rest
+      | "--homeowner-addresses" :: [] | "--addresses" :: [] ->
+          prerr_endline "Error: --homeowner-addresses requires a neighborhood argument";
+          exit 1
       | "--gis-roofs" :: n :: rest | "--gis" :: n :: rest ->
           gis_arg := Some n;
           parse rest
+      | "--gis-roofs" :: [] | "--gis" :: [] ->
+          prerr_endline "Error: --gis-roofs requires a neighborhood argument";
+          exit 1
       | "--roof-permits" :: z :: rest | "--permits" :: z :: rest ->
           permits_arg := Some z;
           parse rest
+      | "--roof-permits" :: [] | "--permits" :: [] ->
+          prerr_endline "Error: --roof-permits requires a zip code argument";
+          exit 1
       | "--property-tax-records" :: n :: rest | "--tax-records" :: n :: rest ->
           tax_arg := Some n;
           parse rest
+      | "--property-tax-records" :: [] | "--tax-records" :: [] ->
+          prerr_endline "Error: --property-tax-records requires a neighborhood argument";
+          exit 1
       | "--acquire-public-records" :: n :: rest | "--acquire" :: n :: rest ->
           acquire_arg := Some n;
           parse rest
+      | "--acquire-public-records" :: [] | "--acquire" :: [] ->
+          prerr_endline "Error: --acquire-public-records requires a neighborhood argument";
+          exit 1
+      | "--neighborhood" :: n :: rest | "--neighborhoods" :: n :: rest ->
+          neighborhoods := split_comma n;
+          parse rest
+      | "--neighborhood" :: [] | "--neighborhoods" :: [] ->
+          prerr_endline "Error: --neighborhood requires an argument";
+          exit 1
       | "--run" :: rest ->
           run_mode := true;
           parse rest
       | "--zips" :: z :: rest ->
-          zips := split_comma z;
+          let parsed = split_comma z in
+          List.iter (fun zip ->
+            if not (is_valid_zip zip) then (
+              prerr_endline ("Error: Invalid 5-digit zip code: " ^ zip);
+              exit 1
+            )
+          ) parsed;
+          zips := parsed;
           parse rest
+      | "--zips" :: [] ->
+          prerr_endline "Error: --zips requires a comma-separated list of zip codes";
+          exit 1
+      | "--max-leads" :: l :: rest ->
+          (match int_of_string_opt l with
+           | Some n when n > 0 ->
+               max_leads_opt := Some n;
+               limit_val := n
+           | _ ->
+               prerr_endline ("Error: --max-leads must be a positive integer, got: " ^ l);
+               exit 1);
+          parse rest
+      | "--max-leads" :: [] ->
+          prerr_endline "Error: --max-leads requires an integer argument";
+          exit 1
       | "--limit" :: l :: rest ->
-          (try limit := int_of_string l with _ -> ());
+          (match int_of_string_opt l with
+           | Some n when n > 0 ->
+               limit_val := n;
+               max_leads_opt := Some n
+           | _ ->
+               prerr_endline ("Error: --limit must be a positive integer, got: " ^ l);
+               exit 1);
           parse rest
+      | "--limit" :: [] ->
+          prerr_endline "Error: --limit requires an integer argument";
+          exit 1
       | "--csv" :: c :: rest ->
+          if String.trim c = "" then (
+            prerr_endline "Error: --csv path cannot be empty";
+            exit 1
+          );
           csv_path := c;
           parse rest
+      | "--csv" :: [] ->
+          prerr_endline "Error: --csv requires a filepath argument";
+          exit 1
       | "--db" :: d :: rest ->
+          if String.trim d = "" then (
+            prerr_endline "Error: --db path cannot be empty";
+            exit 1
+          );
           db_path := d;
           parse rest
+      | "--db" :: [] ->
+          prerr_endline "Error: --db requires a database path argument";
+          exit 1
       | "--min-score" :: m :: rest ->
-          (try min_score := float_of_string m with _ -> ());
+          (match float_of_string_opt m with
+           | Some score when score >= 0.0 && score <= 100.0 ->
+               min_score := score
+           | _ ->
+               prerr_endline ("Error: --min-score must be a float between 0.0 and 100.0, got: " ^ m);
+               exit 1);
           parse rest
+      | "--min-score" :: [] ->
+          prerr_endline "Error: --min-score requires a float argument";
+          exit 1
       | "--json" :: j :: rest | "--verify-lead" :: j :: rest ->
           json_arg := Some j;
           parse rest
+      | "--json" :: [] | "--verify-lead" :: [] ->
+          prerr_endline "Error: --json requires a JSON string argument";
+          exit 1
       | "--file" :: f :: rest ->
           file_arg := Some f;
           parse rest
+      | "--file" :: [] ->
+          prerr_endline "Error: --file requires a filepath argument";
+          exit 1
       | "--stdin" :: rest ->
           stdin_arg := true;
           parse rest
@@ -229,48 +341,61 @@ let main () =
 
     if !sources_arg then print_public_records_sources ()
     else match !names_arg with
-    | Some n -> run_homeowner_names n !limit
+    | Some n -> run_homeowner_names n !limit_val
     | None ->
         match !addrs_arg with
-        | Some n -> run_homeowner_addresses n !limit
+        | Some n -> run_homeowner_addresses n !limit_val
         | None ->
             match !gis_arg with
-            | Some n -> run_gis_roofs n !limit
+            | Some n -> run_gis_roofs n !limit_val
             | None ->
                 match !permits_arg with
-                | Some z -> run_roof_permits z !limit
+                | Some z -> run_roof_permits z !limit_val
                 | None ->
                     match !tax_arg with
-                    | Some n -> run_property_tax_records n !limit
+                    | Some n -> run_property_tax_records n !limit_val
                     | None ->
                         match !acquire_arg with
-                        | Some n -> run_acquire_public_records n !limit
+                        | Some n -> run_acquire_public_records n !limit_val
                         | None ->
                             if !stdin_arg then
                               let content = read_stdin () in
                               process_json content
                             else match !file_arg with
                             | Some filename ->
-                                let content = read_file filename in
-                                process_json content
+                                (match read_file filename with
+                                 | Ok content -> process_json content
+                                 | Error err ->
+                                     prerr_endline err;
+                                     exit 1)
                             | None ->
                                 match !json_arg with
                                 | Some json_str ->
                                     process_json json_str
                                 | None ->
                                     if !run_mode then
-                                      let cfg = {
-                                        Pipeline.default_config with
-                                        target_zips = !zips;
-                                        limit_per_zip = !limit;
-                                        csv_path = !csv_path;
-                                        db_path = !db_path;
-                                        min_score = !min_score;
-                                      } in
-                                      let summary = Pipeline.run_pipeline ~config:cfg () in
-                                      if summary.leads_exported > 0 then exit 0 else exit 0
+                                      try
+                                        let cfg = {
+                                          Pipeline.default_config with
+                                          target_zips = !zips;
+                                          limit_per_zip = !limit_val;
+                                          csv_path = !csv_path;
+                                          db_path = !db_path;
+                                          min_score = !min_score;
+                                        } in
+                                        let summary =
+                                          Pipeline.run_pipeline
+                                            ~config:cfg
+                                            ?target_neighborhoods:(if !neighborhoods <> [] then Some !neighborhoods else None)
+                                            ?max_leads:!max_leads_opt
+                                            ()
+                                        in
+                                        ignore summary;
+                                        exit 0
+                                      with exn ->
+                                        prerr_endline ("Pipeline execution failed: " ^ Printexc.to_string exn);
+                                        exit 1
                                     else
-                                      usage ()
+                                      usage ~exit_code:1 ()
 
 let () = main ()
-

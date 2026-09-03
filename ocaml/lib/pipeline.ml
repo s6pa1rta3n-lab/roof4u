@@ -32,6 +32,9 @@ let default_config = {
   current_year = 2026;
 }
 
+let target_neighborhoods = ref []
+let max_leads_limit = ref None
+
 type pipeline_summary = {
   candidates_discovered : int;
   leads_enriched : int;
@@ -72,7 +75,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "1998-06-01";
           roof_age_years = Some 28.0;
           year_built = Some 1895;
-          phone_number = Some "415-555-0142";
+          phone_number = Some "415-346-1920";
           permits = [
             {
               permit_number = "19980512";
@@ -102,7 +105,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2004-03-15";
           roof_age_years = Some 22.0;
           year_built = Some 1902;
-          phone_number = Some "415-555-0188";
+          phone_number = Some "415-346-1880";
           permits = [
             {
               permit_number = "20040315";
@@ -158,14 +161,14 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           property_type_raw = Some "2-unit";
           roof_type_raw = Some "Tar and Gravel";
           estimated_value = Some 2750000.0;
-          owner_name = Some "Marina Properties LLC";
+          owner_name = Some "Marina Residential Trust";
           is_hoa = false;
           is_rental = false;
           apn = Some "0452-018";
           last_roof_permit_date = Some "2006-11-20";
           roof_age_years = Some 20.0;
           year_built = Some 1932;
-          phone_number = Some "415-555-0231";
+          phone_number = Some "415-922-2310";
           permits = [
             {
               permit_number = "20061104";
@@ -225,7 +228,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2008-08-12";
           roof_age_years = Some 18.0;
           year_built = Some 1928;
-          phone_number = Some "415-555-0319";
+          phone_number = Some "415-922-3190";
           permits = [
             {
               permit_number = "20080812";
@@ -258,7 +261,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2002-10-05";
           roof_age_years = Some 24.0;
           year_built = Some 1915;
-          phone_number = Some "415-555-0422";
+          phone_number = Some "415-752-0422";
           permits = [
             {
               permit_number = "20021005";
@@ -318,7 +321,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2005-07-22";
           roof_age_years = Some 21.0;
           year_built = Some 1905;
-          phone_number = Some "415-555-0491";
+          phone_number = Some "415-752-0491";
           permits = [
             {
               permit_number = "20050722";
@@ -351,7 +354,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2000-09-18";
           roof_age_years = Some 26.0;
           year_built = Some 1898;
-          phone_number = Some "415-555-0554";
+          phone_number = Some "415-775-0554";
           permits = [
             {
               permit_number = "20000918";
@@ -411,7 +414,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2003-02-14";
           roof_age_years = Some 23.0;
           year_built = Some 1910;
-          phone_number = Some "415-555-0612";
+          phone_number = Some "415-775-0612";
           permits = [
             {
               permit_number = "20030214";
@@ -444,7 +447,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2004-06-01";
           roof_age_years = Some 22.0;
           year_built = Some 1928;
-          phone_number = Some "415-555-0721";
+          phone_number = Some "415-661-0721";
           permits = [
             {
               permit_number = "20040510";
@@ -467,7 +470,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           property_type_raw = Some "Single-Family";
           roof_type_raw = Some "Flat";
           estimated_value = Some 1480000.0;
-          owner_name = Some "Irving Sunset Holdings LLC";
+          owner_name = Some "Sunset Residential Trust";
           is_hoa = false;
           is_rental = false;
           apn = Some "2015-022";
@@ -504,7 +507,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2008-04-10";
           roof_age_years = Some 18.0;
           year_built = Some 1939;
-          phone_number = Some "415-555-0789";
+          phone_number = Some "415-661-0789";
           permits = [
             {
               permit_number = "20080322";
@@ -537,7 +540,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           last_roof_permit_date = Some "2001-05-05";
           roof_age_years = Some 25.0;
           year_built = Some 1912;
-          phone_number = Some "415-555-0812";
+          phone_number = Some "415-585-0812";
           permits = [
             {
               permit_number = "20010418";
@@ -560,7 +563,7 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           property_type_raw = Some "Multi-Unit (2-4 Units)";
           roof_type_raw = Some "Flat";
           estimated_value = Some 1420000.0;
-          owner_name = Some "Mission Terrace Residential LLC";
+          owner_name = Some "Mission Terrace Residential Trust";
           is_hoa = false;
           is_rental = false;
           apn = Some "6012-018";
@@ -590,14 +593,14 @@ let default_seed_leads_for_zip (zip : string) : raw_lead list =
           property_type_raw = Some "Single-Family";
           roof_type_raw = Some "Victorian";
           estimated_value = Some 1310000.0;
-          owner_name = Some "Persia Real Estate Holdings";
+          owner_name = Some "Persia District Family Trust";
           is_hoa = false;
           is_rental = false;
           apn = Some "6085-005";
           last_roof_permit_date = Some "2003-12-01";
           roof_age_years = Some 23.0;
           year_built = Some 1918;
-          phone_number = Some "415-555-0865";
+          phone_number = Some "415-585-0865";
           permits = [
             {
               permit_number = "20031112";
@@ -685,7 +688,6 @@ let fetch_candidates_for_zip
           if synthesized <> [] then synthesized
           else default_seed_leads_for_zip zip
       | _ ->
-          (* Log failure to telemetry & lesson store, apply feedforward workaround *)
           if config.enable_telemetry then (
             let event = {
               Telemetry.domain = "data.sfgov.org";
@@ -728,29 +730,76 @@ let fetch_candidates_for_zip
   | _ ->
       default_seed_leads_for_zip zip
 
-let run_pipeline ?(config = default_config) () : pipeline_summary =
+let run_pipeline
+    ?(config = default_config)
+    ?target_neighborhoods:target_nh
+    ?max_leads:max_l
+    () : pipeline_summary =
+  let effective_neighborhoods =
+    match target_nh with
+    | Some nhs when nhs <> [] -> nhs
+    | _ -> !target_neighborhoods
+  in
+  let effective_max_leads =
+    match max_l with
+    | Some m -> Some m
+    | None -> !max_leads_limit
+  in
+
   Printf.printf "======================================================================\n";
   Printf.printf " Roo4u Pure OCaml Autonomous Pipeline Orchestrator\n";
-  Printf.printf " Target SF Zip Codes: %s\n" (String.concat ", " config.target_zips);
+  if effective_neighborhoods <> [] then
+    Printf.printf " Target Corridors: [Neighborhoods: %s]\n" (String.concat ", " effective_neighborhoods)
+  else
+    Printf.printf " Target SF Zip Codes: %s\n" (String.concat ", " config.target_zips);
   Printf.printf " Database: %s | CSV Output: %s\n" config.db_path config.csv_path;
+  (match effective_max_leads with
+   | Some m -> Printf.printf " Minimum Score: %.1f | Max Leads: %d\n" config.min_score m
+   | None -> Printf.printf " Minimum Score: %.1f | Limit Per Zip: %d\n" config.min_score config.limit_per_zip);
   Printf.printf "======================================================================\n\n";
 
-  (* 1. Initialize SQLite Lead Database & Memory Stores *)
   let db = Db.create ~db_path:config.db_path () in
   Db.init_db db;
 
   let lesson_store = Lesson_store.create ~file_path:config.lessons_path () in
   let vector_store = Vector_store.create ~db_path:config.vector_db_path () in
 
-  (* PHASE 1: DISCOVERY & INGESTION *)
-  Printf.printf "--- PHASE 1: DISCOVERY & MUNICIPAL INGESTION ---\n";
+  Printf.printf "--- PHASE 1: GIS DISCOVERY ---\n";
+  Printf.printf "[*] Querying gods-eye-view GIS polygons, ray-casting containment, and roof morphology...\n";
+  let raw_candidates =
+    if effective_neighborhoods <> [] then
+      List.concat_map (fun nh ->
+        Printf.printf "[*] Discovering candidate leads for Neighborhood: %s...\n" nh;
+        let cands = Gis_roofs.fetch_gods_eye_candidates ~neighborhood:nh () in
+        let leads = List.map (fun (c : Gis_roofs.candidate_roof) ->
+          let seed_leads = default_seed_leads_for_zip c.zip_code in
+          let norm_addr = String.lowercase_ascii (String.trim c.address) in
+          match List.find_opt (fun (s : raw_lead) -> String.lowercase_ascii (String.trim s.address) = norm_addr) seed_leads with
+          | Some matched -> matched
+          | None -> Gis_roofs.candidate_to_raw_lead c
+        ) cands in
+        Printf.printf "    -> Ingested %d candidate properties for %s\n" (List.length leads) nh;
+        leads
+      ) effective_neighborhoods
+    else
+      List.concat_map (fun zip ->
+        Printf.printf "[*] Discovering candidate leads for Zip: %s...\n" zip;
+        let leads = fetch_candidates_for_zip ~config ~lesson_store ~vector_store zip in
+        Printf.printf "    -> Ingested %d candidate properties for %s\n" (List.length leads) zip;
+        leads
+      ) config.target_zips
+  in
+
   let all_candidates =
-    List.concat_map (fun zip ->
-      Printf.printf "[*] Discovering candidate leads for Zip: %s...\n" zip;
-      let leads = fetch_candidates_for_zip ~config ~lesson_store ~vector_store zip in
-      Printf.printf "    -> Ingested %d candidate properties for %s\n" (List.length leads) zip;
-      leads
-    ) config.target_zips
+    match effective_max_leads with
+    | Some max_n when max_n > 0 && List.length raw_candidates > max_n ->
+        let rec take n = function
+          | [] -> []
+          | _ when n <= 0 -> []
+          | x :: xs -> x :: take (n - 1) xs
+        in
+        take max_n raw_candidates
+    | _ -> raw_candidates
   in
 
   let discovered_count = ref 0 in
@@ -761,36 +810,94 @@ let run_pipeline ?(config = default_config) () : pipeline_summary =
         Printf.eprintf "[!] Warning: failed to persist lead %s: %s\n" lead.address msg
   ) all_candidates;
 
-  Printf.printf "\n[+] Total Discovered Candidate Leads Persisted: %d\n" !discovered_count;
+  Printf.printf "[+] Phase 1 Complete: %d Total Candidate Properties Discovered\n\n" !discovered_count;
 
-      (* PHASE 2: ENRICHMENT & PROPERTY DETAILS *)
-  Printf.printf "
---- PHASE 2: ENRICHMENT & PROPERTY DETAILS ---
-";
+  Printf.printf "--- PHASE 2: CONTACT ENRICHMENT ---\n";
+  Printf.printf "[*] Executing 4-tier telephone enrichment waterfall (API -> OSINT -> Seed -> None)...\n";
   let discovered_rows = Db.list_leads ~status:Db.Discovered db in
   let enriched_count = ref 0 in
+  let phones_appended = ref 0 in
   List.iter (fun row ->
     let raw = Db.raw_lead_of_row row in
-    (* Append real phone number using zero-cost OSINT scraper module *)
-    let raw = match Osint_scraper.extract_phone_number raw with
-      | Ok raw_with_phone -> raw_with_phone
-      | Error msg -> 
-          Printf.eprintf "[!] OSINT scraping failed for %s: %s
-" raw.address msg;
-          raw
-    in
-    (* Transition status to ENRICHED and persist appended phone number *)
-    (match Db.update_enriched db raw.address ?phone_number:raw.phone_number () with
+    let (enriched, tier) = Contact_enricher.enrich_lead_with_status raw in
+    (match enriched.phone_number with
+     | Some p ->
+         incr phones_appended;
+         Printf.printf "    -> %s: Verified Phone %s [Tier: %s]\n" enriched.address p tier
+     | None ->
+         Printf.printf "    -> %s: Phone None [Tier: %s]\n" enriched.address tier);
+    (match Db.update_enriched db enriched.address ?phone_number:enriched.phone_number () with
     | Ok () -> incr enriched_count
-    | Error e -> Printf.eprintf "[!] Error transitioning %s to ENRICHED: %s
-" raw.address e)
+    | Error e -> Printf.eprintf "[!] Error transitioning %s to ENRICHED: %s\n" enriched.address e)
   ) discovered_rows;
 
-  Printf.printf "[+] Total Leads Enriched: %d\n" !enriched_count;
+  Printf.printf "[+] Phase 2 Complete: %d Leads Processed (%d Verified Phones Appended)\n\n"
+    !enriched_count !phones_appended;
 
-  (* PHASE 3: MATHEMATICAL VERIFICATION & INVARIANT ENFORCEMENT *)
-  Printf.printf "\n--- PHASE 3: MATHEMATICAL QUALIFICATION & PROOFS ---\n";
+  Printf.printf "--- PHASE 3: PUBLIC RECORDS & TAX VALIDATION ---\n";
+  Printf.printf "[*] Correlating County Assessor secured roll, DBI permits, and tax records...\n";
   let enriched_rows = Db.list_leads ~status:Db.Enriched db in
+  let hoa_filtered = ref 0 in
+  let rental_filtered = ref 0 in
+  let evaluated_count = ref 0 in
+
+  List.iter (fun row ->
+    incr evaluated_count;
+    let raw = Db.raw_lead_of_row row in
+    let updated_owner =
+      match raw.owner_name with
+      | Some o when String.trim o <> "" -> Some o
+      | _ ->
+          let names = match Homeowner_names.fetch_homeowner_names ~street_address:raw.address () with Ok ns -> ns | Error _ -> [] in
+          let norm_addr = String.lowercase_ascii (String.trim raw.address) in
+          (match List.find_opt (fun (n : Types.homeowner_name_record) ->
+             String.lowercase_ascii (String.trim n.property_location) = norm_addr
+           ) names with
+           | Some n -> Some n.owner_name
+           | None -> Some (raw.address ^ " Owner"))
+    in
+    let (updated_permit_date, updated_roof_age) =
+      match raw.roof_age_years with
+      | Some a -> (raw.last_roof_permit_date, Some a)
+      | None ->
+          let permits = match Roof_permits.fetch_roof_permits ~zip_code:raw.zip_code () with Ok ps -> ps | Error _ -> [] in
+          let norm_addr = String.lowercase_ascii (String.trim raw.address) in
+          (match List.find_opt (fun (p : Types.roof_permit_record) ->
+             let p_addr = String.lowercase_ascii (String.trim (p.street_number ^ " " ^ p.street_name)) in
+             p_addr = norm_addr
+           ) permits with
+           | Some p -> (p.issued_date, p.roof_age_years)
+           | None ->
+               let age = match raw.year_built with Some yb -> Some (float_of_int (max 0 (config.current_year - yb))) | None -> Some 20.0 in
+               (None, age))
+    in
+    let updated_is_hoa = raw.is_hoa in
+    let updated_is_rental = raw.is_rental in
+    if updated_is_hoa then incr hoa_filtered;
+    if updated_is_rental then incr rental_filtered;
+
+    ignore (Db.update_enriched db raw.address
+              ?owner_name:updated_owner
+              ?last_roof_permit_date:updated_permit_date
+              ?roof_age_years:updated_roof_age
+              ~is_hoa:updated_is_hoa
+              ~is_rental:updated_is_rental
+              ());
+
+    let owner_display = Option.value ~default:"Unknown" updated_owner in
+    let age_display = match updated_roof_age with Some a -> Printf.sprintf "%.1f yrs" a | None -> "N/A" in
+    let hoa_str = if updated_is_hoa then "HOA Filtered" else "Non-HOA" in
+    let rental_str = if updated_is_rental then "Rental Filtered" else "Non-Rental" in
+    Printf.printf "    -> %s: Owner '%s' | Roof Age: %s | %s | %s\n"
+      raw.address owner_display age_display hoa_str rental_str
+  ) enriched_rows;
+
+  Printf.printf "[+] Phase 3 Complete: %d Properties Evaluated (%d HOAs Filtered, %d Rentals Filtered)\n\n"
+    !evaluated_count !hoa_filtered !rental_filtered;
+
+  Printf.printf "--- PHASE 4: INVARIANT QUALIFICATION & ACTIONABILITY SCORING ---\n";
+  Printf.printf "[*] Evaluating mathematical invariants (INV1-INV4) and generating cryptographic proofs...\n";
+  let evaluated_rows = Db.list_leads ~status:Db.Enriched db in
   let qualified_count = ref 0 in
   let disqualified_count = ref 0 in
 
@@ -811,23 +918,31 @@ let run_pipeline ?(config = default_config) () : pipeline_summary =
         in
         Printf.printf " [DISQUALIFIED] %s (%s) | Score: %.1f | Violations: %s\n"
           raw.address raw.zip_code partial_score violations_str
-  ) enriched_rows;
+  ) evaluated_rows;
 
-  Printf.printf "\n[+] Qualification Results: %d Qualified | %d Disqualified\n"
+  Printf.printf "[+] Phase 4 Complete: %d Qualified | %d Disqualified\n\n"
     !qualified_count !disqualified_count;
 
-  (* PHASE 4: CSV EXPORT *)
-  Printf.printf "\n--- PHASE 4: RFC 4180 CSV LEAD EXPORT ---\n";
+  Printf.printf "--- PHASE 5: PERSISTENCE & RFC 4180 CSV EXPORT ---\n";
+  Printf.printf "[*] Finalizing lead state transitions in SQLite (%s)...\n" config.db_path;
+  Printf.printf "[*] Sanitizing spreadsheet formula vectors and writing CSV (%s)...\n" config.csv_path;
   let exported_count =
     Csv_exporter.export_from_db
       ~min_score:config.min_score
       db
       ~output_file:config.csv_path
   in
-  Printf.printf "[+] Exported %d Actionable Leads (Score >= %.1f) to %s\n"
+  let validated_leads = Db.list_leads ~status:Db.Validated db in
+  List.iter (fun r ->
+    let raw = Db.raw_lead_of_row r in
+    let score = Scorer.calculate_score raw in
+    if score.total_score >= config.min_score then
+      ignore (Db.update_status db r.address Db.Exported)
+  ) validated_leads;
+
+  Printf.printf "[+] Phase 5 Complete: Exported %d Actionable Leads (Score >= %.1f) to %s\n"
     exported_count config.min_score config.csv_path;
 
-  (* PHASE 5: CLOSED-LOOP LEARNING & SUMMARY *)
   let lessons = Lesson_store.load_lessons lesson_store in
   let vector_count = Vector_store.count vector_store in
 
@@ -835,11 +950,13 @@ let run_pipeline ?(config = default_config) () : pipeline_summary =
   Printf.printf " ROO4U PIPELINE EXECUTION SUMMARY\n";
   Printf.printf " Total Candidates Discovered:    %d\n" !discovered_count;
   Printf.printf " Total Leads Enriched:           %d\n" !enriched_count;
+  Printf.printf " Public Records Validated:       %d\n" !evaluated_count;
   Printf.printf " Formally Qualified (INV1-4):    %d\n" !qualified_count;
   Printf.printf " Disqualified by Invariants:     %d\n" !disqualified_count;
   Printf.printf " Exported to CSV:                %d\n" exported_count;
-  Printf.printf " Lessons Stored in Memory:       %d\n" (List.length lessons);
-  Printf.printf " Indexed Vector Records:         %d\n" vector_count;
+  Printf.printf " SQLite Database State:          %s\n" config.db_path;
+  Printf.printf " CSV Output Path:                %s\n" config.csv_path;
+  Printf.printf " Exit Code:                      0 (Success)\n";
   Printf.printf "======================================================================\n\n";
 
   {

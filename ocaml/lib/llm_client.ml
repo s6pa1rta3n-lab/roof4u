@@ -87,7 +87,6 @@ let clean_json_response (raw_text : string) : string =
   if raw_text = "" then ""
   else
     let text = String.trim (remove_thinking_tags raw_text) in
-    (* 1. Check markdown code blocks ```json ... ``` *)
     let code_blocks =
       let len = String.length text in
       let blocks = ref [] in
@@ -129,7 +128,6 @@ let clean_json_response (raw_text : string) : string =
     match valid_block with
     | Some b -> b
     | None ->
-        (* 2. Balanced brace scanner *)
         let len = String.length text in
         let rec scan_from start_idx =
           if start_idx >= len then None
@@ -167,7 +165,6 @@ let clean_json_response (raw_text : string) : string =
         match scan_from 0 with
         | Some valid_json -> valid_json
         | None ->
-            (* 3. Fallback: first '{' and last '}' *)
             (match String.index_opt text '{', String.rindex_opt text '}' with
              | Some s_idx, Some e_idx when e_idx > s_idx ->
                  String.trim (String.sub text s_idx (e_idx - s_idx + 1))

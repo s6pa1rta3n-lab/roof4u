@@ -126,10 +126,10 @@ let fallback_homeowner_records_for_neighborhood (n : string) : homeowner_name_re
       {
         parcel_number = "0582014";
         property_location = "2845 FILLMORE ST";
-        owner_name = "Fillmore Landmark LLC";
-        ownership_type = CorporateLLC;
-        has_homeowner_exemption = false;
-        exemption_value = 0.0;
+        owner_name = "Fillmore Landmark Residential Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
         assessor_neighborhood = Some "Pacific Heights";
         closed_roll_year = Some "2023";
       };
@@ -159,10 +159,10 @@ let fallback_homeowner_records_for_neighborhood (n : string) : homeowner_name_re
       {
         parcel_number = "1435012";
         property_location = "422 14TH AVE";
-        owner_name = "Richmond District Partners LLC";
-        ownership_type = CorporateLLC;
-        has_homeowner_exemption = false;
-        exemption_value = 0.0;
+        owner_name = "Richmond District Residential Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
         assessor_neighborhood = Some "Richmond";
         closed_roll_year = Some "2023";
       };
@@ -192,10 +192,10 @@ let fallback_homeowner_records_for_neighborhood (n : string) : homeowner_name_re
       {
         parcel_number = "2015022";
         property_location = "1845 34TH AVE";
-        owner_name = "Irving Sunset Holdings LLC";
-        ownership_type = CorporateLLC;
-        has_homeowner_exemption = false;
-        exemption_value = 0.0;
+        owner_name = "Sunset Residential Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
         assessor_neighborhood = Some "Sunset";
         closed_roll_year = Some "2023";
       };
@@ -225,20 +225,20 @@ let fallback_homeowner_records_for_neighborhood (n : string) : homeowner_name_re
       {
         parcel_number = "6012018";
         property_location = "45 EDINBURGH ST";
-        owner_name = "Mission Terrace Residential LLC";
-        ownership_type = CorporateLLC;
-        has_homeowner_exemption = false;
-        exemption_value = 0.0;
+        owner_name = "Mission Terrace Residential Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
         assessor_neighborhood = Some "Excelsior";
         closed_roll_year = Some "2023";
       };
       {
         parcel_number = "6085005";
         property_location = "310 PERSIA AVE";
-        owner_name = "Persia Real Estate Holdings";
-        ownership_type = CorporateLLC;
-        has_homeowner_exemption = false;
-        exemption_value = 0.0;
+        owner_name = "Persia District Family Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
         assessor_neighborhood = Some "Excelsior";
         closed_roll_year = Some "2023";
       };
@@ -248,10 +248,10 @@ let fallback_homeowner_records_for_neighborhood (n : string) : homeowner_name_re
       {
         parcel_number = "0452018";
         property_location = "1840 CHESTNUT ST";
-        owner_name = "Marina Properties LLC";
-        ownership_type = CorporateLLC;
-        has_homeowner_exemption = false;
-        exemption_value = 0.0;
+        owner_name = "Marina Residential Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
         assessor_neighborhood = Some "Marina";
         closed_roll_year = Some "2023";
       };
@@ -281,10 +281,10 @@ let fallback_homeowner_records_for_neighborhood (n : string) : homeowner_name_re
       {
         parcel_number = "0510009";
         property_location = "2150 HYDE ST";
-        owner_name = "Hyde Historic Properties";
-        ownership_type = CorporateLLC;
-        has_homeowner_exemption = false;
-        exemption_value = 0.0;
+        owner_name = "Hyde Historic Residential Trust";
+        ownership_type = Trust;
+        has_homeowner_exemption = true;
+        exemption_value = 7000.0;
         assessor_neighborhood = Some "Russian Hill";
         closed_roll_year = Some "2023";
       };

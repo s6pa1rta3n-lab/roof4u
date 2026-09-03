@@ -35,7 +35,8 @@ type lesson = {
   timestamp : string;
   dom_snippet : string option;
   resolved : bool;
-  status : string; (* ACTIVE | RESOLVED | PROBATION | DEPRECATED *)
+  (** Status: ACTIVE, RESOLVED, PROBATION, DEPRECATED *)
+  status : string;
   occurrence_count : int;
   success_count_after_workaround : int;
   target_entity : string option;

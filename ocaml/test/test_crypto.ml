@@ -35,7 +35,6 @@ let () =
   Printf.printf "=== Pure OCaml SHA-256 Cryptographic Engine Tests ===\n";
   Printf.printf "======================================================\n\n";
 
-  (* 1. RFC 6234 Standard Test Vectors *)
   assert_equal_str "T1.1: Empty string vector (0 bytes)"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     (sha256_string "");
@@ -64,7 +63,6 @@ let () =
     "64"
     (string_of_int (String.length (sha256_string "test_lead_qualification")));
 
-  (* 2. NIST 1,000,000 'a' Repetitions (Long Message Test) *)
   let million_ctx = init () in
   let chunk = String.make 10000 'a' in
   for _ = 1 to 100 do
@@ -74,13 +72,12 @@ let () =
     "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"
     (finalize_hex million_ctx);
 
-  (* 3. Boundary Value Analysis (BVA) & Multi-Block Transitions *)
   let boundaries = [
     (0, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-    (55, ""); (* Single block boundary *)
-    (56, ""); (* Two block spill boundary *)
+    (55, "");
+    (56, "");
     (63, "");
-    (64, ""); (* Exact block size *)
+    (64, "");
     (65, "");
     (119, "");
     (120, "");
@@ -99,7 +96,6 @@ let () =
       assert_equal_str (Printf.sprintf "T2.BVA: Exact match for length %d" len) expected digest
   ) boundaries;
 
-  (* 4. Incremental Streaming Chunk-Size Invariance *)
   let sample_text = "The quick brown fox jumps over the lazy dog - San Francisco Real Estate Verification 2026" in
   let direct_hash = sha256_string sample_text in
   List.iter (fun chunk_sz ->
@@ -116,7 +112,6 @@ let () =
       (finalize_hex ctx)
   ) [1; 2; 3; 7; 15; 31; 64];
 
-  (* 5. Avalanche Effect & Tamper Detection *)
   let h1 = sha256_string "2223 Pacific Ave, San Francisco, CA 94115" in
   let h2 = sha256_string "2223 Pacific Ave, San Francisco, CA 94114" in
   assert_true "T2.Avalanche: 1-character address flip yields completely distinct hash"
@@ -129,7 +124,6 @@ let () =
   assert_true "T2.Avalanche: Avalanche effect alters >= 45/64 hex characters"
     (!diff_chars >= 45);
 
-  (* 6. Byte and Channel Hashing *)
   let bytes_input = Bytes.of_string "abc" in
   let bytes_digest = sha256_bytes bytes_input in
   assert_true "T2.Bytes: sha256_bytes produces 32 raw bytes"

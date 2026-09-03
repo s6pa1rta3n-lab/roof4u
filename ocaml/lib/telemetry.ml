@@ -235,7 +235,6 @@ let find_duplicate_issue (event : scraping_failure_event) (open_issues : Json.t 
     let body = Json.get_string "body" issue |> Option.value ~default:"" in
     let title = Json.get_string "title" issue |> Option.value ~default:"" in
 
-    (* 1. Check embedded metadata block *)
     match parse_telemetry_metadata_block body with
     | Some pairs ->
         let get_k k = List.assoc_opt k pairs in
@@ -246,7 +245,6 @@ let find_duplicate_issue (event : scraping_failure_event) (open_issues : Json.t 
                 get_k "selector" = event.selector then true
         else false
     | None ->
-        (* 2. Check title prefix match *)
         if String.starts_with ~prefix:expected_prefix title then
           match event.selector with
           | Some s when s <> "" ->
@@ -421,7 +419,6 @@ let log_scraping_failure
       Printf.sprintf "type:%s" (String.lowercase_ascii event.failure_type);
     ] in
 
-    (* 1. Query open issues via MCP or REST *)
     let open_issues, list_transport =
       match mcp_caller with
       | Some caller ->
