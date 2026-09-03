@@ -1,0 +1,25 @@
+opam-version: "2.0"
+synopsis: "Roo4u Pure OCaml Engine"
+description: "Formal verification of real estate leads, cryptographic proofs, and municipal qualification invariants"
+maintainer: ["Roo4u Lab"]
+authors: ["Roo4u Lab"]
+license: "MIT"
+homepage: "https://github.com/s6pa1rta3n-lab/roof4u"
+bug-reports: "https://github.com/s6pa1rta3n-lab/roof4u/issues"
+depends: [
+  "ocaml" {>= "5.0.0"}
+  "dune" {>= "3.0"}
+]
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+  ]
+]

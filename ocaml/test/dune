@@ -1,0 +1,158 @@
+(test
+ (name test_verif)
+ (libraries roof_engine unix)
+ (modules test_verif))
+
+(test
+ (name test_crypto)
+ (libraries roof_engine unix)
+ (modules test_crypto))
+
+(test
+ (name test_json)
+ (libraries roof_engine unix)
+ (modules test_json))
+
+(test
+ (name test_invariants)
+ (libraries roof_engine unix)
+ (modules test_invariants))
+
+(test
+ (name test_memory)
+ (libraries roof_engine unix)
+ (modules test_memory))
+
+(test
+ (name test_connectors)
+ (libraries roof_engine unix)
+ (modules test_connectors))
+
+(test
+ (name test_security)
+ (libraries roof_engine unix)
+ (modules test_security))
+
+(test
+ (name test_e2e_pipeline)
+ (libraries roof_engine unix)
+ (modules test_e2e_pipeline))
+
+(test
+ (name test_adversarial_m1)
+ (libraries roof_engine unix)
+ (modules test_adversarial_m1))
+
+(test
+ (name test_m1_challenger)
+ (libraries roof_engine unix)
+ (modules test_m1_challenger))
+
+(test
+ (name test_tier5_adversarial)
+ (libraries roof_engine unix)
+ (modules test_tier5_adversarial))
+
+(test
+ (name test_public_records_microservices)
+ (libraries roof_engine unix)
+ (modules test_public_records_microservices))
+
+(test
+ (name test_district_pipeline)
+ (libraries roof_engine unix)
+ (modules test_district_pipeline))
+
+(test
+ (name test_challenger_2)
+ (libraries roof_engine unix threads)
+ (modules test_challenger_2))
+
+(test
+ (name test_adversarial_4district)
+ (libraries roof_engine unix)
+ (modules test_adversarial_4district))
+
+(test
+ (name test_gis_roofs)
+ (libraries roof_engine unix)
+ (modules test_gis_roofs))
+
+(test
+ (name test_spatial_pip_challenger)
+ (libraries roof_engine unix)
+ (modules test_spatial_pip_challenger))
+
+(executable
+ (name diff_sha256_gen)
+ (libraries roof_engine unix)
+ (modules diff_sha256_gen))
+
+(executable
+ (name diff_json_fuzz)
+ (libraries roof_engine unix)
+ (modules diff_json_fuzz))
+
+(test
+ (name test_m1_2_challenger)
+ (libraries roof_engine unix)
+ (modules test_m1_2_challenger))
+
+(test
+ (name test_milestone2_benchmarks)
+ (libraries roof_engine unix)
+ (modules test_milestone2_benchmarks))
+
+(test
+ (name test_m2_2_challenger)
+ (libraries roof_engine unix)
+ (modules test_m2_2_challenger))
+
+(test
+ (name test_m2_1_challenger)
+ (libraries roof_engine unix)
+ (modules test_m2_1_challenger))
+
+(test
+ (name test_phone_validation)
+ (libraries roof_engine unix)
+ (modules test_phone_validation))
+
+(test
+ (name test_phone_validation_challenger)
+ (libraries roof_engine unix)
+ (modules test_phone_validation_challenger))
+
+(test
+ (name test_m3_2_challenger)
+ (libraries roof_engine unix)
+ (modules test_m3_2_challenger))
+
+(test
+ (name test_cli_runner)
+ (libraries roof_engine unix)
+ (modules test_cli_runner))
+
+(test
+ (name test_m4_2_challenger)
+ (libraries roof_engine unix)
+ (modules test_m4_2_challenger))
+
+(test
+ (name test_m4_1_challenger)
+ (libraries roof_engine unix)
+ (modules test_m4_1_challenger))
+
+(test
+ (name test_tier5_whitebox_challenger)
+ (libraries roof_engine unix threads)
+ (modules test_tier5_whitebox_challenger))
+
+(test
+ (name test_m5_integration_challenger)
+ (libraries roof_engine unix)
+ (modules test_m5_integration_challenger))
+
+
+
+
