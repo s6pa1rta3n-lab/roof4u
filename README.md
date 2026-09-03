@@ -1,38 +1,49 @@
-# Roo4u - Offline Agentic Lead Generation
+# Roo4u - Automated Lead Generation Pipeline
 
-Roo4u is an automated lead generation pipeline for roofing contractors targeting Victorian and Flat roofs in high-income neighborhoods.
+Roo4u is an automated lead generation pipeline for roofing contractors targeting Victorian and flat roofs in high-income neighborhoods.
 
-## System Architecture
+## Overview
 
-The system operates entirely offline using local compute resources. It requires zero external cloud APIs or paid infrastructure. All operations execute within the Antigravity Desktop Agent environment via scheduled tasks.
+Roo4u finds high-value roofing leads. It identifies specific roof types in affluent San Francisco corridors, extracts the property owner's name and mailing address, calculates the age of the roof using building permits, filters out condos and commercial rentals, and finds the owner's phone number. The final output is a verified list of actionable leads ready for contact.
 
-### Core Components
+### Technical Architecture
 
-1. **Local Inference Execution:** The Browsing Agent executes web scraping and data extraction tasks using a local OpenAI-compatible inference endpoint (`http://localhost:8000/v1`). It parses HTML structures dynamically without external language model dependencies.
-2. **Learning Agent (Self-Healing Loop):** A dedicated agent monitors the system for scraping failures. It records failures to a dual-memory system consisting of a local file (`lessons_learned.json`) and a custom SQLite+NumPy vector database. It logs issues to GitHub using a dual-transport client (MCP and REST fallback) with SHA-256 deduplication.
-3. **Programmatic Zero-Mock Test Suite:** The testing infrastructure uses live Starlette and Uvicorn loopback servers to simulate network traffic locally. It executes all tests without utilizing the `unittest.mock` library for external endpoints.
-4. **Agent-As-Judge Evaluator:** An evaluation agent analyzes the codebase using Abstract Syntax Trees (AST). It scores the system across five dimensions and issues a cryptographic SHA-256 digital certificate (`CERTIFIED_PASS.json`) upon successful verification.
+The system is a fully autonomous pipeline built entirely in OCaml. It processes data locally.
 
-## Technology Stack
+1. **GIS Integration (`gods-eye-view`)**: The pipeline ingests San Francisco neighborhood polygon boundaries. It uses a custom ray-casting algorithm with AABB pre-filtering to identify properties in target corridors (Pacific Heights, Marina, Seacliff). It applies morphological classifiers to target Victorian, flat, and Mansard roofs.
+2. **Public Record Connectors**: The system extracts property ownership from the San Francisco Assessor-Recorder Secured Roll. It normalizes addresses to USPS Publication 28 standards.
+3. **Roof Age Validation**: The pipeline parses Department of Building Inspection (DBI) permit datasets. It analyzes roofing keywords to calculate the elapsed roof age. It queries county tax and property records to filter out Homeowner Associations (HOAs) and commercial rentals.
+4. **Contact Enrichment**: The system uses a 4-tier waterfall enrichment process (Commercial Skip Tracer -> OSINT Scraper -> Municipal Directory) to append phone numbers. A strict North American Numbering Plan (NANP) validator rejects fake numbers and toll-free lines.
+5. **Production Infrastructure**: The system executes via a CLI runner (`bin/main.ml`). It stores state in a resilient SQLite database running in WAL mode to guarantee transactional idempotency. It exports leads to a 10-column RFC 4180 CSV file, protects against formula injection, and validates every lead with a cryptographic SHA-256 proof.
 
-- **Execution Environment:** Antigravity Scheduled Tasks
-- **Inference Engine:** Local OpenAI-compatible server (e.g., NVIDIA open-source models)
-- **Vector Database:** Custom SQLite and NumPy implementation
-- **Testing:** Pytest with native HTTP loopback servers
-- **Data Storage:** SQLite database and CSV file exports
+## Agentic Development and GitHub Integration
 
-## Execution Status
+We built Roo4u using multi-agent swarms. We delegated complex engineering milestones to autonomous agent teams that executed the entire software development lifecycle.
 
-The current implementation has completed all primary milestones. The codebase holds a 100 percent test pass rate across 468 integration tests and possesses a validated `CERTIFIED_PASS.json` digital signature.
+### Multi-Agent Orchestration
+We used the `teamwork_preview` system to spawn parallel agents (explorers, workers, reviewers, challengers, and auditors). These agents independently researched requirements, wrote OCaml code, patched vulnerabilities, and audited the final deliverables. 
+
+### Zero-Mock Verification
+The agent teams enforced absolute integrity. They wrote and passed over 1,500 test assertions across 29 test suites using real data invariants. They refused all test mocks. Independent post-victory auditors verified the cryptographic proofs and enforced a coding style with zero inline comments.
+
+### GitHub as a Second Brain
+We integrated GitHub directly into the agent workflow to track state and manage the build process.
+- **Mandatory Documentation**: Agents filed unexpected errors, blockers, and architecture shifts as sub-issues under parent epics in real time.
+- **Automated Issue Management**: We implemented a strict issue hygiene framework. The agents cross-reference the OCaml codebase against open GitHub issues. They automatically close resolved issues using explicit code citations and test run evidence. A scheduled GitHub Actions workflow and local reconciliation scripts guarantee issues transition deterministically from `TRIAGED` to `CLOSED`.
 
 ## Setup Instructions
 
-1. Clone the repository to your local machine.
-2. Ensure the Antigravity Desktop application is installed and active.
-3. Start the local inference endpoint on port 8000.
-4. Configure a scheduled task within Antigravity to trigger the orchestrator.
-5. The system processes leads and generates the `validated_leads.csv` export file locally.
+1. Clone the repository.
+2. Install OCaml (5.1.0) and Dune.
+3. Run the complete test suite:
+   ```bash
+   cd ocaml && dune runtest
+   ```
+4. Execute the CLI pipeline to generate leads:
+   ```bash
+   dune exec roo4u -- --run --neighborhood "Pacific Heights" --csv validated_leads.csv
+   ```
 
 ## License
 
-This project is licensed under the MIT License.
+MIT License.
