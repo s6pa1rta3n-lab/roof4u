@@ -1,0 +1,33 @@
+name: MisakaNet Intake Bot
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      error:
+        description: 'Error text'
+        required: false
+        default: 'ModuleNotFoundError: No module named pytest'
+      mode:
+        type: choice
+        options: [suggest-only, suggest-and-intake]
+        default: suggest-and-intake
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  intake:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Ikalus1988/MisakaNet/.github/actions/misaka-intake-bot@main
+        id: intake
+        with:
+          mode: ${{ github.event.inputs.mode || 'suggest-and-intake' }}
+          source: ${{ github.repository }}
+          error: ${{ github.event.inputs.error || '' }}
