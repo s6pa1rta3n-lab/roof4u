@@ -25,7 +25,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: Ikalus1988/MisakaNet/.github/actions/misaka-intake-bot@main
+      - uses: s6pa1rta3n-lab/MisakaNet/.github/actions/misaka-intake-bot@fix-issue-1550
         id: intake
         with:
           mode: ${{ github.event.inputs.mode || 'suggest-and-intake' }}
